@@ -1,5 +1,5 @@
 ---
-title: On the fly
+title: On your own genomes
 layout: default
 parent: Tutorials
 nav_order: 1
