@@ -40,7 +40,7 @@ The integration of previous evidence or/and knowledge can increase or decrease t
 This way, associations can be further investigated and more reliable conclusions can be drawn.  
 
 
-*microbetag* implements data integration techniques to annotate both the nodes (taxa) and the edges (predicted associations) of such a network 
+*`microbetag`* implements data integration techniques to annotate both the nodes (taxa) and the edges (predicted associations) of such a network 
 to enhance microbial co-occurrence network analysis for amplicon data. 
 Have a look at the [**modules**](docs/modules) tab to get an overview of the methods used.
 
@@ -59,14 +59,13 @@ Their comparison in each pair of correlated taxa evaluates their corresponding a
 
 ## How to use 
 
-microbetag is available as a [Cytoscape App]()
-[Cytoscape](https://cytoscape.org) is a well-established, widely used software for
-network data Integration, analysis, and visualization.
-All you need to do is to [download and install Cytoscape](https://cytoscape.org/download.html) and then visit the [Cytoscape Appstore](https://apps.cytoscape.org) and search for microbetag.
+[Cytoscape](https://cytoscape.org) is a well-established, widely used software for network data integration, analysis, and visualization.
+`microbetag` is available as a [Cytoscape App](https://apps.cytoscape.org/apps/mgg); we call the CytoscapeApp MGG.
+To use it you need to first make sure you have Cytoscape installed on your machine; if not you can do this from the [Cytoscape Install page](https://cytoscape.org/download.html)
+Then, **after lunching Cytoscape**, you may visit the [Cytoscape Appstore](https://apps.cytoscape.org/apps/mgg) and install MGG by pressing the `Install` button.
+Alternatively, you may click `Apps > App manager..` after lunching Cytoscape, then search for "microbetag" in the pop-up box and click  "Install".
 
-Otherwise, you may click `Apps > App manager..` after lunching Cytoscape, then search for "microbetag" in the pop-up box and click  "Install".
-
-Once microbetag is installed, you are ready to lunch it using an OTUs/ASVs (amplicon data) or bins/MAGs (shotgun data) abundance tabl as input. 
+Once MGG is installed, you are ready to use `microbetag` either on the fly, by providing an OTUs/ASVs (amplicon data) and optionally a network, if you already have one, or locally, if you want to apply the annotations on your own bins/MAGs. In the last case, you will also have to install [Docker](https://www.docker.com) or [Singularity](https://sylabs.io) and pull the `microbetag` image that allows you to do so (see [Tutorials](docs/tutorials/tutorials.md) for more).
 
 {: .important-title }
 > HOW TO USE AND INTERPRET MICROBETAG's FINDINGS 
@@ -74,9 +73,8 @@ Once microbetag is installed, you are ready to lunch it using an OTUs/ASVs (ampl
 > For a thorough description of the app, please check the [Cytoscape App](docs/cytoApp) tab.
 
 
-In addition, microbetag's annotations are also available through its [Application Programming Interface (API)](docs/api). 
-This way, one may have direct access to the microbetagDB and may export annotations for species or pair of species of interest, without the need of a network. 
-
+In addition, `microbetag`'s annotations are also available through its [Application Programming Interface (API)](docs/api). 
+This way, one may have direct access to the `microbetagDB` and may export annotations for species or pairs of species of interest, without the need of a network. 
 
 
 <!-- 
@@ -128,4 +126,4 @@ and the [3D’omics](https://www.3domics.eu) Horizon project (101000309).
 
 ## License
 
-*microbetag* is under [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html). For third-party components separate licenses apply. 
+*microbetag* is under [GNU General Public License v3.0](https://opensource.org/license/gpl-3-0). For third-party components separate licenses apply. The MGG CytoscapeApp is under [Apache License, Version 2.0](https://opensource.org/license/apache-2-0).

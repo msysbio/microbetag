@@ -121,7 +121,7 @@ In case a non related genome id for which there are no phen-like traits on micro
 ```
 
 
-## Get pathway complememtarities
+## Get pathway complementarities
 
 ### Get pathway complementarities for a pair of genomes 
 
