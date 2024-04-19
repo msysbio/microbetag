@@ -2,12 +2,9 @@
 title: On your own genomes
 layout: default
 parent: Tutorials
-nav_order: 1
+nav_order: 3
 description: "an example case of how to run microbetag using your own bins/MAGs"
 ---
-
-
-
 
 
 ## Using your own bins/MAGs 
@@ -55,7 +52,7 @@ mkdir kofam_database &&\
 ```
 
 
-Now, you need to [download][2] the `config.yml` file that accompanies microbetag, to set the values to the required and optional arguments of your choice. 
+Now, you need to [download][1] the `config.yml` file that accompanies microbetag, to set the values to the required and optional arguments of your choice. 
 
 In this file, each argument has a `required` field that denotes whether it is mandatory to be set or not. 
 
@@ -64,7 +61,7 @@ One may provide just an abundance table and the corresponding bins/MAGs sequence
 {: .important-title}
 > FILENAMES
 >
-> The filenames of your bins/MAGs need to have the same name like those in your abundance table.
+> The filenames of your bins/MAGs need to have the same name, like those in your abundance table.
 > For example, if in the abundance table you have bin101, then the corresponding filename of the bin should be bin101.fa or bin101 fasta etc.
 > This will soon be changed so a mapping file can be used instead. 
 > Until then though microbetag will fail if that is not the case. 
@@ -104,11 +101,10 @@ bin_19.fa
 ### Using Singularity/Apptainer
 
 These technologies are widely used in High Performance Computing (HPC) systems. 
-In case you are about to use microbetag in such a system, you may 
+In case you are about to use `microbetag` in such a system, you may 
 
 
-[1]:{{ site.url }}/microbetag/download/seq_ab_tab.tsv
 
-[2]:{{ site.url }}/microbetag/download/config.yml
+[1]:{{ site.url }}/microbetag/download/config.yml
 
 
