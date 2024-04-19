@@ -26,7 +26,7 @@ beta version
 # the 'mb'is the margin-bottom as said,  while the 'md' stands for a [responsive modifier](https://pmarsceill.github.io/just-the-docs/docs/utilities/responsive-modifiers/#responsive-modifiers)-->
 
 [View it on GitHub](https://github.com/hariszaf/microbetag){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
-[CytoscapeApp](){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[CytoscapeApp](https://apps.cytoscape.org/apps/mgg){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 
 
 ---
