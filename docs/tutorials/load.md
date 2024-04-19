@@ -1,5 +1,5 @@
 ---
-title: load microbetag-annotated network
+title: load networks to Cytoscape and use them with microbetag
 layout: default
 parent: Tutorials
 nav_order: 2
@@ -7,11 +7,14 @@ description: "an example case of how to load a previously microbetag-annotated n
 ---
 
 
-## Visualize an already `microbetag`-annotated network on Cytoscape
+# Load networks to Cytoscape to use them with `microbetag`
 
 
+## ..coming from the preparation step
+
+The preparation step should have provided you with the `GTDB_tax_assigned_abundance_table.tsv` and/or the `network_output.edgelist` files. 
 Now, we can get those two files returned and jump into Cytoscape. 
-Open Cytoscape and then click on `File > Import > Network from file` and browse on the pop up box to your `network_output.edgelist` file. 
+Open Cytoscape and then click on `File > Import > Network from file` and browse on the pop-up box to your `network_output.edgelist` file. 
 
 You will then see another pop up box like this: 
 
@@ -55,6 +58,25 @@ That's it!
 You may now [*"roam"* across your annotated network](../cytoApp.md#roaming-acrross-annotated-nodes-and-edges).
 
 
+
+## Any other network 
+
+In this case, you can load your network as you would do in Cytoscape in general. 
+
+If your network is not already `microbetag`-annotated, you need first to load in on Cytoscape and then import it to the `microbetag` input;
+you may follow the instructions [here](https://hariszaf.github.io/microbetag/docs/cytoApp/#-starting-from-a-co-occurrence-network). 
+
+{: .note}
+Remember, you need always to call the column to be used as weight of the network as `microbetag::weight`.
+
+
+If you have already a `microbetag`-annotated network, that will be a `.cx` file which you can load as any other network on Cytoscape, i.e., by clicking 
+on `File > Import > Network from file`. 
+
+Make sure you enable the MGG style and cyPanels:
+
+![style](../../assets/images/app/visualStyle.png)
+![panels](../../assets/images/app/show_panels.png)
 
 
 

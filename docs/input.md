@@ -134,7 +134,7 @@ To get the optimal annotations in the more robust way, we **strongly suggest** y
 That will be almost always the case when you have large datasets with more than a few thousands of sequences and no network for them. 
 Yet, even if you have a network, we still **strongly suggest** running the *taxonomy assignment* step, so `microbetag` can map more efficiently the taxa present to their corresponding GTDB genomes. 
 
-Have a look at the ["preparation"](#the-preparation) section for how to do so! 
+Have a look at the ["preparation"](./tutorials/prep.md) section for how to do so! 
 
 
 
