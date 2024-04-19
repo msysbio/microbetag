@@ -1,16 +1,24 @@
 ---
-title: load networks to Cytoscape and use them with microbetag
+title: Loading networks
 layout: default
 parent: Tutorials
 nav_order: 2
 description: "an example case of how to load a previously microbetag-annotated network on cytoscape"
 ---
 
+{: .no_toc }
 
-# Load networks to Cytoscape to use them with `microbetag`
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
 
 
-## ..coming from the preparation step
+# Load networks to Cytoscape and `microbetag`
+
+
+## ..coming from the `microbetag` preparation step
 
 The preparation step should have provided you with the `GTDB_tax_assigned_abundance_table.tsv` and/or the `network_output.edgelist` files. 
 Now, we can get those two files returned and jump into Cytoscape. 
@@ -59,7 +67,7 @@ You may now [*"roam"* across your annotated network](../cytoApp.md#roaming-acrro
 
 
 
-## Any other network 
+## ..anywhere!
 
 In this case, you can load your network as you would do in Cytoscape in general. 
 

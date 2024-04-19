@@ -6,27 +6,40 @@ nav_order: 3
 description: "an example case of how to run microbetag using your own bins/MAGs"
 ---
 
+{: .no_toc }
 
-## Using your own bins/MAGs 
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+
+# Run `microbetag` by making use of your own (annotated) bins/MAGs or GENREs
 
 {: .note}
-> For advanced users. Contrary to the previous scenario, this case is not performed from within the CytoscapeApp.
+> For advanced users. Contrary to previous cases, this scenario is not performed from within the CytoscapeApp.
 >
-> The user needs to run microbetag first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape. 
+> The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape. 
 
 
-In the first tutorial, our taxonomically assigned sequences were mapped to representative GTDB genomes and microbetag used those for the annotation steps. 
+In the first tutorial, our taxonomically assigned sequences were mapped to representative GTDB genomes and `microbetag` used those for the annotation steps. 
 
 However, in case of shotgun metagenomics binning of the contigs and further refinement can lead to Metagenome-Assembled Genomes (MAGs). 
 In case of high quality MAGs, i.e. high completeness and low contamination, they can be used directly for the annotation steps of microbetag. 
 Yet, this requires computing resources and time much higher than those that a web-server can support. 
 
-Thus, we provide a version of microbetag as a stand-alone, containerized tool so that users can annotate a co-occurrence network using their own sequences. 
-To do that, you need first to make sure you have either [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)/[Apptainer]() in the computing system to be used for running microbetag. 
+Thus, we provide a version of `microbetag` as a stand-alone, containerized tool so that users can annotate a co-occurrence network using their own sequences. 
+To do that, you need first to make sure you have either [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)/[Apptainer]() in the computing system to be used for running `microbetag`. 
 The last is common in HPC systems and if you are about to use such a system, you should ask your admin for more information.
 
+To go for this case you need:
+* Docker / Singularity (containerization technology)
+* the `microbetag` image based on the containerization technology you are using 
+* the `config.yml` file that you may get from our GitHub repo
 
-### Using Docker 
+
+## Using Docker 
 
 
 Once you have installed Docker locally, you may run 
@@ -52,7 +65,7 @@ mkdir kofam_database &&\
 ```
 
 
-Now, you need to [download][1] the `config.yml` file that accompanies microbetag, to set the values to the required and optional arguments of your choice. 
+Now, you need to [download][1] the `config.yml` file that accompanies `microbetag`, to set the values to the required and optional arguments of your choice. 
 
 In this file, each argument has a `required` field that denotes whether it is mandatory to be set or not. 
 
@@ -98,7 +111,7 @@ bin_19.fa
 ..
 ```
 
-### Using Singularity/Apptainer
+## Using Singularity/Apptainer
 
 These technologies are widely used in High Performance Computing (HPC) systems. 
 In case you are about to use `microbetag` in such a system, you may 
