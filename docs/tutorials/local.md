@@ -99,7 +99,7 @@ computed directly on the,
 
 
 
-{: important-title}
+{: .important-title}
 > Input folder 
 >
 > To conclude, your input folder to be mounted will look like this:
