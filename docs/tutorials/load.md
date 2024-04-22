@@ -6,6 +6,7 @@ nav_order: 2
 description: "an example case of how to load a previously microbetag-annotated network on cytoscape"
 ---
 
+# Load networks to Cytoscape and `microbetag`
 {: .no_toc }
 
 ## Table of contents
@@ -13,9 +14,6 @@ description: "an example case of how to load a previously microbetag-annotated n
 
 1. TOC
 {:toc}
-
-
-# Load networks to Cytoscape and `microbetag`
 
 
 ## ..coming from the `microbetag` preparation step

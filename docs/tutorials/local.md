@@ -8,6 +8,7 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 
 
 # Run `microbetag` by making use of your own (annotated) bins/MAGs or GENREs
+{: .no_toc }
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -15,6 +16,8 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 1. TOC
 {:toc}
 
+
+## Input and `config.yml` files
 
 {: .note}
 > For advanced users. 
@@ -26,11 +29,11 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 In the first tutorial, our taxonomically assigned sequences were mapped to representative GTDB genomes and `microbetag` used those for the annotation steps. 
 
 However, in case of shotgun metagenomics binning of the contigs and further refinement can lead to Metagenome-Assembled Genomes (MAGs). 
-In case of high quality MAGs, i.e. high completeness and low contamination, they can be used directly for the annotation steps of microbetag. 
+In case of high quality MAGs, i.e. high completeness and low contamination, they can be used directly for the annotation steps of `microbetag`. 
 Yet, this requires computing resources and time much higher than those that a web-server can support. 
 
 Thus, we provide a version of `microbetag` as a stand-alone, containerized tool so that users can annotate a co-occurrence network using their own sequences. 
-To do that, you need first to make sure you have either [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)/[Apptainer]() in the computing system to be used for running `microbetag`. 
+To do that, you need first to make sure you have either [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)/[Apptainer](https://apptainer.org/docs/user/latest/quick_start.html) in the computing system to be used for running `microbetag`. 
 The last is common in HPC systems and if you are about to use such a system, you should ask your admin for more information.
 
 To go for this case you need:
@@ -171,8 +174,5 @@ singularity exec
     python3 /microbetag/microbetag.py /data/config.yml
 ```
 
-
-
 [1]:{{ site.url }}/microbetag/download/config.yml
-
 

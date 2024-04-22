@@ -7,8 +7,6 @@ permalink: /docs/modules
 usemath: true
 ---
 
-
-
 # Modules
 {: .no_toc }
 
@@ -20,10 +18,13 @@ usemath: true
 
 ---
 
-microbetag gets as input either a co-occurrence network or an abundance table where either [Silva](https://www.arb-silva.de) or [GTDB](https://gtdb.ecogenomic.org) taxonomies have been used. 
+## Overview
+
+
+`microbetag` gets as input either a co-occurrence network or an abundance table where either [Silva](https://www.arb-silva.de) or [GTDB](https://gtdb.ecogenomic.org) taxonomies have been used. 
 When an abundance table is provided, microbetag firsts builds a co-occurrence network using [FlashWeave](https://github.com/meringlab/FlashWeave.jl) [1].
 
-Once a network is availalbe, microbetag identifies the taxonomic level that has been assigned to each entry, for example 
+Once a network is available, `microbetag` identifies the taxonomic level that has been assigned to each entry, for example 
 `D_0__Bacteria; D_1__Firmicutes; D_2__Clostridia; D_3__Clostridiales; D_4__Ruminococcaceae; D_5__uncultured; D_6__uncultured rumen bacterium`
 has reached the family level, while
 `D_0__Bacteria; D_1__Actinobacteria; D_2__Coriobacteriia; D_3__Coriobacteriales; D_4__Coriobacteriaceae; D_5__Collinsella; D_6__uncultured bacterium`
@@ -66,10 +67,10 @@ As an example, here is how the FAPROTAX output looks like for the **denitrificat
 FAPROTAX returns only the ASVs present in the (user provided) abundance table that are related to the **denetrification** function.
 Numbers represent the ASV abundance in each sample. 
 
-microbetag runs FAPROTAX agains the abundance table and parses the subtables ([`seqId_faprotax_functions_assignment`](https://github.com/msysbio/microbetagApp/blob/main/services/web/microbetag/scripts/utils.py#L181)) 
+`microbetag` runs FAPROTAX against the abundance table and parses the sub-tables ([`seqId_faprotax_functions_assignment`](https://github.com/msysbio/microbetagApp/blob/main/services/web/microbetag/scripts/utils.py#L181)) 
 to annotate each node with the corresponding function. 
 
-In case the user provides as input a co-occurrence network, microbetag runs FAPROTAX against the nodes.
+In case the user provides as input a co-occurrence network, `microbetag` runs FAPROTAX against the nodes.
 
 
 
