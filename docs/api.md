@@ -111,13 +111,11 @@ For a thorough description of the abbreviations used, have a look in the microbe
 > 2. In case a GTDB genome returns an "Internal Server Error", please try again replacing the "GCA" with "GCF". 
 
 
-In case a non related genome id for which there are no phen-like traits on microbetagDB is provided, a list of 2 zeros is returned.  
+In case a genome id is provided for which there are no phenotypic traits on microbetagDB, you will get a message explaining this:
 
 ```bash
-[
-  0,
-  0
-]
+No Phen traits for the genome id asked.         
+Make sure you are asking for a GTDB v202 representative genome.
 ```
 
 
@@ -225,37 +223,28 @@ For example:
 
 ```bash
 curl -X GET https://msysbio.gbiomed.kuleuven.be/genomes-seed-scores/GCF_000470535.1/GCF_000336555.1
-
-{
-  "0": {
-    "A": "1379686",
-    "B": "883079",
-    "scores": {
-      "0": {
-        "competition": "0.596",
-        "cooperatiom": "0.209",
-        "genome_A": "GCF_000470535.1",
-        "genome_B": "GCF_000336555.1"
-      }
-    }
-  },
-  "1": {
-    "A": "883079",
-    "B": "1379686",
-    "scores": {
-      "0": {
-        "competition": "0.647",
-        "cooperatiom": "0.131",
-        "genome_A": "GCF_000336555.1",
-        "genome_B": "GCF_000470535.1"
-      }
-    }
-  }
-}
 ```
 
-The function returns pairs of seed scores,
- the first genome provided is considered as genome A for the seed metrics (see ["microbetag Modules"](modules/modules.md#seed-scores-based-on-genome-scale-draft-reconstructions-gems) for more) and the second one as genome B.
+returns 
+
+```bash
+[
+  [
+    "GCF_000470535.1",
+    "GCF_000336555.1",
+    "0.596",
+    "0.209"
+  ],
+  [
+    "GCF_000470535.1",
+    "GCF_000336555.1",
+    "0.647",
+    "0.131"
+  ]
+]
+```
+
+The function returns pairs of seed scores, the first genome provided is considered as genome A for the seed metrics (see ["microbetag Modules"](modules/modules.md#seed-scores-based-on-genome-scale-draft-reconstructions-gems) for more) and the second one as genome B.
 
 
 
