@@ -62,20 +62,30 @@ For input file examples, please have a look [here](https://github.com/hariszaf/m
 {: .warning } Do not use numeric characters only for labeling your samples and/or the sequences mentioned in your abundance table. For example, `324` as a sample id will lead microbetag to fail. 
 
 
-
-
 ### Case 1: all you have is your abundance table and your taxonomies 
 
 For up to a few thousands of sequences entries, microbetag can be a one-stop-shop application performing both taxonomy annotation, network generation and annotation. 
 
 Moving on with microbetag's taxonomy annotation is always a best practice as it makes sure that the sequences assigned to the species/strain level, they will all be annotated from microbetag. 
 
-Further, one can keep both the taxonomies assigned from microbetag and from any other software. 
+Further, one can keep both the taxonomies assigned from `microbetag` and from any other software. 
 
-However, if you would like to move on with your taxonomy scheme, microbetag enables that but you should know that there's a big chance of loosing some annotations. 
+However, if you would like to move on with your taxonomy scheme, microbet`ag enables that, but you should know that there's a big chance of loosing some annotations. 
 
+In case 1, one may also have some metadata describing the sequencing data. FlashWeave, the software `microbetag` invokes to build the co-occurrence network, can exploit metadata. 
 
-In case 1, one may also have some metadata describing the sequencing data. FlashWeave, the software microbetag invokes to build the co-occurrence network, can exploit metadata. 
+{: .note}
+> In case you start from a `phyloseq` object, you may get a `.tsv` file like this:
+> ```
+>
+> OTU_TAX <- cbind(
+>    data.frame(otu_table(physeq)), 
+>    data.frame(tax_table(physeq))
+>)
+>write.table(OTU_TAX, "OTU_TAX.txt", 
+>            row.names = TRUE, col.names = TRUE, sep = "\t", quote=FALSE)
+>```
+
 
 {: .important-title}
 > METADATA FILE 
@@ -104,6 +114,7 @@ In case 1, one may also have some metadata describing the sequencing data. Flash
 > As shown, the sample names are omitted from the `metadata_file.tsv`. 
 > You need to make sure that their corresponding values are in the exact same order as in the `abundance_file.txt`. 
 > In case the files are not provided like this, microbetag and/or the Docker image of microbetag preprocess, will fail.
+
 
 
 {: .important-title}
