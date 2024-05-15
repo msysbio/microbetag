@@ -28,5 +28,7 @@ tools/
 preprocess/
 jeckyll-theme/
 
-
+gurobi.lic
+__pycache__/
+.vscode/
 
