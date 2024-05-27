@@ -87,5 +87,8 @@ microbetagDB/scripts/*.json
 
 gtdb_16s.RData
 
+gurobi.lic
+__pycache__/
+.vscode/
 
 
