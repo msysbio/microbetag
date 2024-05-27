@@ -63,8 +63,6 @@ chem_xref.tsv
 qiime2_consensus_taxonomy_7_levels.tsv
 taxmap_embl_ssu_ref_132.txt
 
-__pycache__/
-
 # Ignore NCBI Taxonomy db and mgnify catalogues metadata provided by the MGNify FTP
 mappings/mgnify_mappings/metadata/
 ref-dbs/taxdump/
@@ -105,9 +103,13 @@ microbetag_env
 # Ignore the GTDB db with 16S 
 gtdb_16s.RData
 
+<<<<<<< HEAD
 # Ignore the kofam database
 ext_data/kofam_database/profiles/
 ext_data/kofam_database/ko_list
+
+# Gurobi license
+gurobi.lic
 
 # Ignore the output folder of the stand alone tool
 #microbetag_run/
