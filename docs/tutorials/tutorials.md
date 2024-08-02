@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Tutorials
+title: Additional tutorials
 nav_order: 6
 has_children: true
-permalink: /docs/tutorialas
+permalink: /docs/tutorials
 usemath: true
 ---
 
-# Tutorials
+# Additional tutorials
 
 To use `microbetag` there are two main approaches: 
 * with `microbetagDB` through Cytoscape; in this case, your taxa will be mapped to a GTDB representative genome if possible and pre-calculations will be used for the annotation step. However, if you have an abundance table with more than 1000 sequences, you will have to provide a network. 
