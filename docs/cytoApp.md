@@ -131,8 +131,7 @@ Once you set the parameters of your choice, you are ready to sent your query to 
 
 After a few minutes (based on your data and the steps you have asked for) a *microbetag-*annotated network will pop up automatically on your Cytoscape instance.
 
-![annotated_net](../assets/images/app/annotatedNetwork.png)
-
+![annotated_net](../assets/images/app/annotated_net_no_net.png)
 
 
 
@@ -207,6 +206,10 @@ Once both your abundance file and your network are imported, you can proceed as 
 Make sure that you set the `Choose Input Type` as `network` this time, otherwise `microbetag` will ignore your network and try to build on of their own. 
 
 
+This will take significantly less time and here is the returned network: 
+
+
+![annotated_net](../assets/images/app/annotatedNetwork.png)
 
 
 
@@ -218,10 +221,10 @@ Make sure that you set the `Choose Input Type` as `network` this time, otherwise
 
 
 
+## *"Roaming"* across annotated nodes and edges
 
-## *"Roaming"* acrross annotated nodes and edges
-
-Once an annotated network is returned (or loaded), you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returned. 
+Once an annotated network is returned (or loaded), you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returned.
+We will use the `microbetag`-annogated network of the [last example-case](cytoApp.md#starting-from-a-co-occurrence-network).
 
 Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequence was able to be mapped on *microbetag*.
 
@@ -236,15 +239,15 @@ If you edit the style of your *microbetag-*annotated network, you can always bri
 ![style](../assets/images/app/visualStyle.png)
 
 
-
 By clicking on the *Show Species* button, all nodes that were not mapped to a genome will be masked. 
 
 ![show_species](../assets/images/app/showSpecies.png)
 
+
 Or you can choose/click directly any node on the network and check the `Nodes` Panel 
 
-
 ![selcted_node](../assets/images/app/nodePanel.png)
+
 
 or several at the same time
 
