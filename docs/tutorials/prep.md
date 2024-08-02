@@ -1,7 +1,7 @@
 ---
 title: microbetag-prep
 layout: default
-parent: Tutorials
+parent: Additional tutorials
 nav_order: 1
 description: "an example case of how to run the microbetag prep step"
 ---

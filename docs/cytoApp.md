@@ -73,6 +73,16 @@ Then, as you will see in the following two cases, you will have to set the value
 ## .. starting from an abundance table
 
 In case that a co-occurrence network is not available, *microbetag* can come up with one using [FlashWeave](https://doi.org/10.1016/j.cels.2019.08.002).
+
+
+{: .important-title}
+> UP LIMIT FOR ABUNDANCE TABLE RECORDS
+> 
+> *microbetag* will build a co-occurrence network only for abundance tables with less than 1000 of records.
+> In case your abundance table is larger, you will have to run the [`microbetag` preprocess](./tutorials/prep.md) step.
+> Otherwise, you can always run any algorithm for network inference locally and use their findings with microbetag.
+
+
 The on-the fly creation of the co-occurrence network is supported only for abundance tables with **up to 1000 records**.
 If your data include more sequencing records, then you will have to use the [`microbetag` preprocess](./tutorials/prep.md) step.
 
@@ -124,12 +134,6 @@ After a few minutes (based on your data and the steps you have asked for) a *mic
 ![annotated_net](../assets/images/app/annotatedNetwork.png)
 
 
-{: .important-title}
-> UP LIMIT FOR ABUNDANCE TABLE RECORDS
-> 
-> *microbetag* will build a co-occurrence network only for abundance tables with less than 1000 of records. 
-> In case your abundance table is larger, you will have to run the [microbetag prepropcess steps](./input.md#the-preparation). 
-> Otherwise, you can always run any algorithm for network inference locally and use their findings with microbetag.
 
 
 

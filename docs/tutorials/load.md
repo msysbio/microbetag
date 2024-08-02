@@ -1,7 +1,7 @@
 ---
 title: Loading networks
 layout: default
-parent: Tutorials
+parent: Additional tutorials
 nav_order: 2
 description: "an example case of how to load a previously microbetag-annotated network on cytoscape"
 ---

@@ -1,7 +1,7 @@
 ---
 title: On your own genomes
 layout: default
-parent: Tutorials
+parent: Additional tutorials
 nav_order: 3
 description: "an example case of how to run microbetag using your own bins/MAGs"
 ---
