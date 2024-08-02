@@ -30,6 +30,7 @@ Once the app is installed, you may click on the `Apps` tab, and you will find *M
 
 {: .important-title}
 > INPUT FILES USED IN THIS TUTORIAL
+>
 > In this example, we will use the [`testAbund.tsv`][3] file to showcase how to use microbetag without a network being already available.
 > 
 > In the second case, where a network is already available, we will use the [`vitAbund.tsv`][1] as our abundance file and the [`edgelist.tsv`][2] file as our network file.
@@ -40,33 +41,12 @@ As you see, the *Get Annotated Network* is currently not a clickable option.
 That is because *microbetag* has no input yet. 
 
 You need first to feed the app with your abundance table and, if available, your co-occurrence network.
-In both cases though, the abundance table will be required and this is why when you click on *Import Data* you 
-currently see only the *Import Abundance Data* option.
-
-<!-- ![load_data](../assets/images/app/importData.png)  -->
-
-![import_abundance](../assets/images/app/importAbundData.png)
-
-
-By clicking on it, a pop-up box will ask you to provide your abundance table.
-Select it with you mouse and then open it. 
-
-
-<!-- ![open_data](../assets/images/app/openFile.png) -->
-![open_data](../assets/images/app/Open_abund.png)
-
-
-To make sure of the imported data, you can then *check* them, using the corresponding option from the *Check Data Files* feature, in this case the abundance table:
-
-![check_abund_option](../assets/images/app/checkOptionAbundData.png)
-
-Once clicking that, a table will pop up where you can go through the data you have imported as the abundance table. 
+In both cases though, the abundance table will be required. 
 
 Please, make sure your taxonomy fits the criteria for *microbetag* to run. 
 You may find more on that issue on the [*Input files*](./input.md#input-files) section.
 
-Then, as you will see in the following two cases, you will have to set the values to a set of parameters to describe your input data but also 
-what annotation steps you would like `microbetag` to perform.
+Then, as you will see in the following two cases, you will have to set the values to a set of parameters to describe your input data but also what annotation steps you would like `microbetag` to perform.
 
 
 | Variable      | Description                       | Value |
@@ -75,7 +55,7 @@ what annotation steps you would like `microbetag` to perform.
 | `taxonomy` | In case a user's taxonomy is to be used, denotes which taxonomy scheme to be used from microbetag | [`GTDB` \| `dada2` \| `qiime2`]
 | `phenDB`            | return phenotypic traits based on phen models  | bool |
 | `faprotax`          | return annotations using the FAPROTAX database | bool |
-| `pathway_complement`| return pathway complmementarities between associated nodes | bool |
+| `pathway_complement`| return pathway complementarities between associated nodes | bool |
 | `seed_scores`       | return complementarity and cooperation scores based on metabolic reconstructions seed sets | bool |
 | `manta`             | return clusters of nodes on the network using the manta package | bool | 
 | `get_children`      | use genomes of children taxa of the taxa in the abundance table based on the NCBI Taxonomy scheme | bool |
@@ -89,17 +69,38 @@ what annotation steps you would like `microbetag` to perform.
 
 
 
+
 ## .. starting from an abundance table
 
-In this case, *microbetag* can come up with a co-occurrence network using FlashWeave. 
-The on-the fly creation of the co-occurrence network is supported only for abundance tables with **up to 1000 records**. 
+In case that a co-occurrence network is not available, *microbetag* can come up with one using [FlashWeave](https://doi.org/10.1016/j.cels.2019.08.002).
+The on-the fly creation of the co-occurrence network is supported only for abundance tables with **up to 1000 records**.
+If your data include more sequencing records, then you will have to use the [`microbetag` preprocess](./tutorials/prep.md) step.
 
-Once your abundance table is imported, you can now ask for a *microbetag-*annotated network by clicking on the corresponding feature:
+Once clicking on *Import Data* you currently see only the *Import Abundance Data* option.
 
+<!-- ![load_data](../assets/images/app/importData.png)  -->
+![import_abundance](../assets/images/app/importAbundData.png)
+
+
+By clicking on it, a pop-up box will ask you to provide your abundance table.
+Select it with you mouse and then open it. 
+
+<!-- ![open_data](../assets/images/app/openFile.png) -->
+![open_data](../assets/images/app/Open_abund.png)
+
+You can view the imported data by clicking on the *Check Data Files* feature, for the case of the abundance table:
+
+![check_abund_option](../assets/images/app/checkOptionAbundData.png)
+
+Once clicking that, a table will pop up where you can go through the data you have imported as the abundance table. 
+
+<!--  -->
+
+You can now ask for a *microbetag-*annotated network by clicking on the corresponding feature:
 
 ![get_annotated_network](../assets/images/app/getaAnnotatedNet.png)
 
-Once clicking on that, a parameter-setting box will pop-up, asking for values on a number of parameters **essential** for the successful network inference and their corresponding annotation.
+Once clicking on that, a parameter-setting box will pop up, asking for values on a number of parameters **essential** for the successful network inference and their corresponding annotation.
 
 ![settings](../assets/images/app/setParameters.png)
 
@@ -128,7 +129,7 @@ After a few minutes (based on your data and the steps you have asked for) a *mic
 > 
 > *microbetag* will build a co-occurrence network only for abundance tables with less than 1000 of records. 
 > In case your abundance table is larger, you will have to run the [microbetag prepropcess steps](./input.md#the-preparation). 
-> Otherwise, you can always run any algorithm for network inference locally and use their findings with microrbetag.
+> Otherwise, you can always run any algorithm for network inference locally and use their findings with microbetag.
 
 
 
