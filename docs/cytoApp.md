@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Cytoscape App
+title: Cytoscape App Tutorial
 nav_order: 3
 ---
 
@@ -9,28 +9,33 @@ nav_order: 3
 
 ---
 
-
-
-
 ![microbetag CyApp](../assets/images/cyApp.png){: width=25% }
-
 
 
 ## Run `microbetag` Cytoscape app
 
-All you need to do for start using *microetag* is first, to [download Cytoscape](https://cytoscape.org/download.html) in case not already on your computer, and then
-install the *microbetag* app (`MGG`) from [Cytoscape App store](https://apps.cytoscape.org/apps/mgg).
+All you need to do for start using *microetag* is first, to [download Cytoscape](https://cytoscape.org/download.html) in case not already on your computer, 
+and then install the *microbetag* app (`MGG`) from [Cytoscape App store](https://apps.cytoscape.org/apps/mgg).
 If you visit Cytoscape Appstore and you have not lunched Cytoscape, you will see a *Download* button.
 Please, make sure **you first lunch Cytoscape** and then visit Cytoscape, otherwise, **lunch Cytoscape and refresh the Cytoscape Appstore page**.
 Now, you will see that the *Download* button has turned to *Install*. By clicking it, it will be automatically integrated on your Cytoscape. 
 This can also be performed from within Cytoscape by clicking on the `Apps` tab of the main bar and then `App  Store > Show App Store` and typing `microbetag` on the box that pops up.
 
 
-Once the app is installed, you may click on the `Apps` tab and you will find *MGG* there.
+Once the app is installed, you may click on the `Apps` tab, and you will find *MGG* there.
 
 ![mgg_overall](../assets/images/app/mainMenu.png)
 
-From this box, you will have access to all features of the app. 
+
+
+{: .important-title}
+> INPUT FILES USED IN THIS TUTORIAL
+> In this example, we will use the [`testAbund.tsv`][3] file to showcase how to use microbetag without a network being already available.
+> 
+> In the second case, where a network is already available, we will use the [`vitAbund.tsv`][1] as our abundance file and the [`edgelist.tsv`][2] file as our network file.
+
+
+From the main menu box, you will have access to all features of the app. 
 As you see, the *Get Annotated Network* is currently not a clickable option. 
 That is because *microbetag* has no input yet. 
 
@@ -43,27 +48,22 @@ currently see only the *Import Abundance Data* option.
 ![import_abundance](../assets/images/app/importAbundData.png)
 
 
-By clicking on it, a pop-up box will ask you to provide your abundance table. In this example, we will use the `vitAbund.tsv` file. 
-Select it whith you mouse and then open it. 
+By clicking on it, a pop-up box will ask you to provide your abundance table.
+Select it with you mouse and then open it. 
 
 
+<!-- ![open_data](../assets/images/app/openFile.png) -->
+![open_data](../assets/images/app/Open_abund.png)
 
-![open_data](../assets/images/app/openFile.png)
 
-
-To make sure of the imported data, you can then *check* them, using the corresponding option from the *Check Data Files* feature, in this case the abundance tabe:
+To make sure of the imported data, you can then *check* them, using the corresponding option from the *Check Data Files* feature, in this case the abundance table:
 
 ![check_abund_option](../assets/images/app/checkOptionAbundData.png)
 
 Once clicking that, a table will pop up where you can go through the data you have imported as the abundance table. 
 
-![check_abundance](../assets/images/app/checkAbudanceData.png)
-
-
 Please, make sure your taxonomy fits the criteria for *microbetag* to run. 
 You may find more on that issue on the [*Input files*](./input.md#input-files) section.
-
-
 
 Then, as you will see in the following two cases, you will have to set the values to a set of parameters to describe your input data but also 
 what annotation steps you would like `microbetag` to perform.
@@ -87,6 +87,8 @@ what annotation steps you would like `microbetag` to perform.
 
 
 
+
+
 ## .. starting from an abundance table
 
 In this case, *microbetag* can come up with a co-occurrence network using FlashWeave. 
@@ -103,7 +105,7 @@ Once clicking on that, a parameter-setting box will pop-up, asking for values on
 
 
 Please make sure you set the input type as `abundance_table` and you select the correct [taxonomy scheme](./input.md#input-files).
-It is crucial to also set the [FlashWeave related parameters](./faq.md#what-is-sensitive-and-heterogeneous-in-flashweave) in a way they address your abundance table idiosyncracy.
+It is crucial to also set the [FlashWeave related parameters](./faq.md#what-is-sensitive-and-heterogeneous-in-flashweave) in a way they address your abundance table idiosyncrasy.
 
 
 {: .important}
@@ -118,8 +120,6 @@ Once you set the parameters of your choice, you are ready to sent your query to 
 
 After a few minutes (based on your data and the steps you have asked for) a *microbetag-*annotated network will pop up automatically on your Cytoscape instance.
 
-
-
 ![annotated_net](../assets/images/app/annotatedNetwork.png)
 
 
@@ -132,11 +132,16 @@ After a few minutes (based on your data and the steps you have asked for) a *mic
 
 
 
+
+
+
+
+
+
 ## .. starting from a co-occurrence network
 
-
-
-If you already have a network, then you need to provide both the network and the abundance table and **make sure that the sequence identifiers in those two files are the same**; meaning that the node ids of the network are present in the abundance table in the column representing the sequence identifier. 
+If you already have a network, then you need to provide **both the network and the abundance table** and **make sure that the sequence identifiers in those two files are the same**; 
+meaning that the *node ids of the network are present in the abundance table in the column representing the sequence identifier*.
 
 For example, a toy model of a network file would be: 
 
@@ -151,41 +156,46 @@ then, the corresponding abundance table would have, among other records, to have
 |bin_1|  234 | 42 | 43| g__Devosia;s__Devosia sp001899045
 |bin_2 | 324| 54 | 43 | g__Pseudonocardia;s__Pseudonocardia sp001899645
 
+
 {: .note}
 > Taxonomy here is only partial. 
 > Make sure you always have a 7-level taxonomy, e.g. 
 > d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Devosiaceae;g__Devosia_A;s__Devosia_A sp001899075
 
 
+So, this time we will load the [`vitAbund.tsv`][1] file. 
+Here how this looks like:
+
+![check_abundance](../assets/images/app/checkAbudanceData.png)
 
 
-Once you are sure of these requirements, you can import your network through the main `File` tab of Cytoscape:
+Then, you need to import your network **first** *on Cytoscape* through the main `File` tab:
 
 ![import_network](../assets/images/app/loadNetworkFromFile.png)
 
 
 Cytoscape will display your network and on the bottom of your screen you will have the core tables of a Cytoscape network. 
 As your network may have several edges, you need to make clear which edge attribute you would like `microbetag` to use; this is essential in cases network clustering will be performed. 
-To do so, you need to move on the *Edge table* by clicking on the arrow next to the *Node table* that is displayed by default, and then **remame** the column of your choice to `microbetag::weight`. 
+To do so, you need to move on the *Edge table* by clicking on the arrow next to the *Node table* that is displayed by default, and then **rename** the column of your choice to `microbetag::weight`. 
 
 ![rename](../assets/images/app/renameWeight.png)
 
 
-
-Now you are ready to import your network to MGG though its main menu on the `Apps` tab:
+Now you are ready to import your network *to MGG* though its main menu on the `Apps` tab:
 
 ![import_network](../assets/images/app/importNetwork.png)
 
 Finally, you can again check your network as loaded on MGG through the `Check Data Files` tab:
 
-![check_network](../assets/images/app/checkAbudanceData.png)
+![check_network](../assets/images/app/Loaded_Network_Data.png)
+
 
 
 {: .important }
 If the node names of the network are not included in the sequence identifiers of the abundance table, you will not be able to import your network to MGG.
 
 
-Once both your abundance file and your network are imported, you can proceed as in the [*Starting from an abundance table*](cytoApp.md#starting-from-an-abundance-table) case by clicking on `Get Annotated Network`  on the main menu of the `MGG` app on the `Apps` tab and setting the parameters required.
+Once both your abundance file and your network are imported, you can proceed as in the [*Starting from an abundance table*](cytoApp.md#starting-from-an-abundance-table) case by clicking on `Get Annotated Network` on the main menu of the `MGG` app on the `Apps` tab and setting the parameters required.
 
 ![settings](../assets/images/app/inputNet.png)
 
@@ -195,9 +205,18 @@ Make sure that you set the `Choose Input Type` as `network` this time, otherwise
 
 
 
+
+
+
+
+
+
+
+
+
 ## *"Roaming"* acrross annotated nodes and edges
 
-Once an annotated network is returned (or loaded), you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returend. 
+Once an annotated network is returned (or loaded), you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returned. 
 
 Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequence was able to be mapped on *microbetag*.
 
@@ -228,8 +247,8 @@ or several at the same time
 
 
 
-Further, you may selecet among a list of annotations under the `PhenDb/FAPROTAX filters` with `AND` and `OR` relationships.
-For example, I was curios about the Nitrite-oxidizing bacteria (NOB) on my network
+Further, you may select among a list of annotations under the `PhenDb/FAPROTAX filters` with `AND` and `OR` relationships.
+For example, I was curious about the Nitrite-oxidizing bacteria (NOB) on my network
 
 ![NOB](../assets/images/app/NOB.png)
 
@@ -245,7 +264,7 @@ Edges are either
 
 
 
-One may select from the two top buttons on the `Edges` panel to show only edges with pathwawy complementarities or seed complementarities.
+One may select from the two top buttons on the `Edges` panel to show only edges with pathway complementarities or seed complementarities.
 
 
 By clinking on a potential metabolic interaction edge, 
@@ -255,7 +274,7 @@ highlighting who potentially benefits from the other.
 Then, for cases where pathway complementarities have been returned for this association, a panel will be available for each pair of genomes that were mapped to those two taxa. 
 For each pair of genomes, a list with the potential metabolic complementarities is then returned. 
 In the first column the KEGG MODULE id of the corresponding complementarity is provided, and in the second and third column their description and metabolism category. 
-In the fourth column, called *"Complement"* the KO that need to be provided to the beneficiary species to support the module are given and in the next column, the complete alternative that would then faciliate the module is shown; i.e., assuming the complement is provided.
+In the fourth column, called *"Complement"* the KO that need to be provided to the beneficiary species to support the module are given and in the next column, the complete alternative that would then facilitate the module is shown; i.e., assuming the complement is provided.
 
 ![pathway_compl](../assets/images/app/pathwayCompl.png)
 
@@ -266,16 +285,16 @@ The screenshot below illustrates the highlighted complementarity in the biosynth
 
 
 
-Moerover, *microbetag* may also return seed complements. 
-Like in the case of the patwhay complementarities, a new panel is displayed when seed complements are available for an edge.
+Moreover, *microbetag* may also return seed complements. 
+Like in the case of the pathway complementarities, a new panel is displayed when seed complements are available for an edge.
 Here is an example:
 
 ![kegg_seed_map](../assets/images/app/seedComplPanel.png)
 
 
 [*Seed scores*](./modules/modules.md#seed-scores-based-on-genome-scale-draft-reconstructions-gems) between the two genomes are also shown here. 
-Remebmer that like the edge under study, seed scores have also *directionality*; seed score for competiotion  between $genome_A$ and $genome_B$ is not necessarily the same with the one between $genome_B$ and $genome_A$.
-Those scores are only indicative and they should not be considered as fact of observed cooperation/competition. 
+Remember that like the edge under study, seed scores have also *directionality*; seed score for competition between $genome_A$ and $genome_B$ is not necessarily the same with the one between $genome_B$ and $genome_A$.
+Those scores are only indicative, and they should not be considered as fact of observed cooperation/competition. 
 Seed complements are then recorded in the same way as pathway complementarities.
 However, there is no *Complement* column as this time it is not a specific KEGG MODULE that is supported, rather a potential range of functions that can be viewer through the colored url. 
 Also, a new column provides the ModelSEED compound id that was actually found as a complement and was then mapped to their KEGG corresponding one. 
@@ -284,6 +303,9 @@ Also, a new column provides the ModelSEED compound id that was actually found as
 
 
 
+[1]:{{ site.url }}/microbetag/download/vitAbund.tsv
+[2]:{{ site.url }}/microbetag/download/edgelist.tsv
+[3]:{{ site.url }}/microbetag/download/testAbund.tsv
 
 
 <!-- 
