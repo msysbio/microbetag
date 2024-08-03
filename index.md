@@ -28,7 +28,7 @@ background, documentation and a use case
 
 [CytoscapeApp](https://apps.cytoscape.org/apps/mgg){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 [View it on GitHub](https://github.com/hariszaf/microbetag){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
-[Join us on Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org){: .btn .btn-orange .fs-5 .mb-4 .mb-md-0 }
+[Join us on Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org){: .btn .btn-blue .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
