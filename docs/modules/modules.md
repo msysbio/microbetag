@@ -164,6 +164,7 @@ $$
 Here is a toy example to calculate the two indices as shown in the PhyloMInt paper:
 
 ![seed scores example](../../assets/images/seed-scores-examples.png)
+Figure from the [PhyloMInt paper](https://doi.org/10.1371/journal.pcbi.1007951.g006).
 <!-- In metabolic pathway A, SeedSetA consists of metabolites A, F, G, and H; 
 metabolites F, G, and H form a seed group. 
 Confidence level of seed set metabolites within metabolic network A is $1$, $1/3$, $1/3$, and $1/3$ for metabolites A, F, G, and H, respectively. 
