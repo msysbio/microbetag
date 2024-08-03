@@ -12,8 +12,8 @@ permalink: /
 background, documentation and a use case
 {: .fs-6 .fw-300 }
 
-beta version
-{: .label .label-yellow }
+<!-- beta version
+{: .label .label-yellow } -->
 
 
 
