@@ -112,7 +112,7 @@ You can now ask for a *microbetag-*annotated network by clicking on the correspo
 
 Once clicking on that, a parameter-setting box will pop up, asking for values on a number of parameters **essential** for the successful network inference and their corresponding annotation.
 
-![settings](../assets/images/app/setParameters.png)
+![settings](../assets/images/app/parameters_no_net.png)
 
 
 Please make sure you set the input type as `abundance_table` and you select the correct [taxonomy scheme](./input.md#input-files).
@@ -124,6 +124,12 @@ We suggest you do the network inference step as well as the mapping to the GTDB 
 
 
 Once you set the parameters of your choice, you are ready to sent your query to the server by clicking *ok*. 
+In this case, we need `microbetag` to come up with a network as we only provide an abundance table; thus, we set the `Choose input type` to `abundance_table`. 
+Also, since our taxonomy scheme was Silva we choose this to map our taxa against. 
+Last but not least, we set the `Sensitive` parameter as `True` since we have a relatively low number of sequences; 
+this way FlashWeave may detect more subtle associations because it considers the full range of abundance variations. 
+However, this also makes the computation more intensive and slower, especially with large datasets.
+See [FAQ](./faq.md) for more. 
 
 ![send_data](../assets/images/app/sendingDataToServer.png)
 
@@ -134,11 +140,13 @@ After a few minutes (based on your data and the steps you have asked for) a *mic
 ![annotated_net](../assets/images/app/annotated_net_no_net.png)
 
 
-
-
-
-
-
+{: .important-title}
+> HELP
+>
+> There are several reasons you may either get a network with only a few nodes/edges annotated or get an error message from the server. 
+> Both scenarios are related to either the format of your input data or the parameters you have selected. 
+> Please, follow the guidelines you can find in the [*Input files*](./input.md) tab and check our [*FAQ*](./faq.md) for common errors. 
+> If you still need some help, please go ahead and ask the `microbetag` community on our [Matrix community](https://matrix.to/#/#microbetagcommunity:matrix.org).
 
 
 
