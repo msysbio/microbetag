@@ -14,13 +14,17 @@ nav_order: 6
 
 | File            | Description                                                    | requirement_status        |
 |-----------------|----------------------------------------------------------------|---------------------------|
-| abundance_table | An abundance table (in `.tsv`, `.csv`, `.biom` format)         | mandatory                 | 
-| metadata_file   | File describing the sequencing data; for examples see [here]() | optionally with FlashWeave| 
+| abundance_table | An abundance table (in `.tsv` or `.csv` format)                | mandatory                 | 
+| metadata_file   | File describing the sequencing data; for examples see [here]() | optional; using FlashWeave| 
 | network_file    | if already built                                               | optional                  |
 
 
-Please, make sure in case you provide your abundance table as a `.tsv` or `.csv` file that in the first column you have always the sequence identifier and a complete 7-level taxonomy in the last one.
-`microbetag` requires for a 7-level taxonomy scheme; for example:
+Please, make sure in case you provide your abundance table as a `.tsv` or `.csv` file where: 
+- in the **first column** you have always the **sequence identifier**
+- in the **first row** the **samples names** 
+- in the **last column** you keep a complete **7-level taxonomy**
+
+If `microbetag` requires for a 7-level taxonomy scheme; for example:
 
 ```bash
 Bacteria;Firmicutes;Thermoanaerobacteria;Thermoanaerobacterales;Thermoanaerobacteraceae;Caldanaerobius;Caldanaerobius polysaccharolyticus
@@ -51,7 +55,8 @@ would get a lower score that `Salmonella infantis`, so removing `[` and `]` char
 {: .important-title}
 > Curate your taxonomies! 
 > 
-> If you have a taxonomy that "skips" a level, or another one that has more levels, microbetag will fail. You need to curate those taxonomies manually and make sure you always have a 7-level scheme for all the entries on your table.
+> If you have a taxonomy that "skips" a level, or another one that has more levels, microbetag will fail. 
+> You need to curate those taxonomies manually and make sure you always have a 7-level scheme for all the entries on your table.
 
 
 
@@ -59,7 +64,10 @@ would get a lower score that `Salmonella infantis`, so removing `[` and `]` char
 For input file examples, please have a look [here](https://github.com/hariszaf/microbetag/tree/develop/tests).
 
 
-{: .warning } Do not use numeric characters only for labeling your samples and/or the sequences mentioned in your abundance table. For example, `324` as a sample id will lead microbetag to fail. 
+{: .warning } 
+> Do not use numeric characters only for labeling your samples and/or the sequences mentioned in your abundance table. 
+> For example, `324` as a sample id will lead microbetag to fail. 
+
 
 
 ### Case 1: all you have is your abundance table and your taxonomies 

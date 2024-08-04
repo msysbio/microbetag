@@ -12,15 +12,34 @@ nav_order: 3
 ![microbetag CyApp](../assets/images/cyApp.png){: width=25% }
 
 
+
+In this page we show how to install and use the microbetag Cytoscape app (called `MGG`) and use it with your data to get `microbetag`-annotated networks 
+using the `micrbetagDB` and the online version of `microbetag`.
+We also highlight the `MGG` features that allow you to go through the nodes and the edges annotations returned. 
+
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+
+
 ## Run `microbetag` Cytoscape app
 
-All you need to do for start using *microetag* is first, to [download Cytoscape](https://cytoscape.org/download.html) in case not already on your computer, 
-and then install the *microbetag* app (`MGG`) from [Cytoscape App store](https://apps.cytoscape.org/apps/mgg).
-If you visit Cytoscape Appstore and you have not lunched Cytoscape, you will see a *Download* button.
-Please, make sure **you first lunch Cytoscape** and then visit Cytoscape, otherwise, **lunch Cytoscape and refresh the Cytoscape Appstore page**.
-Now, you will see that the *Download* button has turned to *Install*. By clicking it, it will be automatically integrated on your Cytoscape. 
-This can also be performed from within Cytoscape by clicking on the `Apps` tab of the main bar and then `App  Store > Show App Store` and typing `microbetag` on the box that pops up.
+To start using *microbetag* you need first, to make sure you have **Cytoscape** on your system; if not, go ahead and [download Cytoscape](https://cytoscape.org/download.html). 
+Then, you need to install the *microbetag* app (`MGG`) from [Cytoscape App store](https://apps.cytoscape.org/apps/mgg).
+Make sure **you first lunch Cytoscape** and then visit Cytoscape Appstore.
+If you have already visited the MGG page on Cytoscape Appstore, **lunch Cytoscape and refresh the Cytoscape Appstore page**.
+You should now see an **Install** button.
+![mgg install](../assets/images/install_button_mgg.png)
+By clicking it, it will be automatically integrated on your Cytoscape. 
+If you visit Cytoscape Appstore and you have not lunched Cytoscape, you will see a *Download* button instead of the *Install*.
+As already mentioned, we suggest you lunch Cytoscape and refresh the page. 
+Otherwise, you can click the **Download** button and move manually the `.jar` file to the apps folder of your Cytoscape.
 
+You can also get `MGG` from within Cytoscape by clicking on the `Apps` tab of the main bar and then `App  Store > Show App Store` and typing `microbetag` on the box that pops up.
 
 Once the app is installed, you may click on the `Apps` tab, and you will find *MGG* there.
 
@@ -41,9 +60,9 @@ As you see, the *Get Annotated Network* is currently not a clickable option.
 That is because *microbetag* has no input yet. 
 
 You need first to feed the app with your abundance table and, if available, your co-occurrence network.
-In both cases though, the abundance table will be required. 
+In both cases though, the **abundance table** will be **required**. 
 
-Please, make sure your taxonomy fits the criteria for *microbetag* to run. 
+Please, make sure your taxonomy fits the criteria for `microbetag` to run. 
 You may find more on that issue on the [*Input files*](./input.md#input-files) section.
 
 Then, as you will see in the following two cases, you will have to set the values to a set of parameters to describe your input data but also what annotation steps you would like `microbetag` to perform.
@@ -74,17 +93,16 @@ Then, as you will see in the following two cases, you will have to set the value
 
 In case that a co-occurrence network is not available, *microbetag* can come up with one using [FlashWeave](https://doi.org/10.1016/j.cels.2019.08.002).
 
-
 {: .important-title}
 > UP LIMIT FOR ABUNDANCE TABLE RECORDS
 > 
-> *microbetag* will build a co-occurrence network only for abundance tables with less than 1000 of records.
-> In case your abundance table is larger, you will have to run the [`microbetag` preprocess](./tutorials/prep.md) step.
+> When using the online *microbetag* version, it will build a co-occurrence network only for abundance tables with less than 1000 of records.
+> In case your abundance table is larger, you will have to run the [`microbetag` preprocess](./tutorials/prep.md) step locally.
 > Otherwise, you can always run any algorithm for network inference locally and use their findings with microbetag.
 
 
-The on-the fly creation of the co-occurrence network is supported only for abundance tables with **up to 1000 records**.
-If your data include more sequencing records, then you will have to use the [`microbetag` preprocess](./tutorials/prep.md) step.
+<!-- The on-the fly creation of the co-occurrence network is supported only for abundance tables with **up to 1000 records**.
+If your data include more sequencing records, then you will have to use the [`microbetag` preprocess](./tutorials/prep.md) step. -->
 
 Once clicking on *Import Data* you currently see only the *Import Abundance Data* option.
 
