@@ -114,7 +114,7 @@ First, you can try to build a database with the closest genomes you can find for
 If you do so, then you could run `microbetag` locally using those genomes as they were your bins. 
 
 Second, you could build a local instance of `microbetagDB` locally. 
-This would require a storage of $~700GB$.
+This would require a storage of $$ ~700GB $$.
 <!-- REMEMBER! Edit next phrase once coplete -->
 We are now working on an efficient way to go for that. 
 
