@@ -94,3 +94,29 @@ Also, in case there are also *seed complementarities* available for a species pa
 If a *seed* is close to the pathway mentioned from your pathway complementarities, this adds some extra confidence for the latter to occur. 
 
 
+
+## I am trying to run `microbetag` locally, but.. 
+
+When running `microbetag` locally (see [relative tutorial](./tutorials/local.md)) one may have a wide range of different input files as starting points.
+You may start with nothing but your bins; i.e., sequencing files, one for each bin mentioned in your abundance table. 
+Otherwise, you may have already annotated them with KEGG ORTHOLOGY terms. 
+You may as well have reconstructed GEMs on your own already. 
+You can adapt your `microbetag` run by pointing to these files through the [`config.yml`](https://github.com/hariszaf/microbetag/blob/user-bins/tests/dev_io_microbetag/config.yml) file you have to provide as input.
+However, we cannot say for sure that no matter the software you used to annotate for example your bins will suit what `microbetag` expects.
+If you have a large number of bins, and you would prefer to avoid annotating them again using `microbetag` this time, you may check the format of the annotations provided in the example case and see if you can edit your format to that. 
+In any case, we strongly suggest you reach out the [`microbetag`'s community on Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) with any specific questions of yours.
+
+
+## I have a really large 16S-oriented network. What can I do? 
+
+There are three things you could do in this case.
+First, you can try to build a database with the closest genomes you can find for the strains present in you data. 
+If you do so, then you could run `microbetag` locally using those genomes as they were your bins. 
+
+Second, you could build a local instance of `microbetagDB` locally. 
+This would require a storage of $~700GB$.
+<!-- REMEMBER! Edit next phrase once coplete -->
+We are now working on an efficient way to go for that. 
+
+Third, you can get the annotations per species pairs using the `microbetag` API. 
+However, in this case, you will not have a `.cx` file as an end product, i.e. you will not have a single file you can then load on Cytoscape and view through the `MGG` features. 

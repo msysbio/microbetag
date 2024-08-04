@@ -24,6 +24,7 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 > Contrary to previous cases, this scenario is not performed from within the CytoscapeApp.
 >
 > The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape. 
+> You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
 
 
 In the first tutorial, our taxonomically assigned sequences were mapped to representative GTDB genomes and `microbetag` used those for the annotation steps. 
@@ -138,7 +139,7 @@ It is **essential** that the **right** parts of the volumes are kept as above!
 For example, when using `carveme`, a gurobi license is required; `microbetag` expects the license unde the `/opt/gurobi` path, so you need to make sure all the right parts of the volumes are as above and that the left parts point to your local paths. 
 
 {: .important}
->**Remember!** It is strongly suggested all the files and folders you mount to be part of your root path >meaning the directory from which you initiate your Docker container. 
+>**Remember!** It is strongly suggested all the files and folders you mount to be part of your root path; meaning the directory from which you initiate your Docker container. 
 >
 >For example, if you observe the last chunk of code, you will notice that both `kofam_database` and `gurobi.lic` and the input-output folder called `dev_io_microbetag` they are all within my root folder
 >`~/github_repos/KU/microbetag` from where I run the `docker run` command.

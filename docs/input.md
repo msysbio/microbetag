@@ -52,12 +52,12 @@ would get a lower score that `Salmonella infantis`, so removing `[` and `]` char
 
 
 
-{: .important-title}
-> Curate your taxonomies! 
+{: .warning}
+> CURATE YOUR TAXONOMIES 
 > 
-> If you have a taxonomy that "skips" a level, or another one that has more levels, microbetag will fail. 
-> You need to curate those taxonomies manually and make sure you always have a 7-level scheme for all the entries on your table.
-
+> If you have a taxonomy scheme that "skips" a level, or another one that has more levels, microbetag will either return **fewer annotations** or **fail**.
+> You need to make sure you always have a 7-level scheme for all the entries on your table and that the species/strain level if available is in the 7th field.
+> Again, it is always a good practice to use the [`microbetag` preparation step](./tutorials/prep.md) to get the most suited taxonomies for `microbetag`
 
 
 
@@ -78,9 +78,10 @@ Moving on with microbetag's taxonomy annotation is always a best practice as it 
 
 Further, one can keep both the taxonomies assigned from `microbetag` and from any other software. 
 
-However, if you would like to move on with your taxonomy scheme, microbet`ag enables that, but you should know that there's a big chance of loosing some annotations. 
+However, if you would like to move on with your taxonomy scheme, `microbetag` enables that, but you should know that there's a big chance of loosing some annotations. 
 
-In case 1, one may also have some metadata describing the sequencing data. FlashWeave, the software `microbetag` invokes to build the co-occurrence network, can exploit metadata. 
+In case 1, one may also have some metadata describing the sequencing data. 
+FlashWeave, the software `microbetag` invokes to build the co-occurrence network, can exploit metadata. 
 
 {: .important-title}
 > THE `PHYLOSEQ` CASE
