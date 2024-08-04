@@ -110,8 +110,9 @@ where `tagname` is the name of the specific version.
 
 ## Contact
 
-For hints on how to use microbetag, ideas for new features and bug reports find us on out [matrix space](https://matrix.to/#/#microbetagcommunity:matrix.org).
-
+For hints on how to use microbetag, ideas for new features and bug reports find us on out [Matrix space](https://matrix.to/#/#microbetagcommunity:matrix.org).
+If you do not have a Matrix account, it's only two clicks away! 
+For more, you may check [here](https://matrix.org/docs/chat_basics/matrix-for-im/).
 
 
 ## Cite us
