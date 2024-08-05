@@ -25,6 +25,7 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 >
 > The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape. 
 > You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
+> 
 > The [`config.yml`][1] file is rather important and allows you to set all the relative parameters for `microbetag` to run.
 > You need to always have it in the root of your input/output folder; i.e. in the path you set as your `io_path` in the `config.yml` file.
 
