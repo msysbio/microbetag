@@ -79,6 +79,13 @@ Additionally, you can specify the `output_directory`, which is the name of the f
 Here we discuss the folders and the files you will find under the `output_directory`.
 We dot not always follow the order with which the files are generated. 
 
+### The annotated `.cx` network file
+
+The main output file (end proudct) of `microbetag` can be found in the `output_directory` you set in your `config.yml` file; the `microbetag`-annotated network called `microbetag_annotated_network.cx`.
+This is the file you need to [load in your Cytoscape](./load.md) and then after enabling the MGG visual style and the MGG results panel you can investigate your annotated network! 
+This file is in [`.cx2`](https://cytoscape.org/cx/cx2/specification/cytoscape-exchange-format-specification-(version-2)/) format. 
+
+
 ### FAPROTAX
 A folder called `faprotax` is made where there is a subfolder, called `sub_tables` and a file whith the sum of the abundances of the taxa found with a specific process in each sample , called `functional_otu_table.tsv`. 
 In the `sub_tables` folder, a file for each process is available mentioning the genomes/bins found related with the process udner study and their relative abundance per sample. 
@@ -135,6 +142,7 @@ It creates a folder called `ORFs` in the `output_directory` and for each genome/
 > TPEDIYDLACLLRDNGRFVVESIRSAKTGETTAVCSTTRLNKIAGEYVGKDDPVALARVQ
 ```
 
+
 ### KEGG annotations 
 
 `microbetag` makes use of the `hmmsearch` tool and the `kofam_database` profiles to check which KOs are present in each of your genomes.
@@ -189,6 +197,49 @@ and it is the **key** file for `microbetag` to proceed with the pathway compleme
 > KEGG annotation using `hmmsearch` computes 24.728 KO profiles for each of your genomes; i.e. under the `KEGG_annotations/hmmout` path of your `io_path`, you will have 
 >
 > It worths mentioning though, that if you break 
+
+
+
+
+
+
+### GEMs
+
+#### using `modelseedpy` and your bins 
+
+in this case, you have set 
+
+- `input_type_for_seed_complementarities` as `bins_fasta`, and 
+- `sequence_files_for_reconstructions` is blank
+
+Then, `microbetag` will use [`RASTtk` programs](https://www.bv-brc.org/docs///cli_tutorial/rasttk_getting_started.html) to RAST annotate the original genomes/bins. 
+In the `output_directory`, a folder called `reconstructions` has been built and in this case, 3 files for each genome/bin are now available:
+
+- `.gto` and `.gto_2`: these are genome typed object, i.e. JSON files that are compatible with KBase. The `.gto_2` is a second genome typed object with all of the RAST annotation data.
+- `.faa` includes the same information as the `.gto_2` file but we export the protein translations in fasta format
+
+{: .note}
+> For our 7 genomes/bins this step may take about 1 hour depending on your computing system
+
+
+Then, `microbetag` will try to reconstruct GEMs using `modelseedpy`.
+This is performed with the `MSBuilder.build_metabolic_model()` function that needs to establish a connection to the RAST server (`RastClient()`)
+In some cases, 
+
+
+
+
+#### using `modelseedpy` and your already RAST annotated genomes
+
+
+
+
+#### using `carveme`
+
+
+
+
+
 
 
 
@@ -301,6 +352,13 @@ For example, when using `carveme`, a gurobi license is required; `microbetag` ex
 {: .note}
 A Web License Service (WLS) [Gurobi license](https://www.gurobi.com/downloads/) in case you are about to use `carveme`.
 You may find the following [link](https://support.gurobi.com/hc/en-us/community/posts/4406485885841-Installing-Gurobi-on-a-Docker-container-Ubuntu) useful on how to do that.
+
+Once you have fired a container, you can now run `microbetag` using the following command:
+
+```bash
+root@20510f8400f1:/microbetag# python3 microbetag.py /data/config.yml 
+```
+
 
 
 ## Using Singularity/Apptainer
