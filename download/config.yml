@@ -1,6 +1,3 @@
-# microbetag YAML file for arguments 
-# version: 1.0.0
-
 # ------
 # INPUT/OUTPUT
 # ------
@@ -16,6 +13,12 @@ io_path:
   required: True
   type: Path
 
+output_directory: 
+  folderName: microbetag_run
+  description: Name of the output folder that will be built inside the io_path directory.
+  required: True
+  type: string
+
 abundance_table_file: 
   fileName: thirty_Samples.tsv
   description: Filename of the abundance table file. \
@@ -28,33 +31,10 @@ abundance_table_file:
     - counts_genomes_taxonomies.tsv
   type: string
 
-input_type_for_seed_complementarities:
-  value: models
-  value_from: 
-    - bins_fasta
-    - coding_regions
-    - proteins_faa
-    - models
-  description: "To reconstruct a GENRE, protein sequences of the annotated genes are required. \
-    If that step is already performed outside the microbetag workflow, you may provide the .faa files \
-    to be directly used for that step. However, please remember that if you wish to use modelseedpy, you need to\ 
-    give .faa files that are the result of the RAST annotation.\
-    Of course, you can also provide models (in .xml format) directly."
-  type: string
-  required: True
-
 bins_fasta:
   folderName: my_bins
   description: Name of the folder with the bins .fasta files.
   required: False
-  type: string
-
-sequence_files_for_reconstructions:
-  folderName: my_xmls
-  required: 
-    value: True
-    when: if input_type_for_seed_complementarities != "bins". Could be either .fna or .faa files.
-  description:
   type: string
 
 edge_list:
@@ -65,11 +45,30 @@ edge_list:
     - edgelist.csv
   type: string
 
-output_directory: 
-  folderName: microbetag_run_singularity
-  description: Name of the output folder that will be built inside the io_path directory.
-  required: True
+input_type_for_seed_complementarities:
+  value: bins_fasta
+  value_from: 
+    - bins_fasta
+    - coding_regions
+    - proteins_faa
+    - models
+  description: "Clarifies what is the information the input files to be used for the GEMs reconstruction include. \
+    This parameter is strongly related to the `sequence_files_for_reconstructions` as it is the last that specifies the path to the files described here. \
+    If GEMs are already available, then you may set the `input_type_for_seed_complementarities` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. \
+    If you intend to use ModelSEEDpy to reconstruct GEMs but you have already RAST annotated your genomes, i.e. gto, gto_2 and their corresponding .faa files are available, then you may set this parameter as `proteins_faa` and \
+    give the directory path to the .faa files in the `sequence_files_for_reconstructions`. \
+    If none of the above is available, then set this parameter as bins_fasta and leave the sequence_files_for_reconstructions blank."
   type: string
+  required: True
+
+sequence_files_for_reconstructions:
+  folderName: 
+  required: 
+    value: True
+    when: if input_type_for_seed_complementarities != "bins_fasta". Could be either .fna or .faa files.
+  description: 
+  type: string
+
 
 # -----
 # Computing
@@ -83,7 +82,7 @@ threads:
 # Metabolic network reconstruction 
 # -----
 seed_complementarity:
-  value: False
+  value: True
   description: This is the most time-consuming and challengint step of the workflow. You may perform microbetag with or without it by setting \
                 this argument as True or False correspondinly.
   required: True
@@ -103,11 +102,13 @@ gene_predictor:
   type: string
 
 genre_reconstruction_with:
-  value: modelseedpy
+  value: carveme
   value_from: 
     - modelseedpy
     - carveme
-  required: True
+  required: 
+    value: True
+    when: seed_complementarity == True
 
 gapfill_model:
   value: True
