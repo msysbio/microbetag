@@ -93,13 +93,14 @@ Additionally, you can specify the `output_directory`, which is the name of the f
 Here we discuss the folders and the files you will find under the `output_directory`.
 We dot not always follow the order with which the files are generated. 
 
+{:.no_toc}
 ### The annotated `.cx` network file
 
 The main output file (end proudct) of `microbetag` can be found in the `output_directory` you set in your `config.yml` file; the `microbetag`-annotated network called `microbetag_annotated_network.cx`.
 This is the file you need to [load in your Cytoscape](./load.md) and then after enabling the MGG visual style and the MGG results panel you can investigate your annotated network! 
 This file is in [`.cx2`](https://cytoscape.org/cx/cx2/specification/cytoscape-exchange-format-specification-(version-2)/) format. 
 
-
+{:.no_toc}
 ### FAPROTAX
 A folder called `faprotax` is made where there is a subfolder, called `sub_tables` and a file whith the sum of the abundances of the taxa found with a specific process in each sample , called `functional_otu_table.tsv`. 
 In the `sub_tables` folder, a file for each process is available mentioning the genomes/bins found related with the process udner study and their relative abundance per sample. 
@@ -113,7 +114,7 @@ For example, the `aerobic_nitrite_oxidation.txt` looks like:
 
 
 
-
+{:.no_toc}
 ### phenDB-like
 
 - `train.genotype` file: this is the output of the `phenotrex` program annotating your genomes/bins with COG families using the latest 
@@ -131,7 +132,7 @@ For example, the `aerobic_nitrite_oxidation.txt` looks like:
 |bin_45.fa	      | YES	        |  0.7954   |
 |bin_48.fa	      | NO	        |  0.8545   |
 
-
+{:.no_toc}
 ### ORFs
 
 `microbetag` invokes `prodigal` to extract Open Reading Frames (ORFs). 
@@ -156,7 +157,7 @@ It creates a folder called `ORFs` in the `output_directory` and for each genome/
 > TPEDIYDLACLLRDNGRFVVESIRSAKTGETTAVCSTTRLNKIAGEYVGKDDPVALARVQ
 ```
 
-
+{:.no_toc}
 ### KEGG annotations 
 
 `microbetag` makes use of the `hmmsearch` tool and the `kofam_database` profiles to check which KOs are present in each of your genomes.
@@ -216,9 +217,10 @@ and it is the **key** file for `microbetag` to proceed with the pathway compleme
 
 
 
-
+{:.no_toc}
 ### GEMs
 
+{:.no_toc}
 #### using `modelseedpy` and your bins 
 
 in this case, you have set 
@@ -242,21 +244,20 @@ In some cases,
 
 
 
-
+{:.no_toc}
 #### using `modelseedpy` and your already RAST annotated genomes
 
 
 
-
+{:.no_toc}
 #### using `carveme`
 
+In this case, under the `reconstructions` file, we have a `.tsv` file for each genome/bin with the findings of the `diamond` against the internal database of `carveme` with the BiGG reactions. 
 
+| bin_151.peg.3 |  iLJ478.TM0057 |  57.9 | 309 | 125  |  3  |  6  | 310  | 2  | 309  | 2.72e-128  |  369   |
+| bin_151.peg.3 |  iLJ478.TM1063 |  55.9 | 311 | 130  |  3  |  7  | 310  | 3  | 313  | 5.36e-124  |  358   |
 
-
-
-
-
-
+For a thorough description of each column, you may check this [here](https://github.com/bbuchfink/diamond_docs/blob/master/1%20Tutorial.MD).
 
 
 
