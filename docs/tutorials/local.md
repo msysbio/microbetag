@@ -16,19 +16,6 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 1. TOC
 {:toc}
 
-
-## Input and `config.yml` files
-
-{: .note}
-> For advanced users. 
-> Contrary to previous cases, this scenario is not performed from within the CytoscapeApp.
->
-> The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape. 
-> You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
-> The [`config.yml`][1] file is rather important and allows you to set all the relative parameters for `microbetag` to run.
-> You need to always have it in the root of your input/output folder; i.e. in the path you set as your `io_path` in the `config.yml` file.
-
-
 In the [Cytoscape App tutorial](../cytoApp.md), our sequences were already taxonomically assigned before running `microbetag` and their taxonomies were mapped to representative GTDB genomes.
 `microbetag` then used these genomes for the annotation steps.
 
@@ -44,6 +31,23 @@ To go for this case you need:
 * Docker / Singularity (containerization technology)
 * the `microbetag` image based on the containerization technology you are using 
 * the `config.yml` file that you may get from our [GitHub repo](https://github.com/hariszaf/microbetag/blob/user-bins/tests/dev_io_microbetag/config.yml) or download it directly from [here][1]
+
+Running `microbetag` using your own genomes/bins/MAGs requires **significant** computing time and/or resources.
+In this tutorial, we will use a very short number of bins (7) to showcase the various steps `microbetag` implements. 
+In our experience, memory can hard be an issue, and `microbetag` is more often than not thread-limited. 
+
+
+## Input and `config.yml` files
+
+{: .note}
+> For advanced users. 
+> Contrary to previous cases, this scenario is not performed from within the CytoscapeApp.
+>
+> The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape. 
+> You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
+> 
+> The [`config.yml`][1] file is rather important and allows you to set all the relative parameters for `microbetag` to run.
+> You need to always have it in the root of your input/output folder; i.e. in the path you set as your `io_path` in the `config.yml` file.
 
 
 The `config.yml` file is rather important as it is the one that allows you to set your `microbetag` run.
@@ -83,8 +87,8 @@ For example, the `aerobic_nitrite_oxidation.txt` looks like:
 
 | record |  seqId |   sample1 | sample2 | sample4 | sample5 | sample6 | sample7 | sample8 | sample9 | sample10 | sample11 | sample12 | sample13 |
 | :----:|:-------:|:---------:|:-------:|:--------:|:-------:|:------:|:--------:|:------:|:-------:|:--------:|:--------:|:---------:|:-------:|
-| d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Nitrobacter;s__Nitrobacter sp001896955 | bin_32  | 43 |  10 | 56  | 73 | 9 | 58 | 54 | 46 | 9  | 40 | 42 | 81 | 87 | 
-| d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Nitrobacter;s__Nitrobacter sp001897285 | bin_223 | 47 |  87 | 69  | 64 | 25| 95 | 40 | 71 | 16 | 78 | 52 | 40 | 74 | 
+| d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Nitrobacter;s__Nitrobacter sp001896955 | bin_32  | 43 |  10 | 56  | 73 | 9 | 58 | 54 | 46 | 9  | 40 | 42 | 81 |
+| d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Nitrobacter;s__Nitrobacter sp001897285 | bin_223 | 47 |  87 | 69  | 64 | 25| 95 | 40 | 71 | 16 | 78 | 52 | 40 |
 
 
 
@@ -107,6 +111,69 @@ For example, the `aerobic_nitrite_oxidation.txt` looks like:
 |bin_48.fa	      | NO	        |  0.8545   |
 
 
+### ORFs
+
+`microbetag` invokes `prodigal` to extract Open Reading Frames (ORFs). 
+It creates a folder called `ORFs` in the `output_directory` and for each genome/bin it returns 3 files: 
+- `.gbk`: Genbank-like format (for more check [here](https://www.insdc.org/submitting-standards/feature-table/))
+- `.faa`: the reading frames as aminoacid sequences
+- `.ffn`: the reading frames as nucleic acid sequences
+
+`microbetag` will make use of the `.faa` files but since these files can be of use for a great range of tasks, we decided to keep them. 
+
+{: .important-title}
+> SKIP THE ORFs PREDICTION (`prodigal`) STEP 
+> 
+> If you have already calculated the ORFs of your genomes before start using `microbetag`, you can create a folder within your `output_directory` called `ORFs` and move there all your `.faa` files.
+> This way, `microbetag` will be using those instead of running `prodigal`.
+>
+> You `.faa` files should look like this:
+> ```
+> >c_000000001749_1 # 2 # 913 # 1 # ID=1_1;partial=10;start_type=Edge;rbs_motif=None;rbs_spacer=None;gc_cont=0.479
+> DDSKIHQLGWDAFQAGTKVAKEEGLYGAGQDLLSDAFSGNVKGLGPAVAELSFEERPSEP
+> FLFFMADKTEPGAYNLPFYLSYADPMYNPGLMLSPKMGKGFVFTVMDVENTENDRIIELT
+> TPEDIYDLACLLRDNGRFVVESIRSAKTGETTAVCSTTRLNKIAGEYVGKDDPVALARVQ
+```
+
+### KEGG annotations 
+
+`microbetag` makes use of the `hmmsearch` tool and the `kofam_database` profiles to check which KOs are present in each of your genomes.
+In the `output_directory`, `microbetag` creates a folder called `KEGG_annotations` and there it builds a folder called `hmmout`, where it keeps all the 24.728 `.hmmout` files for each genome.  
+Once all the `.hmmout` files are there for all the genomes/bins under study, `microbetag` build a file called `ko_merged.txt` based on the DiTing implementation, that looks like this:
+
+| bin_id	|    contig_id                       |	ko_term     |
+|:---------:|:----------------------------------:|:------------:|
+| bin_41	| SCN18_26_2_15_R1_F_scaffold_115_57 |	K07586      |
+| bin_48	| SCN18_26_2_15_R4_B_scaffold_93_80	 |  K08086      |
+| bin_41	| SCN18_26_2_15_R1_F_scaffold_206_63 |	K03503      |
+
+and it is the **key** file for `microbetag` to proceed with the pathway complementarity step. 
+
+
+{: .important-title}
+> SKIP THE KEGG ANNOTATION (`HMMSEARCH`) STEP
+> 
+> If you have already hmm profiles either from analysis before using `microbetag` or from previous `microbetag` runs of your genomes, you can create a folder called `hmmout` within the `KEGG_annotations` folder of your `output_directory` and move all the `.hmmout` profiles of your bins there. 
+> An `.hmmout` file would looks like:
+> ```
+>root@8649bd465c24:/data/microbetag_local/KEGG_annotations/hmmout# more K00005.bin_101.hmmout 
+>#                                                               --- full sequence ---- --- best 1 domain ---- --- domain number estimation ----
+># target name        accession  query name           accession    E-value  score  bias   E-value  score  bias   exp reg clu  ov env dom rep inc description of target
+>#------------------- ---------- -------------------- ---------- --------- ------ ----- --------- ------ -----   --- --- --- --- --- --- --- --- ---------------------
+>c_000000006615_9     -          K00005               -            1.2e-98  327.2   0.0   1.4e-98  327.0   0.0   1.0   1   0   0   1   1   1   1 # 14663 # 15772 # 1 # ID=74_9;partial=00;start_type=TTG;rbs_motif=AGGAGG;rbs_spacer=5-10bp;gc_cont=0.449
+>#
+># Program:         hmmsearch
+># Version:         3.4 (Aug 2023)
+># Pipeline mode:   SEARCH
+># Query file:      /microbetag/microbetagDB/ref-dbs/kofam_database/profiles/K00005.hmm
+># Target file:     /data/microbetag_local/ORFs/bin_101.faa
+># Option settings: hmmsearch -o /dev/null --tblout /data/microbetag_local/KEGG_annotations/hmmout/K00005.bin_101.hmmout -T 324.27 --cpu 1 /microbetag/microbetagDB/ref-dbs/kofam_database/profiles/K00005.hmm /data/microbetag_local/ORFs/bin_101.faa 
+># Current dir:     /microbetag
+># Date:            Mon Aug  5 11:06:08 2024
+># [ok]
+>```
+> If you already have the `ko_merged.txt` file, you can only add a copy of it in the `KEGG_annotations` folder (the `hmmout` files are not necessary in this case) and `microbetag` will use this directly skipping the `hmmsearch` step. 
+
 
 
 
@@ -117,7 +184,7 @@ For example, the `aerobic_nitrite_oxidation.txt` looks like:
 > Running `microbetag` locally using your own genomes/bins/MAGs can take significant computing time and resources.
 > In this tutorial, we use only a short number of bins that has almost no biological significance.
 > What we want to accomplish here is to make sure that you can run `microbetag` locally.
-> Using only this short number of bins (5) and a normal Linux machine and allocating 2 cpus (`threads`) for this run, where we asked all the steps to be performed, it takes almost 1 hour to be completed.
+> Using only this short number of bins (7) and a normal Linux machine and allocating 2 cpus (`threads`) for this run, where we asked all the steps to be performed, it takes almost 1 hour to be completed.
 >
 > KEGG annotation using `hmmsearch` computes 24.728 KO profiles for each of your genomes; i.e. under the `KEGG_annotations/hmmout` path of your `io_path`, you will have 
 >
