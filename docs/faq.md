@@ -120,3 +120,17 @@ We are now working on an efficient way to go for that.
 
 Third, you can get the annotations per species pairs using the `microbetag` API. 
 However, in this case, you will not have a `.cx` file as an end product, i.e. you will not have a single file you can then load on Cytoscape and view through the `MGG` features. 
+
+
+## Reconstructing GEMs locally 
+
+There is a great chance when you are trying to reconstruct Genome Scale Models (GEMs) using your own genomes/bins/MAGs and the `modelseedpy` library, as shown in the relative [tutorial](./tutorials/local.md), to keep getting messages like:
+```bash
+Recursive run for model_id: /data/my_faa/bin_101
+```
+This can lead to excessive time, especially as the number of your genomes increases.
+This is because `modelseedpy` requires RAST annotated genomes and thus it needs to establish a connection to the RAST server.
+Unfortunately, we have observed that this is not always stable.
+
+
+
