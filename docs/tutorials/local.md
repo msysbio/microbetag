@@ -17,18 +17,14 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 {:toc}
 
 
-## Input and `config.yml` files
-
 {: .note}
-> For advanced users. 
+> This tutorial is for advanced users that have some basic experience working on a terminal. 
+> 
 > Contrary to previous cases, this scenario is not performed from within the CytoscapeApp.
 >
-> The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape. 
+> The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape.
 > You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
 > 
-> The [`config.yml`][1] file is rather important and allows you to set all the relative parameters for `microbetag` to run.
-> You need to always have it in the root of your input/output folder; i.e. in the path you set as your `io_path` in the `config.yml` file.
-
 
 In the [Cytoscape App tutorial](../cytoApp.md), our sequences were already taxonomically assigned before running `microbetag` and their taxonomies were mapped to representative GTDB genomes.
 `microbetag` then used these genomes for the annotation steps.
@@ -51,18 +47,23 @@ In this tutorial, we will use a very short number of bins (7) to showcase the va
 In our experience, memory can hard be an issue, and `microbetag` is more often than not thread-limited. 
 
 
-## Input and `config.yml` files
-
-{: .note}
-> For advanced users. 
-> Contrary to previous cases, this scenario is not performed from within the CytoscapeApp.
+{: .important-title}
+> INPUT FILES USED IN THIS TUTORIAL
 >
-> The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape. 
-> You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
+> A complete example of running `microbetag` locally using the `modelseedpy` library for GEM reconstruction with all the intermediate files produced can be found in the [`dev_io_microbetag`](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag) folder of the `user-bins` branch on the GitHub repo.
 > 
-> The [`config.yml`][1] file is rather important and allows you to set all the relative parameters for `microbetag` to run.
-> You need to always have it in the root of your input/output folder; i.e. in the path you set as your `io_path` in the `config.yml` file.
+> In the initial run, there are only 3 input files:
+> - the [`config.yml`][1] file; allows you to set all the relative parameters for `microbetag` to run
+> - an **abundance table** (following the format of the Cytoscape app tutorial) called [`thirty_Samples`][2], and
+> - its corresponding edge list ([`edgelist.csv`][3])
+>
+> **Remember!**
+>
+> The config and the abundance table files are **mandatory**. 
+> Always keep those (and the edge list if available) in the root of your input/output folder; i.e. in the path you set as your `io_path` in the `config.yml` file.
 
+
+## Input and `config.yml` files
 
 The `config.yml` file is rather important as it is the one that allows you to set your `microbetag` run.
 A number of the parameters there correspond to tools that are invoked while others have to do with alternative routes that `microbetag` can follow for the annotation of the network. 
@@ -401,4 +402,5 @@ singularity exec
 ```
 
 [1]:{{ site.url }}/microbetag/download/config.yml
-
+[2]:{{ site.url }}/microbetag/download/thirty_Samples.tsv
+[3]:{{ site.url }}/microbetag/download/edgelist.csv
