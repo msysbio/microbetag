@@ -65,7 +65,7 @@ You may now [*"roam"* across your annotated network](../cytoApp.md#roaming-acrro
 
 
 
-## ..anywhere!
+## .. already `microbetag`-annotated networks!
 
 In this case, you can load your network as you would do in Cytoscape in general. 
 

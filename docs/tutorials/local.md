@@ -25,26 +25,47 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 >
 > The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape. 
 > You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
+> The [`config.yml`][1] file is rather important and allows you to set all the relative parameters for `microbetag` to run.
+> You need to always have it in the root of your input/output folder; i.e. in the path you set as your `io_path` in the `config.yml` file.
 
 
-In the first tutorial, our taxonomically assigned sequences were mapped to representative GTDB genomes and `microbetag` used those for the annotation steps. 
+In the [Cytoscape App tutorial](../cytoApp.md), our sequences were already taxonomically assigned before running `microbetag` and their taxonomies were mapped to representative GTDB genomes.
+`microbetag` then used these genomes for the annotation steps.
 
-However, in case of shotgun metagenomics binning of the contigs and further refinement can lead to Metagenome-Assembled Genomes (MAGs). 
+However, in case of shotgun metagenomics one may end up with their own bins while further refinement of the latter can lead to Metagenome-Assembled Genomes (MAGs).
 In case of high quality MAGs, i.e. high completeness and low contamination, they can be used directly for the annotation steps of `microbetag`. 
-Yet, this requires computing resources and time much higher than those that a web-server can support. 
+Yet, this requires computing resources and time much higher than those that our web-server can support.
 
-Thus, we provide a version of `microbetag` as a stand-alone, containerized tool so that users can annotate a co-occurrence network using their own sequences. 
-To do that, you need first to make sure you have either [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)/[Apptainer](https://apptainer.org/docs/user/latest/quick_start.html) in the computing system to be used for running `microbetag`. 
+Thus, we provide a version of `microbetag` as a stand-alone, containerized tool so that users can annotate a co-occurrence network using their own bins/MAGs.
+To do that, you need first to make sure you have either [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)/[Apptainer](https://apptainer.org/docs/user/latest/quick_start.html) in the computing system to be used for running `microbetag`.
 The last is common in HPC systems and if you are about to use such a system, you should ask your admin for more information.
 
 To go for this case you need:
 * Docker / Singularity (containerization technology)
 * the `microbetag` image based on the containerization technology you are using 
-* the `config.yml` file that you may get from our GitHub repo
+* the `config.yml` file that you may get from our [GitHub repo](https://github.com/hariszaf/microbetag/blob/user-bins/tests/dev_io_microbetag/config.yml) or download it directly from [here][1]
 
 
 The `config.yml` file is rather important as it is the one that allows you to set your `microbetag` run.
 A number of the parameters there correspond to tools that are invoked while others have to do with alternative routes that `microbetag` can follow for the annotation of the network. 
+Read **carefully** the `description` of each argument before setting a value. 
+Here, we highlight some of them. 
+
+
+- `abundance_table_file`: path to your abundance table; the abundance table needs to follow the instructions for any abundance table to be used with `microbetag`, i.e., sequence identifier in the first column, sample names in the first row and a 7-level taxonomy in the last column; of course, you may provide the output of the[ `microbetag` preprocessing step](./prep.md) as an abundance table. 
+
+- `input_type_for_seed_complementarities`: This is a **key parameter** for running `microbetag` locally; based on whether you already have annotated your genomes (either using other software or from previous runs of `microbetag`) you can use different input files as the starting point for getting the seed complementarities. The `sequence_files_for_reconstructions` parameter is strongly related to this. 
+For example, if you have already GEMs reconstructed based on your genomes, you may set this to `input_type_for_seed_complementarities` to `models` and then, provide the folder name with your GEMs in the `sequence_files_for_reconstructions` parameter (e.g. `my_xmls`). Likewise, if you do not have GEMs, but you already have RAST annotations, you may set `input_type_for_seed_complementarities` to `proteins_faa` and give the path to those in the `sequence_files_for_reconstructions` parameter.
+
+- `seed_complementarity`: since this is the most time and resource consuming step, the user may choose not to go for it. By setting this to `Fasle`, none of the steps for GEMs reconstruction or seed complementarity inference will be performed.
+
+
+- `flashweave_args`: all the arguments under this umbrella term are related to how `FlashWeave` will perform in case a 
+
+
+> Please, go through the parameters of the `config.yml` file carefully and make sure you keep this file in your `io_path`.
+
+
 
 
 ## Using Docker 
