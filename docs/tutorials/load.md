@@ -16,9 +16,29 @@ description: "an example case of how to load a previously microbetag-annotated n
 {:toc}
 
 
-## ..coming from the `microbetag` preparation step
 
-The preparation step should have provided you with the `GTDB_tax_assigned_abundance_table.tsv` and/or the `network_output.edgelist` files. 
+{: .important-title}
+> INPUT FILES USED IN THIS TUTORIAL
+>
+> 
+
+
+## Load an edge list to be used with `microbetag`
+
+In this case, you need to first load your network on Cytoscape and then import it on the MGG. 
+We show how to do that in the [Cytoscape App Tutorial](https://hariszaf.github.io/microbetag/docs/cytoApp/#-starting-from-a-co-occurrence-network). 
+
+{: .note}
+Remember, you need always to call the column to be used as weight of the network as `microbetag::weight`.
+
+
+
+## Load edge list coming from the `microbetag` preparation step
+
+The preparation step should have provided you with: 
+- the `GTDB_tax_assigned_abundance_table.tsv` and/or 
+- the `network_output.edgelist` files. 
+
 Now, we can get those two files returned and jump into Cytoscape. 
 Open Cytoscape and then click on `File > Import > Network from file` and browse on the pop-up box to your `network_output.edgelist` file. 
 
@@ -65,16 +85,7 @@ You may now [*"roam"* across your annotated network](../cytoApp.md#roaming-acrro
 
 
 
-## .. already `microbetag`-annotated networks!
-
-In this case, you can load your network as you would do in Cytoscape in general. 
-
-If your network is not already `microbetag`-annotated, you need first to load in on Cytoscape and then import it to the `microbetag` input;
-you may follow the instructions [here](https://hariszaf.github.io/microbetag/docs/cytoApp/#-starting-from-a-co-occurrence-network). 
-
-{: .note}
-Remember, you need always to call the column to be used as weight of the network as `microbetag::weight`.
-
+## Load already `microbetag`-annotated networks!
 
 If you have already a `microbetag`-annotated network, that will be a `.cx` file which you can load as any other network on Cytoscape, i.e., by clicking 
 on `File > Import > Network from file`. 

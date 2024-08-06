@@ -15,7 +15,7 @@ v1.0.2
 
 
 [Docker image](https://hub.docker.com/repository/docker/hariszaf/microbetag/general){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
-[Tutorial files](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[Tutorial files](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
 
 
 ## Table of contents

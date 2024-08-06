@@ -15,7 +15,7 @@ v1.0.0
 
 
 [Docker image](https://hub.docker.com/repository/docker/hariszaf/microbetag_prep/general){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
-[Tutorial files](https://github.com/hariszaf/microbetag/tree/preprocess/test){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[Tutorial files](https://github.com/hariszaf/microbetag/tree/preprocess/test){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
 
 
 
@@ -51,13 +51,13 @@ Then, download the `microbetag_prep` image either by running:
 
 
 ```bash
-docker pull hariszaf/microbetag_prep
+docker pull hariszaf/microbetag_prep:v1.0.0
 ```
 
 
 or 
 ```bash
-singularity pull docker://hariszaf/microbetag_prep
+singularity pull docker://hariszaf/microbetag_prep:v1.0.0
 ```
 
 
@@ -99,7 +99,7 @@ A thorough description of each argument can be found below as well as in the `co
 To run directly 
 
 ```bash
-docker run --rm -v ./test/:/media hariszaf/microbetag_prep
+docker run --rm -v ./test/:/media hariszaf/microbetag_prep:v1.0.0
 ```
 
 In this case it is the `./test/` local directory you mount in the `/media` folder on the container.
@@ -108,7 +108,7 @@ In this case it is the `./test/` local directory you mount in the `/media` folde
 If you would like to initiate an interactive container you may run: 
 
 ```bash
-docker run --rm -it --entrypoint /bin/bash -v ./test/:/media microbetag_prep
+docker run --rm -it --entrypoint /bin/bash -v ./test/:/media microbetag_prep:v1.0.0
 ```
 this would initiate a console from within the container with you as a root user:
 
@@ -168,24 +168,24 @@ More complex scenarios can be the case, however they are all based on the princi
 >
 > Having an already optimal co-occurrence network to annotate is essential from a biological point-of-view.
 > Thus, we strongly suggest you first build your co-occurrence network using FlashWeave or any inference tool 
-> on your own, in order to address the idiosyncracy of your data the best you can. 
+> on your own, in order to address the idiosyncrasy of your data the best you can. 
 > In the framework of microbetag, you can do that by running the pre-processing Docker image we provide and by editing the
 > `flashweave.jl` script (see the [preparation step](../../input.md#the-preparation) as well as the [FlashWeave documentation](https://githubhelp.com/meringlab/FlashWeave.jl) for more).
 
 
 
-First, let us [download][1] the data set we will use.
+[Download][1] the data set if you have not done so already.
 After a quick look at it, you will notice that it consists of 1,004 ASVs; just 4 more than `microbetag`'s up limit to build a network on the fly.
 However, most often than not, this number can range up to several hundreds of ASVs or OTUs for amplicon analyses.
 In both cases, the preprocessing step is required.
 Moreover, you will notice that in this abundance table, in the last column there is not a taxonomy but the corresponding ASV instead.
 That is because we want to use the GTDB taxonomy based on the 16S rRNA gene, so we map our ASVs to their closest GTDB genomes. 
 
-For the preparation, we will use the [`microbetag_prep` Docker image](https://hub.docker.com/r/hariszaf/microbetag_prep). 
+<!-- For the preparation, we will use the [`microbetag_prep` Docker image](https://hub.docker.com/r/hariszaf/microbetag_prep).  -->
 <!-- If you do not have the `microbetag_prep` image on your computer system yet, please follow the instructions you may find in the [Preparation](../input.md#the-preparation) paragraph.  -->
 <!-- If [Docker](https://www.docker.com) is not available either, you will have to [install it](https://docs.docker.com/get-docker/).  -->
 
-Once both Docker and the `microbetag_prep` image are installed, you should be able to run
+Assuming both Docker and the `microbetag_prep` image are installed, you should be able to run and among your images find the one for the preparation steps:
 
 ```bash
 (base) u0156635@gbw-l-l0074:git$ docker images
@@ -206,25 +206,24 @@ Assuming you downloaded the data from the link above in your `Downloads`:
 mv ~/Downloads/seq_ab_tab.tsv my_microbetag_prep/
 ```
 
-Now, you need to get the `config.yml` file. 
-If you have already downloaded this then you need to move/copy it in the `my_microbetag_prep` folder too. 
+Now, you need to get the [`config.yml`][2] file and move it or keep a copy of it in the `my_microbetag_prep` folder. 
+<!-- If you have already downloaded this then you need to move/copy it in the `my_microbetag_prep` folder too. 
 If you have not, then you may run 
-
 ```bash
 cd my_microbetag_prep  # to move into your folder
 wget https://raw.githubusercontent.com/hariszaf/microbetag/preprocess/test/config.yml
-```
+``` -->
 
-By running the `ls` command you will have to see two files 
+Your `my_microbetag_prep` folder should now look like:
 
 ```bash
 (base) u0156635@gbw-l-l0074:my_microbetag_prep$ ls
 config.yml  seq_ab_tab.tsv
 ```
 
-That is all you need! However, before firing the preparation, you need to set the values of the parameters described in the `config.yml` file. 
-If you feel confident with the terminal, you can do so by `nano`, `vim` or any other editor you are using. 
-Otherwise, you can always go to the `my_microbetag_prep` folder and double-click on the `config.yml` file. 
+Before firing the preparation, you need to set the values of the parameters described in the `config.yml` file.
+If you feel confident with the terminal, you can do so by `nano`, `vim` or any other editor you are using.
+Otherwise, you can always go to the `my_microbetag_prep` folder and double-click on the `config.yml` file.
 In this case, you will see something like:
 
 ![gedit](../../assets/images/config.png)

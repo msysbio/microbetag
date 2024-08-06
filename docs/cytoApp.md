@@ -12,6 +12,12 @@ nav_order: 3
 ![microbetag CyApp](../assets/images/cyApp.png){: width=25% }
 
 
+v1.0.0
+{: .label .label-green }
+
+[Source code](https://github.com/msysbio/microbetagApp){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[Tutorial files](https://github.com/hariszaf/microbetag/tree/gh-pages/download/mgg){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
+
 
 In this page we show how to install and use the microbetag Cytoscape app (called `MGG`) and use it with your data to get `microbetag`-annotated networks 
 using the `micrbetagDB` and the online version of `microbetag`.
