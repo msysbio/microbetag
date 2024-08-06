@@ -306,6 +306,26 @@ In this case, you may use your GEMs directly for the seed complementarities infe
 
 
 
+{:.no_toc}
+### PhyloMInt post process
+
+After `microbetag` performs `PhyloMInt`, it runs a step to post-process the seed and the non seed sets as initially returned by:
+- removing compounds from seed sets that are related to environmental metabolites that can be produced in several ways within the cell.
+- removing from non seed sets compounds that cannot be produced in any other way than from entering the cell from the environment.
+
+The numbers of this post process are recorded in the `log.tsv` file that can be found under the `seed_complementarity` folder that looks like this:
+
+|model_id | environmental_initial_seeds | non_environmental_initial_seeds | total_initial_seeds | updated_seeds | initial_non_seeds | updated_non_seeds |
+|:-------:|:---------------------------:|:-------------------------------:|:-------------------:|:-------------:|:-----------------:|:-----------------:|
+| bin_151 |            173              |                57               |            230      |      230      |        879        |       879         |
+| bin_38  |            177              |                54               |            231      |      231      |       1211        |      1211         |
+| bin_101 |            152              |                51               |            203      |      203      |        845        |       845         |
+
+This post process step is necessary since we use a complete medium to gapfill the model. 
+
+{: .note}
+> One may come with alternative procedures on how to gap fill in terms of minimising the missing potential cross-feedings, but at the same time not over-predicting such cases.
+
 
 
 
