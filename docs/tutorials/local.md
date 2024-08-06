@@ -23,8 +23,8 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 > Contrary to previous cases, this scenario is not performed from within the CytoscapeApp.
 >
 > The user needs to run `microbetag` first on their computing environment (personal computer, HPC etc.) and then load the returned annotated network to Cytoscape.
-> You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
-> 
+<!-- > You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
+>  -->
 
 In the [Cytoscape App tutorial](../cytoApp.md), our sequences were already taxonomically assigned before running `microbetag` and their taxonomies were mapped to representative GTDB genomes.
 `microbetag` then used these genomes for the annotation steps.
@@ -37,10 +37,11 @@ Thus, we provide a version of `microbetag` as a stand-alone, containerized tool 
 To do that, you need first to make sure you have either [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)/[Apptainer](https://apptainer.org/docs/user/latest/quick_start.html) in the computing system to be used for running `microbetag`.
 The last is common in HPC systems and if you are about to use such a system, you should ask your admin for more information.
 
-To go for this case you need:
+On top of the abundance table and your genomes/bins/MAGs, to go for this case you need:
 * Docker / Singularity (containerization technology)
-* the `microbetag` image based on the containerization technology you are using 
-* the `config.yml` file that you may get from our [GitHub repo](https://github.com/hariszaf/microbetag/blob/user-bins/tests/dev_io_microbetag/config.yml) or download it directly from [here][1]
+* the `microbetag` image based on the containerization technology you are using (see below for how to get `microbetag` as a [Docker](./local.md#using-docker) or a [Singularity](./local.md#using-singularityapptainer) image)
+* the `config.yml` file where you set the parameters for how to run `microbetag`
+ <!-- that you may get from our [GitHub repo](https://github.com/hariszaf/microbetag/blob/user-bins/tests/dev_io_microbetag/config.yml) or download it directly from [here][1] -->
 
 Running `microbetag` using your own genomes/bins/MAGs requires **significant** computing time and/or resources.
 In this tutorial, we will use a very short number of bins (7) to showcase the various steps `microbetag` implements. 
@@ -81,7 +82,7 @@ For example, if you have already GEMs reconstructed based on your genomes, you m
 
 - `flashweave_args`: all the arguments under this umbrella term are related to how `FlashWeave` will perform in case a 
 
-
+{: .note}
 > Please, go through the parameters of the `config.yml` file carefully and make sure you keep this file in your `io_path`.
 
 
@@ -94,12 +95,14 @@ Additionally, you can specify the `output_directory`, which is the name of the f
 Here we discuss the folders and the files you will find under the `output_directory`.
 We dot not always follow the order with which the files are generated. 
 
+
 {:.no_toc}
 ### The annotated `.cx` network file
 
 The main output file (end proudct) of `microbetag` can be found in the `output_directory` you set in your `config.yml` file; the `microbetag`-annotated network called `microbetag_annotated_network.cx`.
 This is the file you need to [load in your Cytoscape](./load.md) and then after enabling the MGG visual style and the MGG results panel you can investigate your annotated network! 
 This file is in [`.cx2`](https://cytoscape.org/cx/cx2/specification/cytoscape-exchange-format-specification-(version-2)/) format. 
+
 
 {:.no_toc}
 ### FAPROTAX
@@ -112,7 +115,6 @@ For example, the `aerobic_nitrite_oxidation.txt` looks like:
 | :----:|:-------:|:---------:|:-------:|:--------:|:-------:|:------:|:--------:|:------:|:-------:|:--------:|:--------:|:---------:|:-------:|
 | d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Nitrobacter;s__Nitrobacter sp001896955 | bin_32  | 43 |  10 | 56  | 73 | 9 | 58 | 54 | 46 | 9  | 40 | 42 | 81 |
 | d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Nitrobacter;s__Nitrobacter sp001897285 | bin_223 | 47 |  87 | 69  | 64 | 25| 95 | 40 | 71 | 16 | 78 | 52 | 40 |
-
 
 
 {:.no_toc}
@@ -132,6 +134,7 @@ For example, the `aerobic_nitrite_oxidation.txt` looks like:
 |bin_41.fa	      | NO	        |  0.7842    |
 |bin_45.fa	      | YES	        |  0.7954   |
 |bin_48.fa	      | NO	        |  0.8545   |
+
 
 {:.no_toc}
 ### ORFs
@@ -156,7 +159,7 @@ It creates a folder called `ORFs` in the `output_directory` and for each genome/
 > DDSKIHQLGWDAFQAGTKVAKEEGLYGAGQDLLSDAFSGNVKGLGPAVAELSFEERPSEP
 > FLFFMADKTEPGAYNLPFYLSYADPMYNPGLMLSPKMGKGFVFTVMDVENTENDRIIELT
 > TPEDIYDLACLLRDNGRFVVESIRSAKTGETTAVCSTTRLNKIAGEYVGKDDPVALARVQ
-```
+>```
 
 {:.no_toc}
 ### KEGG annotations 
@@ -221,6 +224,25 @@ and it is the **key** file for `microbetag` to proceed with the pathway compleme
 {:.no_toc}
 ### GEMs
 
+`microbetag` supports 2 ways to reconstruct GEMs based on the user's genomes/bins: 
+1. using the [`modelseedpy`](https://github.com/ModelSEED/ModelSEEDpy) Python library
+2. using the [`CarveMe`](https://carveme.readthedocs.io/en/latest/) tool 
+
+
+In the first case, `modelseedpy` requires [RAST](https://rast.nmpdr.org)-annotated genomes.
+`microbetag` can do that on its own starting from your genome sequences; alternative, you may provide these to be used for the GEM reconstruction directly if you already have them
+(either from previous `microbetag` runs or from other software).
+
+{: .note}
+> `modelseedpy` needs to establish a connection to the RAST server (`RastClient()`)
+> In some cases, based on the status of the RAST server, we have observed that time errors may occur. 
+> In this case, `microbetag` will exit and force a restart of its running on its own! 
+> Yet, it is a good practice to also check its status when the `modelseed` reconstruction step is running.
+
+In the following paragraphs, we highlight how to go for different scenarios of GEMs reconstruction using different file types as initial starting points. 
+One need to combine 2 parameters of the `config.yml` file to specify those scenarios: the `input_type_for_seed_complementarities` where one specifies the file type and the `sequence_files_for_reconstructions` that points to the directory where the files to be used are located.
+
+
 {:.no_toc}
 #### using `modelseedpy` and your bins 
 
@@ -228,30 +250,43 @@ in this case, you have set
 
 - `input_type_for_seed_complementarities` as `bins_fasta`, and 
 - `sequence_files_for_reconstructions` is blank
+- `genre_reconstruction_with` as `modelseedpy`
 
 Then, `microbetag` will use [`RASTtk` programs](https://www.bv-brc.org/docs///cli_tutorial/rasttk_getting_started.html) to RAST annotate the original genomes/bins. 
 In the `output_directory`, a folder called `reconstructions` has been built and in this case, 3 files for each genome/bin are now available:
 
-- `.gto` and `.gto_2`: these are genome typed object, i.e. JSON files that are compatible with KBase. The `.gto_2` is a second genome typed object with all of the RAST annotation data.
-- `.faa` includes the same information as the `.gto_2` file but we export the protein translations in fasta format
+- `.gto` and `.gto_2`: these are genome typed object, i.e. JSON files that are compatible with KBase. The `.gto_2` is a second genome typed object with all the RAST annotation data.
+- `.faa` includes the same information as the `.gto_2` file, but we export the protein translations in `.fasta` format
 
 {: .note}
 > For our 7 genomes/bins this step may take about 1 hour depending on your computing system
 
 
-Then, `microbetag` will try to reconstruct GEMs using `modelseedpy`.
-This is performed with the `MSBuilder.build_metabolic_model()` function that needs to establish a connection to the RAST server (`RastClient()`)
-In some cases, 
 
 
 
 {:.no_toc}
 #### using `modelseedpy` and your already RAST annotated genomes
 
+Assuming you already have the `.faa` files coming from the `rast-tk` package, you may use them directly by setting 
+
+- `input_type_for_seed_complementarities` as `proteins_faa`, and 
+- `sequence_files_for_reconstructions` as the path to the folder with your `.faa` files
+- `genre_reconstruction_with` as `modelseedpy`
+
+In this case, `microbetag` will have to establish connections with the RAST client like before. 
+
+{: note}
+If your annotated genomes include the DNA sequences instead of the protein ones (`.fna` files) you may use them by setting the 
+`input_type_for_seed_complementarities` as `coding_regions`.
 
 
 {:.no_toc}
 #### using `carveme`
+
+`microbetag` may reconstruct GEMs using the [`CarveMe`](https://carveme.readthedocs.io/en/latest/) approach as well. 
+
+
 
 In this case, under the `reconstructions` file, we have a `.tsv` file for each genome/bin with the findings of the `diamond` against the internal database of `carveme` with the BiGG reactions. 
 
@@ -260,6 +295,16 @@ In this case, under the `reconstructions` file, we have a `.tsv` file for each g
 
 For a thorough description of each column, you may check this [here](https://github.com/bbuchfink/diamond_docs/blob/master/1%20Tutorial.MD).
 
+
+
+
+
+#### GEMs already available
+
+In this case, you may use your GEMs directly for the seed complementarities inference by setting 
+
+- `input_type_for_seed_complementarities` as `models`
+- `sequence_files_for_reconstructions` pointing to directory with the `.xml` files
 
 
 
