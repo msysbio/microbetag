@@ -339,9 +339,9 @@ Also, a new column provides the ModelSEED compound id that was actually found as
 
 
 
-[1]:{{ site.url }}/microbetag/download/vitAbund.tsv
-[2]:{{ site.url }}/microbetag/download/edgelist.tsv
-[3]:{{ site.url }}/microbetag/download/testAbund.tsv
+[1]:{{ site.url }}/microbetag/download/mgg/vitAbund.tsv
+[2]:{{ site.url }}/microbetag/download/mgg/edgelist.tsv
+[3]:{{ site.url }}/microbetag/download/mgg/testAbund.tsv
 
 
 <!-- 

@@ -13,6 +13,11 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 v1.0.2
 {: .label .label-green }
 
+
+[Docker image](https://hub.docker.com/repository/docker/hariszaf/microbetag/general){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[Tutorial files](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+
+
 ## Table of contents
 {: .no_toc .text-delta }
 
@@ -467,6 +472,6 @@ singularity exec
     python3 /microbetag/microbetag.py /data/config.yml
 ```
 
-[1]:{{ site.url }}/microbetag/download/config.yml
-[2]:{{ site.url }}/microbetag/download/thirty_Samples.tsv
-[3]:{{ site.url }}/microbetag/download/edgelist.csv
+[1]:{{ site.url }}/microbetag/download/local/config.yml
+[2]:{{ site.url }}/microbetag/download/local/thirty_Samples.tsv
+[3]:{{ site.url }}/microbetag/download/local/edgelist.csv

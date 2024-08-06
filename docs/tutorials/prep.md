@@ -6,8 +6,18 @@ nav_order: 1
 description: "an example case of how to run the microbetag prep step"
 ---
 
-# `microrbetag` on-the-fly
+# `microrbetag` preparation steps
 {: .no_toc }
+
+
+v1.0.0
+{: .label .label-green }
+
+
+[Docker image](https://hub.docker.com/repository/docker/hariszaf/microbetag_prep/general){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[Tutorial files](https://github.com/hariszaf/microbetag/tree/preprocess/test){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+
+
 
 ## Table of contents
 {: .no_toc .text-delta }
@@ -16,22 +26,28 @@ description: "an example case of how to run the microbetag prep step"
 {:toc}
 
 
+
+{: .important-title}
+> INPUT FILES USED IN THIS TUTORIAL
+>
+> For the `microbetag` preparation tutorial, i.e., the steps you may run to come up with a co-occurrence network and taxonomically assign your sequences using the GTDB resource, 
+> we will use the following 2 files: 
+> 
+> - the [`seq_ab_tab.tsv`][1] as our abundance table, which in its last column instead of a taxonomy includes the **ASV sequence**
+> - [`config.yml`][2] required for the `microbetag_prep` to run
+
+
 ## The *preparation* step
 
-<!-- Now we need to follow the instructions of the [*Preparation*](../input.md#io-folder)  section and build your input/output folder.
 
-# The "preparation"  -->
-
-
-`microbetag` is a one-stop-shop application as it supports the taxonomical annotation of ASVs/OTUs, the building of the co-occurrence network and 
-its annotation. 
-However, its main goal is the latter and at the same point, the first two tasks can be computationally expensive especially for large datasets. 
+`microbetag` is a one-stop-shop application as it supports the taxonomic annotation of ASVs/OTUs, the building of the co-occurrence network and its annotation. 
+However, its main goal is the latter and at the same point, the first two tasks can be computationally expensive especially for large datasets.
 To this end, a Docker/Singularity image is available supporting the taxonomy assignment of the ASVs/OTUs with GTDB taxonomies 
 [a taxonomy annotated abundance file with the 16S GTDB (v.207) taxonomies](https://zenodo.org/records/6655692) and the creation of the co-occurrence network if asked. 
 
 
 [Docker](https://docs.docker.com/get-docker/) or [Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html) needs to be installed. 
-Then, donwnload the `microbetag_prep` image either by running: 
+Then, download the `microbetag_prep` image either by running: 
 
 
 ```bash
@@ -116,7 +132,7 @@ and edit scripts, e.g.:
 vim flashweave.jl
 ```
 
-### Singulariity
+### Singularity
 
 The equivalent commands in Singularity would be :
 
@@ -144,7 +160,7 @@ cd /pre_microbetag/
 
 We will use the findings of a 16S rRNA analysis with [DADA2](https://benjjneb.github.io/dada2/) that we have exported in a `.tsv` file. 
 We show how to get a *microbetag*-annotated co-occurrence network with this matrix as your only input.
-More complex scenaria can be the case, however they are all based on the principles described here.
+More complex scenarios can be the case, however they are all based on the principles described here.
 
 
 {: .important-title}
@@ -233,7 +249,7 @@ You may check this [FAQ](../../faq.md#what-is-sensitive-and-heterogeneous-in-fla
 In our case, we set `flashweave_sensitive` as `True` and `flashweave_heterogeneous` as `False`.
 
 
-- if available, provide the filename of your metadata file; for instrctuctions on how this file should be formatted, please see [here](https://hariszaf.github.io/microbetag/docs/input/#case-1-all-you-have-is-your-abundance-table-and-your-taxonomies) as well as the [FlashWeave documentation](https://github.com/meringlab/FlashWeave.jl)
+- if available, provide the filename of your metadata file; for instructions on how this file should be formatted, please see [here](https://hariszaf.github.io/microbetag/docs/input/#case-1-all-you-have-is-your-abundance-table-and-your-taxonomies) as well as the [FlashWeave documentation](https://github.com/meringlab/FlashWeave.jl)
 
 
 Now, based on your container technology you are ready to run the preparation image.
@@ -271,6 +287,6 @@ you will find two output files,
 
 
 
-[1]:{{ site.url }}/microbetag/download/seq_ab_tab.tsv
-
+[1]:{{ site.url }}/microbetag/download/prep/seq_ab_tab.tsv
+[2]:{{ site.url }}/microbetag/download/prep/config.tsv
 
