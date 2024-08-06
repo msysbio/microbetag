@@ -12,10 +12,15 @@ nav_order: 3
 ![microbetag CyApp](../assets/images/cyApp.png){: width=25% }
 
 
-v1.0.0
+microbetag v1.0.0
 {: .label .label-green }
 
-[Source code](https://github.com/msysbio/microbetagApp){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+MGG v1.0.0
+{: .label .label-green }
+
+
+[microbetag source code](https://github.com/msysbio/microbetagApp){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[MGG source code](https://github.com/ermismd/MGG){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 [Tutorial files](https://github.com/hariszaf/microbetag/tree/gh-pages/download/mgg){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
 
 
