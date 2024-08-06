@@ -221,8 +221,7 @@ and it is the **key** file for `microbetag` to proceed with the pathway compleme
 
 
 
-{:.no_toc}
-### GEMs
+## GEM reconstruction step
 
 `microbetag` supports 2 ways to reconstruct GEMs based on the user's genomes/bins: 
 1. using the [`modelseedpy`](https://github.com/ModelSEED/ModelSEEDpy) Python library
@@ -244,7 +243,7 @@ One need to combine 2 parameters of the `config.yml` file to specify those scena
 
 
 {:.no_toc}
-#### using `modelseedpy` and your bins 
+### using `modelseedpy` and your bins 
 
 in this case, you have set 
 
@@ -263,10 +262,8 @@ In the `output_directory`, a folder called `reconstructions` has been built and 
 
 
 
-
-
 {:.no_toc}
-#### using `modelseedpy` and your already RAST annotated genomes
+### using `modelseedpy` and your already RAST annotated genomes
 
 Assuming you already have the `.faa` files coming from the `rast-tk` package, you may use them directly by setting 
 
@@ -282,11 +279,12 @@ If your annotated genomes include the DNA sequences instead of the protein ones 
 
 
 {:.no_toc}
-#### using `carveme`
-
-`microbetag` may reconstruct GEMs using the [`CarveMe`](https://carveme.readthedocs.io/en/latest/) approach as well. 
+### using `carveme`
 
 
+- `input_type_for_seed_complementarities` as `bins_fasta`
+- `sequence_files_for_reconstructions` is blank
+- `genre_reconstruction_with` as `carveme`
 
 In this case, under the `reconstructions` file, we have a `.tsv` file for each genome/bin with the findings of the `diamond` against the internal database of `carveme` with the BiGG reactions. 
 
@@ -297,14 +295,14 @@ For a thorough description of each column, you may check this [here](https://git
 
 
 
+{:.no_toc}
+### GEMs already available
 
-
-#### GEMs already available
-
-In this case, you may use your GEMs directly for the seed complementarities inference by setting 
+In this case, you may use your GEMs directly for the seed complementarities inference by setting:
 
 - `input_type_for_seed_complementarities` as `models`
 - `sequence_files_for_reconstructions` pointing to directory with the `.xml` files
+- `genre_reconstruction_with` can be left blank or any value; it will not be considered
 
 
 
