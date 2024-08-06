@@ -16,11 +16,15 @@ description: "an example case of how to load a previously microbetag-annotated n
 {:toc}
 
 
+[Tutorial files](https://github.com/hariszaf/microbetag/tree/gh-pages/download/load){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
+
+
 
 {: .important-title}
 > INPUT FILES USED IN THIS TUTORIAL
 >
-> 
+> For this tutorial we will use the output network of the [`microbetag_prep` step](prep.md) called [`network_output.edgelist`][1]
+> and a previously annotated network with `microbetag` called [`microbetag_annotated.cx`][2]
 
 
 ## Load an edge list to be used with `microbetag`
@@ -98,6 +102,7 @@ Make sure you enable the MGG style and cyPanels:
 
 
 
-
+[1]:{{ site.url }}/microbetag/download/load/network_output.edgelist
+[2]:{{ site.url }}/microbetag/download/load/microbetag_annotated.cx
 
 
