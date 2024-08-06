@@ -7,8 +7,11 @@ description: "an example case of how to run microbetag using your own bins/MAGs"
 ---
 
 
-# Run `microbetag` by making use of your own (annotated) bins/MAGs or GENREs
+# Run `microbetag` by making use of your own bins/MAGs or GENREs
 {: .no_toc }
+
+v1.0.2
+{: .label .label-green }
 
 ## Table of contents
 {: .no_toc .text-delta }
