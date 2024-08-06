@@ -2,7 +2,7 @@
 
 # I/O 
 abundance_table_file: 
-  path: test.tsv
+  path: seq_ab_tab.tsv
   description: Path to abundance table file. Attention! The path needs to be within the folder that you mount to the Docker container.
   type: Path
 
