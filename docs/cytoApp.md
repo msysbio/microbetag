@@ -33,7 +33,9 @@ Then, you need to install the *microbetag* app (`MGG`) from [Cytoscape App store
 Make sure **you first lunch Cytoscape** and then visit Cytoscape Appstore.
 If you have already visited the MGG page on Cytoscape Appstore, **lunch Cytoscape and refresh the Cytoscape Appstore page**.
 You should now see an **Install** button.
+
 ![mgg install](../assets/images/install_button_mgg.png)
+
 By clicking it, it will be automatically integrated on your Cytoscape. 
 If you visit Cytoscape Appstore and you have not lunched Cytoscape, you will see a *Download* button instead of the *Install*.
 As already mentioned, we suggest you lunch Cytoscape and refresh the page. 
