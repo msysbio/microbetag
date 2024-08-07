@@ -12,6 +12,11 @@ description: "tutorial using an abundance table and a metadata file as input"
 ## .. starting from an abundance table and a metadata file
 
 
+{: .important-title}
+> INPUT FILES USED IN THIS TUTORIAL
+> We will also do the same but this time considering also metadata ([`metadata.tsv`][4]) accompanying a shorter version of our abundance table ([`testAbundMeta`][5])
+
+
 In this case, you follow the exact steps as in the previous scenario and once you have loaded your abundance table, you import also the one with your metadata. 
 
 ![metadata_menu](../../assets/images/app/import_metadata_menu.png)
@@ -37,6 +42,9 @@ Here is the annotated network returned:
 ![annotated_net_metadata](../../assets/images/app/annotated_net_with_met_env.png)
 
 
+
+[4]:{{ site.url }}/microbetag/download/mgg/metadata.tsv
+[5]:{{ site.url }}/microbetag/download/mgg/testAbundMeta.tsv
 
 
 

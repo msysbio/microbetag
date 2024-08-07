@@ -25,7 +25,16 @@ MGG v1.0.0
 [Tutorial files](https://github.com/hariszaf/microbetag/tree/gh-pages/download/mgg){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
 
 
-In this page we show how to install and use the microbetag Cytoscape app (called `MGG`) and use it with your data to get `microbetag`-annotated networks 
+{: .important-title}
+> INPUT FILES AND PARAMETERS SETTING
+>
+> Please, download the files required for the different cases and **set the parameters as shown in this tutorial**. 
+> Parameters are essential especially for the online version of `microbetag` as they can lead either to non-optimal annotations or even failures of the software.
+> You may check the [FAQs](./faq.md) section for rules of thumb on how to set your parameters and you are always welcome to [join us on Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) and ask us directly.
+
+
+
+We show how to install and use the microbetag Cytoscape app (called `MGG`) and use it with your data to get `microbetag`-annotated networks 
 using the `micrbetagDB` and the online version of `microbetag`.
 We also highlight the `MGG` features that allow you to go through the nodes and the edges annotations returned. 
 
@@ -49,20 +58,6 @@ Once the app is installed, you may click on the `Apps` tab, and you will find *M
 
 ![mgg_overall](../assets/images/app/mainMenu.png)
 
-
-
-{: .important-title}
-> INPUT FILES USED IN THIS TUTORIAL
->
-> In this example, we will use the [`testAbund.tsv`][3] file to showcase how to use microbetag without a network being already available.
->
-> We will also do the same but this time considering also metadata ([`metadata.tsv`][4]) accompanying a shorter version of our abundance table ([`testAbundMeta`][5])
->
-> Last, we run an example where a network is already available. In this case, we use the [`vitAbund.tsv`][1] file as our abundance table and the [`edgelist.tsv`][2] file as our network file.
-> 
-> Please, download the files required for the different cases and **set the parameters as shown in this tutorial**. 
-> Parameters are essential especially for the online version of `microbetag` as they can lead either to non-optimal annotations or even failures of the software.
-> You may check the [FAQs](./faq.md) section for rules of thumb on how to set your parameters and you are always welcome to [join us on Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) and ask us directly.
 
 
 From the main menu box, you will have access to all features of the app. 

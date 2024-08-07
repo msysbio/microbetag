@@ -7,9 +7,14 @@ description: "tutorial using only an abundance table as input"
 ---
 
 
-
-
 ## .. starting from an abundance table
+
+{: .important-title}
+> INPUT FILES USED IN THIS TUTORIAL
+>
+> In this example, we will use the [`testAbund.tsv`][3] file to showcase how to use microbetag without a network being already available.
+
+
 
 In case that a co-occurrence network is not available, *microbetag* can come up with one using [FlashWeave](https://doi.org/10.1016/j.cels.2019.08.002).
 
@@ -88,4 +93,5 @@ After a few minutes (based on your data and the steps you have asked for) a *mic
 
 
 
+[3]:{{ site.url }}/microbetag/download/mgg/testAbund.tsv
 

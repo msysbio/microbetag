@@ -10,6 +10,13 @@ description: "tutorial using an abundance table and and edge list as input"
 
 ## .. starting from a co-occurrence network
 
+
+{: .important-title}
+> INPUT FILES USED IN THIS TUTORIAL
+> Last, we run an example where a network is already available. In this case, we use the [`vitAbund.tsv`][1] file as our abundance table and the [`edgelist.tsv`][2] file as our network file.
+ 
+
+
 If you already have a network, then you need to provide **both the network and the abundance table** and **make sure that the sequence identifiers in those two files are the same**; 
 meaning that the *node ids of the network are present in the abundance table in the column representing the sequence identifier*.
 
@@ -78,6 +85,6 @@ This will take significantly less time and here is the returned network:
 ![annotated_net](../../assets/images/app/annotatedNetwork.png)
 
 
-
-
+[1]:{{ site.url }}/microbetag/download/mgg/vitAbund.tsv
+[2]:{{ site.url }}/microbetag/download/mgg/edgelist.tsv
 
