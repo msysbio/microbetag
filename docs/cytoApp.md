@@ -1,11 +1,18 @@
----
+<!-- ---
 layout: default
 title: Cytoscape App Tutorial
 nav_order: 3
----
+--- -->
 
 # `microbetag` on Cytoscape
+
 {: .no_toc }
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
 
 ---
 
@@ -64,8 +71,14 @@ Once the app is installed, you may click on the `Apps` tab, and you will find *M
 > INPUT FILES USED IN THIS TUTORIAL
 >
 > In this example, we will use the [`testAbund.tsv`][3] file to showcase how to use microbetag without a network being already available.
+>
+> We will also do the same but this time considering also metadata ([`metadata.tsv`][4]) accompanying a shorter version of our abundance table ([`testAbundMeta`][5])
+>
+> Last, we run an example where a network is already available. In this case, we use the [`vitAbund.tsv`][1] file as our abundance table and the [`edgelist.tsv`][2] file as our network file.
 > 
-> In the second case, where a network is already available, we will use the [`vitAbund.tsv`][1] as our abundance file and the [`edgelist.tsv`][2] file as our network file.
+> Please, download the files required for the different cases and **set the parameters as shown in this tutorial**. 
+> Parameters are essential especially for the online version of `microbetag` as they can lead either to non-optimal annotations or even failures of the software.
+> You may check the [FAQs](./faq.md) section for rules of thumb on how to set your parameters and you are always welcome to [join us on Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) and ask us directly.
 
 
 From the main menu box, you will have access to all features of the app. 
@@ -178,6 +191,35 @@ After a few minutes (based on your data and the steps you have asked for) a *mic
 > Both scenarios are related to either the format of your input data or the parameters you have selected. 
 > Please, follow the guidelines you can find in the [*Input files*](./input.md) tab and check our [*FAQ*](./faq.md) for common errors. 
 > If you still need some help, please go ahead and ask the `microbetag` community on our [Matrix community](https://matrix.to/#/#microbetagcommunity:matrix.org).
+
+
+
+
+## .. starting from an abundance table and a metadata file
+
+
+In this case, you follow the exact steps as in the previous scenario and once you have loaded your abundance table, you import also the one with your metadata. 
+
+![metadata_menu](../assets/images/app/import_metadata_menu.png)
+
+![select_metadata_file](../assets/images/app/open_metadata_file.png)
+
+You can check the metadata file, similar to how you check the abundance data, through the `MGG` menu:
+
+![check_metadata_menu](../assets/images/app/check_metadata.png)
+
+{: important}
+Your metadata need to be as rows having their values per sample in their columns. See also on the [input files](./input.md#metadata-file) section. 
+
+
+![metadata_view](../assets/images/app/imported_metadata.png)
+
+{: .warning}
+Remember to set the parameters as in the previous example, i.e. your taxonomy is Silva and FlashWeave needs to run using the `sensitive` approach. 
+
+
+
+
 
 
 
@@ -353,7 +395,8 @@ Also, a new column provides the ModelSEED compound id that was actually found as
 [1]:{{ site.url }}/microbetag/download/mgg/vitAbund.tsv
 [2]:{{ site.url }}/microbetag/download/mgg/edgelist.tsv
 [3]:{{ site.url }}/microbetag/download/mgg/testAbund.tsv
-
+[4]:{{ site.url }}/microbetag/download/mgg/metadata.tsv
+[5]:{{ site.url }}/microbetag/download/mgg/testAbundMeta.tsv
 
 <!-- 
 To check 

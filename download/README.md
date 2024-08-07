@@ -10,6 +10,7 @@
 
 and 
     - `testAbund.tsv`, if no co-occurrence network is provided 
+    - `metadata.tsv`, optionally if you would like to get co-occurrence network considering metadata 
 
 3. For the `microbetag` preprocess steps:
 
