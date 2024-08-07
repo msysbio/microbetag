@@ -13,6 +13,7 @@ description: "tutorial using an abundance table and and edge list as input"
 
 {: .important-title}
 > INPUT FILES USED IN THIS TUTORIAL
+>
 > Last, we run an example where a network is already available. In this case, we use the [`vitAbund.tsv`][1] file as our abundance table and the [`edgelist.tsv`][2] file as our network file.
  
 

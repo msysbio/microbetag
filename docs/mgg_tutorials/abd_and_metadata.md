@@ -14,6 +14,7 @@ description: "tutorial using an abundance table and a metadata file as input"
 
 {: .important-title}
 > INPUT FILES USED IN THIS TUTORIAL
+>
 > We will also do the same but this time considering also metadata ([`metadata.tsv`][4]) accompanying a shorter version of our abundance table ([`testAbundMeta`][5])
 
 
