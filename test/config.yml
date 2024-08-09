@@ -1,4 +1,5 @@
 # Configuration file for microbetag preprocessing
+# __version__ : v1.0.1
 
 # I/O 
 abundance_table_file: 
@@ -7,7 +8,7 @@ abundance_table_file:
   type: Path
 
 metadata_file: 
-  path: null
+  path: metadata_transpose.tsv
   description: Path to metadata file. Metadata describe the abundance table and is going to be used for building the cooccurrence network. For an example file see https://github.com/meringlab/FlashWeave.jl/tree/master/test/data/HMP_SRA_gut and also check http://tinyurl.com/35xxcnrm for further insight. Remember that each column stands for a trait and each row its corresponding value to each sample. 
   type: Path
 
@@ -17,7 +18,7 @@ output_directory:
 
 # Tasks
 16s_gtdb_taxonomy_assign:
-  value: True
+  value: False
   description: Taxonomy assignment of the sequences using IDTAXA and the 16S sequences of the GTDB genomes.
   type: bool
 
