@@ -18,6 +18,77 @@ description: "Frequently Asked Questions on how to use and interprete microbetag
 ---
 
 
+## Setting the parameters right
+
+{: .no_toc }
+### Choose input type
+
+It should be clear by now that you always need to load your abundance table. 
+If you wish `microbetag` to infer a co-occurrence network using FlashWeave then go ahead and set this parameter to `abundance_table`.
+In case you already have a network, and you have loaded it to MGG as described in the [relative tutorial](./tutorials/load.md) then you may set this parameter to `network` so `microbetag` will annotate the provided network. 
+
+{: .no_toc }
+### What taxonomy scheme to choose ? 
+
+For microbetag to return the best annotations it could come up with, it is essential to map as best as possible the sequences described in your abundance table to
+corresponding GTDB genomes. 
+There are 4 taxonomy schemes supported:
+- `GTDB`: in case you have used GTDB-tk to taxonomically annotate your bins
+- `Silva`: in case you have used DADA2 along with the 7-level version of Silva they support
+- `microbetag_prep`: in case you have amplicon data and would like to use our implementation for mapping your OTUs/ASVs to GTDB genomes directly by using the `idataxa` algorithm of the DECIPHER package and the 16S genes of the GTDB genomes as a reference database. For large datasets (>1000 sequences) see also 
+- `other`: in case you want to use your taxonomies and get the closest NCBI Taxonomy names included in the microbetagDB (using the `fuzzywuzzy` Python library)
+
+
+{: .no_toc }
+### When to enable the `sensitive` and `heterogeneous` arguments? 
+
+Both these parameters are arguments of the FlashWeave software.
+Therefore, they are only available if you have selected `abundance_table` as your input type.
+
+<!-- Before jumping to the details for each of those 2 main arguments, let's see briefly how FlashWeave works. -->
+The core idea for FlashWeave is to distinguish direct and indirect associations between the taxa of an abundance table.
+More specifically, for each target variable $$T$$ (OTU/ASV or a metavariable), FlashWeave tries to infer its **directly associated neighborhood**, meaning the *set* of neighbor variables that renders all remaining variables **probabilistically independent** of $$T$$. 
+
+To this end, statistical tests for conditional independence iteratively remove indirect edges.
+In each iteration a **pair of taxa** is tested to be directly associated or not and a **conditioning set** of other taxa is used to test whether the association between the two taxa under study disappears or significantly weakens when conditioning on another taxon.
+
+Apparently, the abundance table is all FlashWeave cares about!
+The figure below comes from the Supplemental Information of the [FlashWeave paper](https://www.sciencedirect.com/science/article/pii/S2405471219302716#appsec3).
+
+![four_cases](../assets/images/flashweave_cases.png)
+
+
+***Sensitive*** modes of FlashWeave use **full abundance** information (*"continuous"*), while fast modes (i.e., the `sensitive` parameter is not selected) work on discretized abundances.
+As a rule-of-thumb, the `sensitive` module requires further computing resources and time, thus it may lead the online version of `microbetag` to time errors. In this case the user can always go for the [`microbetag_prep`](./tutorials/prep.md) steps to infer the network locally. 
+However, in other cases, especially when the number of samples is low, **not** choosing the `sensitive` mode can also lead to errors.
+This is because FlashWeave fails to infer any relationship at all, so there is no network for `microbetag` to annotate! :information_desk_person:
+
+![sens_hetero](../assets/images/sensitive_heterogeneous.png)
+
+The `heterogeneous` module (FlashWeaveHE) makes the assumption that zeroes in large, heterogeneous data sets are mostly structural. 
+Thus, it only considers samples in which both OTUs/ASVs have a non-zero abundance as reliable for association prediction. 
+Zero elements are excluded from association computations. 
+However, this restriction only affects the potential association partners being tested: 
+OTUs in the conditioning set keep their absences.
+
+The FlashWeaveHE approach may lose in sensitivity but in large datasets this loss has been found to be rather small, while saving significant computing time.
+Yet, if applied in small datasets it can also lead to no network inference and therefore `microbetag` to fail.
+
+
+{: .no_toc }
+### What is the *children taxa* ?
+
+This parameter is only valid if the taxonomy database selected is `Other`. 
+In this case, `microbetag` tries to use the taxonomies provided to their closest NCBI Taxonomy. 
+There is a chance that your OTU/ASV has been assigned to a species for which a genome is not present in microbetagDB, but genomes of strains of that species are. 
+By enabling this parameter `microbetag` will consider those genomes and use them for the following annotation steps. 
+
+{: .note}
+We remind that it is always a good practice in terms of getting as many and as good as possible annotations to run the [`microbetag_prep`](./tutorials/prep.md) step instead of using the `Other` taxonomy.
+
+
+
+
 ## I can't get an annotated network, despite having correct input files and well-tuned parameters
 
 This may be caused because of the time limit of our server for a single run. 
@@ -46,35 +117,13 @@ Thus, every year, `microbetag` makes sure it integrates the new genomes that are
 Yet, new calculations will be performed only once a finer way to store the billions of complements is developed.
 
 
-## What is sensitive and heterogeneous in FlashWeave? 
-
-![four_cases](../assets/images/flashweave_cases.png)
-
-heterogeneity of these cross-study data sets, such as variation in habitats, measurement conditions, and sequencing technology, can lead to confounding associations, typically not addressed by current methods
-
-Sensitive modes (`-S`) of FlashWeave uses full abundance information ("continuous"), while fast modes (`-F`) work on discretized abundances. In contrast to FlashWeave, FlashWeaveHE excludes samples in which one partner is absent (colored gray). 
-However, it still includes absences of OTUs within the conditioning sets.
-
-Meta variables (MVs) are by default not normalized for FlashWeave-S and FlashWeaveHE-S and should thus, if necessary, be provided in a sensible pre-normalized format by the user. 
-For FlashWeave-F and FlashWeaveHE-F, continuous meta-variables are by default discretized into two bins separated by their median.
 
 
-## How to choose a taxonomy scheme ? 
-
-For microbetag to return the best annotations it could come up with, it is essential to map as best as possible the sequences described in your abundance table to
-corresponding GTDB genomes. 
-There are 4 taxonomy schemes supported:
-- `GTDB`: in case you have used GTDB-tk to taxonomically annotate your bins
-- `Silva`: in case you have used DADA2 along with the 7-level version of Silva they support
-- `microbetag_prep`: in case you have amplicon data and would like to use our implementation for mapping your OTUs/ASVs to GTDB genomes directly by using the `idataxa` algorithm of the DECIPHER package and the 16S genes of the GTDB genomes as a reference database. For large datasets (>1000 sequences) see also 
-- `other`: in case you want to use your taxonomies and get the closest NCBI Taxonomy names included in the microbetagDB (using the `fuzzywuzzy` Python library)
 
 
 <!-- ## Why using the `get_children` feature? 
 
 ## Positive associations with high competitions seed score ?  -->
-
-
 
 
 ## How to read a KEGG map with pathway complementarities ? 
