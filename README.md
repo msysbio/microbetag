@@ -10,7 +10,14 @@ The `microbetag_prep` supports 2 tasks:
 
 > IMPORTANT!
 >
-> For the case of less than 1,000 sequence identifiers, `microbetag` would annotate a network even if their taxonomy scheme was not GTDB-like. However, this is not the case for large datasets. To this end, please make sure you always have a GTDB taxonomy when you are about to perform a `microbetag` analysis with large datasets.
+> For the case of less than 1,000 sequence identifiers, `microbetag` would annotate a network even if their taxonomy scheme was not GTDB-like. 
+> However, this is not the case for large datasets. 
+> To this end, please make sure you always have a GTDB taxonomy when you are about to perform a `microbetag` analysis with large datasets.
+> This taxonomy annotation is possible thanks to a [dada2 formatted file](https://zenodo.org/records/6655692) including GTDB reference sequences of 31,319 bacteria and 1,565 archaea full 16S rRNA gene sequences
+
+
+A tutorial on how to use the `microbetag_prep` is available on `microbetag`'s [documentation page](https://hariszaf.github.io/microbetag/docs/tutorials/prep/).
+
 
 
 ## Prepare your data for `microbetag`!
@@ -22,8 +29,14 @@ If [Docker](https://docs.docker.com/get-docker/) is not already in your system, 
 Once Docker is installed, you can get the `microbetag_prep` by running: 
 
 ```bash
-docker pull hariszaf/microbetag_prep
+docker pull hariszaf/microbetag_prep:<version_tag>
 ```
+
+If `<version_tag>` is empty, then you are about to pull the latest version of the image. 
+If you like a specific version, you need to specify it by replacing `<version_tag>` with the version of your choice, e.g. `v1.0.1`.
+
+
+
 
 ### Run `microbetag_prep`
 
@@ -52,7 +65,7 @@ Based on the tasks asked, you will find:
 - `network_output.edgelist`: a 3-column tab delimited file
 
 
-You can fire a container in an interactive way by running instead: 
+Alternatively, you can fire a container in an **interactive** way by running instead: 
 ```bash
 docker run --entrypoint /usr/bin/bash  \
             --rm -it -v /<users_input_folder>/:/media hariszaf/prep_microbetag
@@ -60,7 +73,7 @@ docker run --entrypoint /usr/bin/bash  \
 
 You can have a look around:
 ```bash
-root@81ae5787c526:/pre_microbetag# pwd   
+root@81ae5787c526:/pre_microbetag# pwd
 /pre_microbetag
 root@81ae5787c526:/pre_microbetag# ls
 classify.R  flashweave.jl  gtdb_16s.RData  prep.py
@@ -74,21 +87,28 @@ and you can also edit the scripts there. For example
 vim flashweave.jl
 ```
 would open the file so you can edit it. 
-**Remember!** If you edit something within the container, your edits will be lost once the container is exited!
+**Remember!** If you edit something within the container, your edits will be lost once you exit the container!
+
 
 
 ## Contact
 
-Please report any bugs as a [new Issue](https://github.com/hariszaf/microbetag/issues/new). 
-Feel free to contact [Haris Zafeiropoulos](mailto:haris.zafeiropoulos@kuleuven.be)
+For hints on how to use `microbetag`, ideas for new features and bug reports find us on out [Matrix space](https://matrix.to/#/#microbetagcommunity:matrix.org).
+If you do not have a Matrix account, it’s only two clicks away! For more, you may check [here](https://matrix.org/docs/chat_basics/matrix-for-im/).
 
+
+## Cite
+
+In prep.
 
 
 ## Funding
 
-This project is funded by: 
-- the [3D' omics](https://www.3domics.eu) Horizon project (101000309).
-- an [EMBO Short-Term Fellowship](https://www.embo.org/funding/fellowships-grants-and-career-support/scientific-exchange-grants/)
+This project is funded by an [EMBO Short-Term Fellowship](https://www.embo.org/funding/fellowships-grants-and-career-support/scientific-exchange-grants/) and 
+the [3D’omics](https://3domics.eu) Horizon project (101000309).
 
+## License
 
-docker run --rm -it -v ./test:/media --entrypoint  /usr/bin/bash hariszaf/microbetag_prep
+*microbetag* is under [GNU General Public License v3.0](https://opensource.org/license/gpl-3-0). For third-party components separate licenses apply. The MGG CytoscapeApp is under [Apache License, Version 2.0](https://opensource.org/license/apache-2-0).
+
+<!-- docker run --rm -it -v ./test:/media --entrypoint  /usr/bin/bash hariszaf/microbetag_prep -->

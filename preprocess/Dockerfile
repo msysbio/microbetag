@@ -11,7 +11,7 @@ FROM hariszaf/microbetag_prep:base
 LABEL maintainer = "Haris Zafeiropoulos" 
 LABEL contact    = "haris.zafeiropoulos@kuleuven.be"
 LABEL build_date = "2023-11-01"
-LABEL version    = "v.0.0.1"
+LABEL version    = "v.1.0.0"
 
 
 WORKDIR /pre_microbetag

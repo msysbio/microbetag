@@ -12,71 +12,29 @@ bin-release/
 
 # Other files and folders
 .settings/
+*.nans
+*.ini
+*.swp
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
 
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
 
 
-kegg_genomes/
-mgnify_catalogues/
-gtdb_kofam_scan_per_module/
-
-gtdb_genomes/
-*.keg
-
-gtdb_metadata_r202.tsv
-
-# Silva - Qiime files 
-qiime2_consensus_taxonomy_7_levels.tsv
-taxmap_embl_ssu_ref_132.txt
-
-
-__pycache__/
-
 # Ignore NCBI Taxonomy db and mgnify catalogues metadata provided by the MGNify FTP
-mappings/mgnify_mappings/metadata/
-ref-dbs/taxdump/
-ref-dbs/microbetag_genomes/
-microbetagDB/ref-dbs/all_genome_modules/
+microbetagDB/
+tests/
 
-
-tools/BugBase/
-
-
-# Ignore software
-tools/phenotrex/
-
-
-mappings/gtdb_ncbi/gtdb_metadata/gtdb_species2ncbi_ids.tsv
-mappings/gtdb_ncbi/qiime2/qiime2species_ncbi_ids.tsv
-mappings/gtdb_ncbi/dada2/dada2genera.tsv
-mappings/gtdb_ncbi/dada2/dada2species.tsv
-mappings/gtdb_ncbi/gtdb_metadata/gtdb_species2ncbi_ids.tsv
-mappings/gtdb_ncbi/qiime2/qiime2species_ncbi_ids.tsv
-
-microbetagDB/ref-dbs/ko_per_mod_in_genome_per_ncbiId.json
-
-*.swp
-
-tests/output_dev*
-dada2familiesNcbiIds
-*.nans
-*.ini
-
-elos_bins.tsv
-kos_on_modules_graph.tsv
 
 # Ignore the output of the installation.sh script 
 microbetag_env
 
-# Ignore .json files under the scripts folder udner the microbetagDB
-microbetagDB/scripts/*.json 
-
+# Ignore file of 120MB - you may get this file or update it from: 
+# https://zenodo.org/records/6655692
 gtdb_16s.RData
+
+
+
+*.vscode/
+

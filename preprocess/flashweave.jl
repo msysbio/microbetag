@@ -33,14 +33,17 @@ if metadata
                                  data_path, 
                                  meta_data_path, 
                                  sensitive = sensitive, 
-                                 heterogeneous = heterogeneous
+                                 heterogeneous = heterogeneous,
+                                 max_k = 1,
+                                 n_obs_min = 5,
+                                 transposed = true
                               )
 
 else
    
    netw_results = learn_network(
                                  data_path,
-                                 n_obs_min = 5,  
+                                 n_obs_min = 5,
                                  sensitive = sensitive, 
                                  heterogeneous = heterogeneous,
                                  max_k = 1,

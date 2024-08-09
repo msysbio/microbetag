@@ -1,35 +1,70 @@
-#!/usr/bin/env python
-import yaml
-import os
-import pandas as pd
+#!/usr/bin/env python3
 
 """
-Aim:
-====
-This script supports the preprocessing of an abundance table and the building of a co-occurrence network so it can be then annotated by microbetag (https://hariszaf.github.io/microbetag/)
-
 Usage through Docker:
-=====================
-users_input_folder should contain the following files:
-- an abundance table (.csv, .tsv).
-    in its first column it needs to have a sequence identifier, e.g. ASV_XX
-    in case the user is about to perform a taxonomy classification the sequence needs to be provided in the last column of this file
-    otherwise, you
-- a metadata file (.csv, .tsv)
-    make sure the sample names are the exact same in this and the abundance table files
-    follow instructions for the metadata file here: http://tinyurl.com/35xxcnrm
+    (direct)
+    docker run --rm -it -v /<users_input_folder>/:/media hariszaf/prep_microbetag
 
-(direct)
-docker run --rm -it -v /<users_input_folder>/:/media hariszaf/prep_microbetag
-
-(interactactive)
-docker run --entrypoint /usr/bin/bash  \
-            --rm -it -v /<users_input_folder>/:/media hariszaf/prep_microbetag
+    (interactactive)
+    docker run --entrypoint /usr/bin/bash  \
+                --rm -it -v /<users_input_folder>/:/media hariszaf/prep_microbetag
 
 Author:
 =======
 Haris Zafeiropoulos
 """
+
+__version__ = "v1.0.1"
+
+import yaml
+import os
+import pandas as pd
+import sys
+
+def print_help():
+    message = """
+    Aim:
+    ====
+    This script supports the preprocessing of an abundance table and the building of a co-occurrence network so it can be then annotated by microbetag (https://hariszaf.github.io/microbetag/)
+
+    Usage:
+    =====
+    python3 prep.py /media/config.yml
+
+    Options:
+    ========
+    -h | --help         print this message
+    -v | --version      print version
+
+    Input files:
+    ============
+    - an abundance table (.csv, .tsv) -- mandatory
+        in its first column it needs to have a sequence identifier, e.g. ASV_XX
+        in case the user is about to perform a taxonomy classification the sequence needs to be provided in the last column of this file
+        otherwise, you
+
+    - the config.yml file -- mandatory
+        Make sure you download the same version of the config.yml as the version of the Docker image you are using.
+        You
+
+    - a metadata file (.csv, .tsv)  -- optional
+        make sure the sample names are the exact same in this and the abundance table files
+        follow instructions for the metadata file here: http://tinyurl.com/35xxcnrm
+
+    For more about input files and FlashWeave parameters, check the documentation site: https://hariszaf.github.io/microbetag/docs/input/
+    """
+    print(message); sys.exit(0)
+
+def print_version():
+    print(__version__); sys.exit(0)
+
+
+def read_abundance_table(file):
+    try:
+        abundance_table_data = pd.read_csv(file, sep=None,  engine='python')
+        return abundance_table_data
+    except pd.errors.ParserError:
+        print("The abundance table provided cannot be loaded. Check its format.")
 
 class Config:
     def __init__(self, io_path, conf):
@@ -63,6 +98,7 @@ class Config:
         else:
             self.heterogeneous = "false"
 
+
 # Vars
 io_path = "/media"
 main_path = "/pre_microbetag"
@@ -74,16 +110,21 @@ rscript_path = "/usr/local/bin/Rscript"
 classify_Rscript = os.path.join(main_path, "classify.R")
 flashweave_script = os.path.join(main_path, "flashweave.jl")
 
-config_file = os.path.join(io_path, "config.yml")
-with open(config_file, 'r') as yaml_file:
-    config = Config(io_path, yaml.safe_load(yaml_file))
 
-def read_abundance_table(file):
-    try:
-        abundance_table_data = pd.read_csv(file, sep=None,  engine='python')
-        return abundance_table_data
-    except pd.errors.ParserError:
-        print("The abundance table provided cannot be loaded. Check its format.")
+
+
+try:
+    config_file = os.path.join(io_path, "config.yml")
+    with open(config_file, 'r') as yaml_file:
+        config = Config(io_path, yaml.safe_load(yaml_file))
+except:
+    if len(sys.argv) < 2:
+        print_help()
+    if sys.argv[1] == "-h" or sys.argv[1] == "--help":
+        print_help()
+    if sys.argv[1] == "-v" or sys.argv[1] == "--version":
+        print_version()
+
 
 try:
     os.mkdir(config.output_dir)
