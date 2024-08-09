@@ -181,6 +181,7 @@ plugins:
   - jekyll-seo-tag
   - jekyll-github-metadata
   - jekyll-include-cache
+  - jemoji
 
 kramdown:
   syntax_highlighter_opts:
