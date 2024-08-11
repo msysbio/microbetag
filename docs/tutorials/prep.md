@@ -2,6 +2,8 @@
 title: microbetag-prep
 layout: default
 parent: Additional tutorials
+version: latest
+# permalink: /docs/{{ page.version }}/tutorials
 nav_order: 1
 description: "an example case of how to run the microbetag prep step"
 ---
@@ -10,13 +12,13 @@ description: "an example case of how to run the microbetag prep step"
 {: .no_toc }
 
 
-v1.0.0
+v1.0.1
 {: .label .label-green }
 
 
-[Docker image](https://hub.docker.com/repository/docker/hariszaf/microbetag_prep/general){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[Docker image](https://hub.docker.com/layers/hariszaf/microbetag_prep/v1.0.1/images/sha256-084c547fe88f5bd09bb44cbb960dcacdcb0ded78d55214c80da123bcfb9b864f?context=repo){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 [Tutorial files](https://github.com/hariszaf/microbetag/tree/preprocess/test){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
-
+[GitHub release](https://github.com/hariszaf/microbetag/releases/tag/v1.0.1){: .btn .btn-blue .fs-5 .mb-4 .mb-md-0 }
 
 
 ## Table of contents
@@ -24,8 +26,6 @@ v1.0.0
 
 1. TOC
 {:toc}
-
-
 
 {: .important-title}
 > INPUT FILES USED IN THIS TUTORIAL
@@ -38,7 +38,6 @@ v1.0.0
 
 
 ## The *preparation* step
-
 
 `microbetag` is a one-stop-shop application as it supports the taxonomic annotation of ASVs/OTUs, the building of the co-occurrence network and its annotation. 
 However, its main goal is the latter and at the same point, the first two tasks can be computationally expensive especially for large datasets.
