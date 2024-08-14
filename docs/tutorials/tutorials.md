@@ -16,7 +16,7 @@ To enable this and at the same time to support the taxonomy annotation of 16S rR
 
 
 The simplest case is you are about to use the first approach where your sequences are less than 1000 (up limit for the server to build a network).
-In this case, you may follow directly the instructions described in the [Cytoscape App](../cytoApp.md) tab. 
+In this case, you may follow directly the instructions described in the [Cytoscape tutorials](../mgg_tutorials/mgg_totorials.md). 
 If you have a more complex data set, then you need to:
 * either perform the `microbetag_prep` step, where you get a network again using FlashWeave and/or a GTDB-based taxonomy assignment of your amplicon sequences (if that is your case), or
 * perform `microbetag` locally, in case you have your own genomes to use instead of the GTDB representative ones
@@ -28,5 +28,7 @@ Here, we provide three tutorials:
 * [run `microbetag` locally](./local.md)
 * [load previously `microbetag`-annotated network on Cytoscape](./load.md)
 
-For any issues, bugs, questions, feel free to contact us on [Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) or just open an issue on our [GitHub repo](https://github.com/msysbio/microbetagApp/issues).
+For any issues, bugs, questions, feel free to 
+contact us on [Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) or 
+just open an issue on our [GitHub repo](https://github.com/msysbio/microbetagApp-public/issues/new).
 

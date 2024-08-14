@@ -125,7 +125,7 @@ microbetag annotates all **edges** where both nodes represent species/strain lev
 ## Seed scores and complements based on genome-scale draft reconstructions (GEMs)
 
 Based on Borenstein *et al.* (2008) [5] a metabolic network's “seed set” is the set of compounds that, based on the network topology, are exogenously acquired".
-Here is an example (based on the [Borensteil lab webpage](http://borensteinlab.com/software_netseed_examples.html)):
+Here is an example (based on the [Borenstein lab webpage](https://borensteinlab.sites.tau.ac.il/items-1/netseed)):
 
 ![seed concept](../../assets/images/seed_concept_example.png)
 

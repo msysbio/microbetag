@@ -59,7 +59,7 @@ Once clicking on that, a parameter-setting box will pop up, asking for values on
 
 
 Please make sure you set the input type as `abundance_table` and you select the correct [taxonomy scheme](../input.md#input-files).
-It is crucial to also set the [FlashWeave related parameters](../faq.md#what-is-sensitive-and-heterogeneous-in-flashweave) in a way they address your abundance table idiosyncrasy.
+It is crucial to also set the [FlashWeave related parameters](../faq.md#when-to-enable-the-sensitive-and-heterogeneous-arguments) in a way they address your abundance table idiosyncrasy.
 
 
 {: .important}

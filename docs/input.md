@@ -101,7 +101,7 @@ In case you start from a `biom` file, you may get a `.tsv` file using the
 ```bash 
 biom convert -i otu_table.biom -o otu_table.csv --to-tsv --header-key taxonomy
 ```
-Make sure you have the `biom` tools installed; if not, you may follow the instructions you can find [here](https://biom-format.org/index.html) to get them.
+Make sure you have the `biom` tools installed; if not, you may follow the instructions you can find [here](https://biom-format.org/index.html) how to get them.
 <!-- https://www.metagenomics.wiki/tools/16s/qiime/otu-biom-table -->
 
 

@@ -6,6 +6,9 @@ nav_order: 2
 ---
 
 
+# Phen models supported
+
+
 Phen traits have been annotated to all representative GTDB genomes. 
 Here are the corresponding abbreviations' descriptions.
 Each function is referring to the species under study (node).
@@ -45,7 +48,7 @@ Each function is referring to the species under study (node).
 |`thermophilic`   | species has a thermophilic lifestyle |
 
 
-* not returned by a Phen model
+\* not returned by a Phen model
 
 
 

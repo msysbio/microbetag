@@ -105,7 +105,7 @@ where `tagname` is the name of the specific version.
 
 For hints on how to use microbetag, ideas for new features and bug reports find us on out [Matrix space](https://matrix.to/#/#microbetagcommunity:matrix.org).
 If you do not have a Matrix account, it's only two clicks away! 
-For more, you may check [here](https://matrix.org/docs/chat_basics/matrix-for-im/).
+For more information, you may check [here](https://matrix.org/docs/chat_basics/matrix-for-im/).
 
 
 ## Cite us
@@ -115,7 +115,7 @@ In prep.
 ## Funding
 
 This project was funded by an [EMBO Scientific Exchange Grants](https://www.embo.org/funding/fellowships-grants-and-career-support/scientific-exchange-grants/) 
-and the [3D’omics](https://www.3domics.eu) Horizon project (101000309).
+and the [3D’omics](https://www.3domics.eu) Horizon 2020 project (101000309).
 
 <!-- https://www.embo.org/documents/news/facts_figures/EMBO_facts_figures_2021.pdf -->
 

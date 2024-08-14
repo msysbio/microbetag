@@ -87,7 +87,7 @@ Here is an example:
 ![kegg_seed_map](../../assets/images/app/seedComplPanel.png)
 
 
-[*Seed scores*](../modules/modules.md#seed-scores-based-on-genome-scale-draft-reconstructions-gems) between the two genomes are also shown here. 
+[*Seed scores*](../modules/modules.md#seed-scores-and-complements-based-on-genome-scale-draft-reconstructions-gems) between the two genomes are also shown here. 
 Remember that like the edge under study, seed scores have also *directionality*; seed score for competition between $genome_A$ and $genome_B$ is not necessarily the same with the one between $genome_B$ and $genome_A$.
 Those scores are only indicative, and they should not be considered as fact of observed cooperation/competition. 
 Seed complements are then recorded in the same way as pathway complementarities.

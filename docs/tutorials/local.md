@@ -14,7 +14,7 @@ v1.0.2
 {: .label .label-green }
 
 
-[Docker image](https://hub.docker.com/repository/docker/hariszaf/microbetag/general){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[Docker image](https://hub.docker.com/r/hariszaf/microbetag){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 [Tutorial files](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
 [GitHub release](https://github.com/hariszaf/microbetag/releases/tag/v1.0.2){: .btn .btn-blue .fs-5 .mb-4 .mb-md-0 }
 
@@ -34,7 +34,7 @@ v1.0.2
 <!-- > You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
 >  -->
 
-In the [Cytoscape App tutorial](../cytoApp.md), our sequences were already taxonomically assigned before running `microbetag` and their taxonomies were mapped to representative GTDB genomes.
+In the [Cytoscape App tutorial](../mgg_tutorials/abd_only.md), our sequences were already taxonomically assigned before running `microbetag` and their taxonomies were mapped to representative GTDB genomes.
 `microbetag` then used these genomes for the annotation steps.
 
 However, in case of shotgun metagenomics one may end up with their own bins while further refinement of the latter can lead to Metagenome-Assembled Genomes (MAGs).
@@ -63,7 +63,7 @@ In our experience, memory can hard be an issue, and `microbetag` is more often t
 > 
 > In the initial run, there are only 3 input files:
 > - the [`config.yml`][1] file; allows you to set all the relative parameters for `microbetag` to run
-> - an **abundance table** (following the format of the Cytoscape app tutorial) called [`thirty_Samples`][2], and
+> - an **abundance table** (following the format of the Cytoscape app tutorial) called [`thirty_Samples.tsv`][2], and
 > - its corresponding edge list ([`edgelist.csv`][3])
 >
 > **Remember!**
@@ -149,7 +149,7 @@ For example, the `aerobic_nitrite_oxidation.txt` looks like:
 
 `microbetag` invokes `prodigal` to extract Open Reading Frames (ORFs). 
 It creates a folder called `ORFs` in the `output_directory` and for each genome/bin it returns 3 files: 
-- `.gbk`: Genbank-like format (for more check [here](https://www.insdc.org/submitting-standards/feature-table/))
+- `.gbk`: Genbank-like format (for more information check [here](https://www.insdc.org/submitting-standards/feature-table/))
 - `.faa`: the reading frames as aminoacid sequences
 - `.ffn`: the reading frames as nucleic acid sequences
 

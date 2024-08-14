@@ -8,7 +8,7 @@ nav_order: 1
 description: "an example case of how to run the microbetag prep step"
 ---
 
-# `microrbetag` preparation steps
+# `microbetag` preparation steps
 {: .no_toc }
 
 
@@ -168,8 +168,10 @@ More complex scenarios can be the case, however they are all based on the princi
 > Having an already optimal co-occurrence network to annotate is essential from a biological point-of-view.
 > Thus, we strongly suggest you first build your co-occurrence network using FlashWeave or any inference tool 
 > on your own, in order to address the idiosyncrasy of your data the best you can. 
-> In the framework of microbetag, you can do that by running the pre-processing Docker image we provide and by editing the
-> `flashweave.jl` script (see the [preparation step](../../input.md#the-preparation) as well as the [FlashWeave documentation](https://githubhelp.com/meringlab/FlashWeave.jl) for more).
+>
+> In the framework of microbetag, you can do that by running the pre-processing Docker image we provide. 
+> You may check the [FAQs](../faq.md#when-to-enable-the-sensitive-and-heterogeneous-arguments) for FlashWeave's most essential parameters you can set through the `config.yml` file of the preprocessing image.
+> In addition, you can edit the `flashweave.jl` script to adjust it to your needs; you may check for more information the [FlashWeave documentation](https://github.com/meringlab/flashweave.jl) direclty.
 
 
 
@@ -243,7 +245,7 @@ No matter how you edit the file, you need to make sure the following:
 
 
 In case you have asked for building a network, then you also need to consider setting the two related parameters.
-You may check this [FAQ](../../faq.md#what-is-sensitive-and-heterogeneous-in-flashweave) and of course advise the FlashWeave GitHub and paper for that. 
+You may check this [FAQ](../faq.md#when-to-enable-the-sensitive-and-heterogeneous-arguments) and of course advise the FlashWeave GitHub and paper for that. 
 In our case, we set `flashweave_sensitive` as `True` and `flashweave_heterogeneous` as `False`.
 
 
@@ -252,7 +254,7 @@ In our case, we set `flashweave_sensitive` as `True` and `flashweave_heterogeneo
 
 Now, based on your container technology you are ready to run the preparation image.
 
-An example of a directory to mount can be seen [here](https://github.com/hariszaf/microbetag/tree/preprocess/preprocess/test). 
+An example of a directory to mount can be seen [here](https://github.com/hariszaf/microbetag/tree/preprocess/test).
 The mandatory abundance table file can be provided as a `.tsv` or a `.csv` file and needs to be specified in the `config.yml` file accordingly.
 
 
@@ -265,7 +267,7 @@ docker run --rm -v ./my_microbetag_prep/:/media hariszaf/microbetag_prep
 Make sure you are in the parent folder of the `my_microbetag_prep` directory. 
 
 If you would like to edit the FlashWeave script and add extra argument on it, you can 
-fire a Docker container as explained [here](../input.md#io-folder) and edit the script as you wish.
+fire a Docker container as explained [above](./prep.md#docker) and edit the script as you wish.
 
 
 Once the preprocessing is completed (based on your input this could take up to hours)
@@ -286,5 +288,5 @@ you will find two output files,
 
 
 [1]:{{ site.url }}/microbetag/download/prep/seq_ab_tab.tsv
-[2]:{{ site.url }}/microbetag/download/prep/config.tsv
+[2]:{{ site.url }}/microbetag/download/prep/config.yml
 

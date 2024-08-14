@@ -69,7 +69,7 @@ You need first to feed the app with your abundance table and, if available, your
 In both cases though, the **abundance table** will be **required**. 
 
 Please, make sure your taxonomy fits the criteria for `microbetag` to run. 
-You may find more on that issue on the [*Input files*](./input.md#input-files) section.
+You may find more on that issue on the [*Input files*](../input.md#input-files) section.
 
 Then, as you will see in the following two cases, you will have to set the values to a set of parameters to describe your input data but also what annotation steps you would like `microbetag` to perform.
 

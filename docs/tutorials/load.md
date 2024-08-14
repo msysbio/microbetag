@@ -30,7 +30,7 @@ description: "an example case of how to load a previously microbetag-annotated n
 ## Load an edge list to be used with `microbetag`
 
 In this case, you need to first load your network on Cytoscape and then import it on the MGG. 
-We show how to do that in the [Cytoscape App Tutorial](https://hariszaf.github.io/microbetag/docs/cytoApp/#-starting-from-a-co-occurrence-network). 
+We show how to do that in the [Cytoscape App Tutorial](../mgg_tutorials/from_net.md). 
 
 {: .note}
 Remember, you need always to call the column to be used as weight of the network as `microbetag::weight`.
