@@ -1,8 +1,9 @@
 ---
-layout: default
+# layout: default
 title: Cytoscape tutorials
 nav_order: 3
 has_children: true
+version: latest
 permalink: /docs/mgg_tutorials
 usemath: true
 ---
@@ -13,14 +14,14 @@ usemath: true
 
 # Run `microbetag` Cytoscape app
 
-microbetag v1.0.0
+microbetag v1.0.1
 {: .label .label-green }
 
 MGG v1.0.0
 {: .label .label-green }
 
 
-[microbetag source code](https://github.com/msysbio/microbetagApp){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
+[microbetag web-app](https://github.com/msysbio/microbetagApp-public/releases/tag/v1.0.1){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 [MGG source code](https://github.com/ermismd/MGG){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 [Tutorial files](https://github.com/hariszaf/microbetag/tree/gh-pages/download/mgg){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
 

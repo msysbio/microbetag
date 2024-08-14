@@ -3,7 +3,7 @@ layout: default
 title: Additional tutorials
 nav_order: 4
 has_children: true
-permalink: /docs/tutorials
+# permalink: /docs/tutorials
 usemath: true
 ---
 

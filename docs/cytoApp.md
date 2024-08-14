@@ -1,8 +1,8 @@
-<!-- ---
+---
 layout: default
 title: Cytoscape App Tutorial
 nav_order: 3
---- -->
+---
 
 # `microbetag` on Cytoscape
 

@@ -2,7 +2,7 @@
 title: microbetag-prep
 layout: default
 parent: Additional tutorials
-version: latest
+# version: latest
 # permalink: /docs/{{ page.version }}/tutorials
 nav_order: 1
 description: "an example case of how to run the microbetag prep step"
