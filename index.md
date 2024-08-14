@@ -19,13 +19,6 @@ background, documentation and a use case
 
 ![microbetag logo](/assets/images/microbetag_logo.png){: width=5% }
 
-
-<!--The ': .btn' flag denotes the button 
-# The ': .fs-5' flag denotes the font size
-# The ': .mb-4' flag denotes the margin-bottom: https://pmarsceill.github.io/just-the-docs/docs/utilities/layout/#spacing
-# the 'mb'is the margin-bottom as said,  while the 'md' stands for a [responsive modifier](https://pmarsceill.github.io/just-the-docs/docs/utilities/responsive-modifiers/#responsive-modifiers)-->
-
-
 [CytoscapeApp](https://apps.cytoscape.org/apps/mgg){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 [View it on GitHub](https://github.com/hariszaf/microbetag){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
 [Join us on Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org){: .btn .btn-blue .fs-5 .mb-4 .mb-md-0 }
@@ -43,7 +36,7 @@ This way, associations can be further investigated and more reliable conclusions
 
 *`microbetag`* implements data integration techniques to annotate both the nodes (taxa) and the edges (predicted associations) of such a network 
 to enhance microbial co-occurrence network analysis for amplicon data. 
-Have a look at the [**modules**](docs/modules) tab to get an overview of the methods used.
+Have a look at the [**modules**](docs/modules/modules.md) tab to get an overview of the methods used.
 
 <!-- It retrieves the KEGG modules that have been assigned to each of the species found related. 
 Based on the **pathway complementarity** concept, pathways found in both taxa of an association are further explored to check whether the processes of each of the two taxa are complementary denoting a  positive interaction. 
@@ -66,12 +59,12 @@ To use it you need to first make sure you have Cytoscape installed on your machi
 Then, **after lunching Cytoscape**, you may visit the [Cytoscape Appstore](https://apps.cytoscape.org/apps/mgg) and install MGG by pressing the `Install` button.
 Alternatively, you may click `Apps > App manager..` after lunching Cytoscape, then search for "microbetag" in the pop-up box and click  "Install".
 
-Once MGG is installed, you are ready to use `microbetag` either on the fly, by providing an OTUs/ASVs (amplicon data) and optionally a network, if you already have one, or locally, if you want to apply the annotations on your own bins/MAGs. In the last case, you will also have to install [Docker](https://www.docker.com) or [Singularity](https://sylabs.io) and pull the `microbetag` image that allows you to do so (see [Tutorials](docs/tutorials/tutorials.md) for more).
+Once MGG is installed, you are ready to use `microbetag` either on the fly, by providing an OTUs/ASVs (amplicon data) and optionally a network, if you already have one, or locally, if you want to apply the annotations on your own bins/MAGs. In the last case, you will also have to install [Docker](https://www.docker.com) or [Singularity](https://sylabs.io) and pull the `microbetag` image that allows you to do so (see [Additional tutorials](docs/tutorials/tutorials.md) for more).
 
 {: .important-title }
 > HOW TO USE AND INTERPRET MICROBETAG's FINDINGS 
 >
-> For a thorough description of the app, please check the [Cytoscape App](docs/cytoApp) tab.
+> For a thorough description of the app, please check the [Cytoscape App](docs/mgg_tutorials/mgg_totorials.md) tab.
 
 
 In addition, `microbetag`'s annotations are also available through its [Application Programming Interface (API)](docs/api). 

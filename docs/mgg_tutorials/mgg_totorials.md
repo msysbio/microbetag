@@ -31,7 +31,7 @@ MGG v1.0.0
 >
 > Please, download the files required for the different cases and **set the parameters as shown in this tutorial**. 
 > Parameters are essential especially for the online version of `microbetag` as they can lead either to non-optimal annotations or even failures of the software.
-> You may check the [FAQs](./faq.md) section for rules of thumb on how to set your parameters and you are always welcome to [join us on Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) and ask us directly.
+> You may check the [FAQs](../faq.md) section for rules of thumb on how to set your parameters and you are always welcome to [join us on Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) and ask us directly.
 
 
 

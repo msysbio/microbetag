@@ -35,7 +35,7 @@ The network annotation consists of 4 major modules:
 - **literature oriented** taxa functional annotation using [**FAPROTAX**](https://pages.uoregon.edu/slouca/LoucaLab/archive/FAPROTAX/lib/php/index.php) [2]
 - **genomic oriented** taxa functional annotation using an updated, local instance of [**phenDB**](https://phendb.org) using all representative genomes of GTDB and [`phenotrex`](https://phenotrex.readthedocs.io/en/latest/usage.html)
 - **pathway complementarity** annotations between taxa that have been found co-correlated in the produced (or user provided) network; both taxa were considered as potential donor and beneficiary (see [Pathway complementarity](#pathway-complementarity) for more)
-- **complementarity** [3] and **competition** [4] **seed scores** between draft metabolic reconstructions of GTDB representative genomes, mapped to the input taxa using [**PhyloMInt**](https://github.com/mgtools/PhyloMint) (see [Seed-based complementarity and competition scores]() for more) 
+- **complementarity** [3] and **competition** [4] **seed scores** between draft metabolic reconstructions of GTDB representative genomes, mapped to the input taxa using [**PhyloMInt**](https://github.com/mgtools/PhyloMint) (see [Seed-based complementarities and scores](#seed-scores-and-complements-based-on-genome-scale-draft-reconstructions-gems) for more) 
 
 **Nodes** that have species or strain taxonomic annotation are mapped to their closest representative GTDB genomes and based on those, they get phenDB-like and FAPROTAX functional annotations. Taxa (nodes) that have been taxonomically annotated at the family or order level are annotated using FAPROTAX.
 
@@ -67,8 +67,7 @@ As an example, here is how the FAPROTAX output looks like for the **denitrificat
 FAPROTAX returns only the ASVs present in the (user provided) abundance table that are related to the **denetrification** function.
 Numbers represent the ASV abundance in each sample. 
 
-`microbetag` runs FAPROTAX against the abundance table and parses the sub-tables ([`seqId_faprotax_functions_assignment`](https://github.com/msysbio/microbetagApp/blob/main/services/web/microbetag/scripts/utils.py#L181)) 
-to annotate each node with the corresponding function. 
+`microbetag` runs FAPROTAX against the abundance table and parses the sub-tables (an [example](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag/microbetag_run/faprotax/sub_tables)) to annotate each node with the corresponding function. 
 
 In case the user provides as input a co-occurrence network, `microbetag` runs FAPROTAX against the nodes.
 
