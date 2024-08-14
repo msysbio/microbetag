@@ -23,7 +23,7 @@ description: "an example case of how to load a previously microbetag-annotated n
 {: .important-title}
 > INPUT FILES USED IN THIS TUTORIAL
 >
-> For this tutorial we will use the output network of the [`microbetag_prep` step](prep.md) called [`network_output.edgelist`][1]
+> For this tutorial we will use the output network of the [`microbetag_prep` step](./prep.md) called [`network_output.edgelist`][1]
 > and a previously annotated network with `microbetag` called [`microbetag_annotated.cx`][2]
 
 
@@ -75,7 +75,7 @@ Load the network data to the app by clicking `Apps > MGG > Import Data > Import 
 You can check on the imported date by clicking `Apps > MGG > Import Data > Check Data Files`.
 Once you make sure you have loaded what you wanted, you are ready to ask `microbetag` to annotate your network! 
 Just click `Apps > MGG > Get Annotated Network`.
-Set the parameters as discussed in the [*Run `microbetag` from a co-occurrence network*](../cytoApp.md#starting-from-a-co-occurrence-network) section.
+Set the parameters as discussed in the [*Run `microbetag` from a co-occurrence network*](../mgg_tutorials/from_net.md) section.
 
 ![params](../../assets/images/app/prepSettings.png)
 
@@ -85,7 +85,7 @@ Then a *Sending data to the server* loading bar will appear.
 After a few moments, a new network will pop up on your Cytoscape main panel! 
 
 That's it! 
-You may now [*"roam"* across your annotated network](../cytoApp.md#roaming-acrross-annotated-nodes-and-edges).
+You may now [*"roam"* across your annotated network](../mgg_tutorials/roaming.md#roaming-acrross-annotated-nodes-and-edges).
 
 
 
