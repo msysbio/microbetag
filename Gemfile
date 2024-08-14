@@ -9,3 +9,4 @@ gem "html-proofer", "~> 5.0", :group => :development
 
 gem 'jemoji'
 
+gem 'jekyll-version-docs'
