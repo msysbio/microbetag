@@ -46,6 +46,8 @@ You can view the imported data by clicking on the *Check Data Files* feature, fo
 ![check_abund_option](../../assets/images/app/checkOptionAbundData.png)
 
 Once clicking that, a table will pop up where you can go through the data you have imported as the abundance table. 
+Keep in mind that in case you have more than a few samples, or your abundaces have a long number of digirs, you will need to double-click to a column at a time to be able to see its values. 
+
 
 <!--  -->
 

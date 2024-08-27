@@ -21,10 +21,21 @@ Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequ
 - <p style="color : Red">red</p> node was mapped to higher taxonomic level and no annotations were returned
 
 
-If you edit the style of your *microbetag-*annotated network, you can always bring back its original style through the MGG main menu.
+If you edit the style of your *microbetag*-annotated network, you can always bring back its original style through the MGG main menu.
 
 ![style](../../assets/images/app/visualStyle.png)
 
+
+Now, if already opened, you need to open the MGG results panel; just click 
+`Apps > MGG > Show Results panel > Show results panel`
+(see also [Loading models](../tutorials/load.md#load-already-microbetag-annotated-networks) tutorial).
+
+Once your *microbetag*-annotated model is imported and the MGG results panel opened, you can now browse the network along with its annotations using both Cytoscape core features and those of MGG. 
+
+Notice that the MGG results panel on its bottom has two options: 
+the **Nodes** and the **Edges** panels. 
+By default, the **Nodes** panel is selected. 
+Let's start with that then!
 
 By clicking on the *Show Species* button, all nodes that were not mapped to a genome will be masked. 
 
@@ -59,8 +70,7 @@ Edges are either
 
 
 
-One may select from the two top buttons on the `Edges` panel to show only edges with pathway complementarities or seed complementarities.
-
+Now, you can click on the **Edges** button on the bottom of the MGG panel to *jump* to the Edges annotations.
 
 By clinking on a potential metabolic interaction edge, 
 the donor and the beneficiary species, along with their corresponding sequence identifiers will be displayed

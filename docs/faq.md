@@ -163,7 +163,7 @@ First, you can try to build a database with the closest genomes you can find for
 If you do so, then you could run `microbetag` locally using those genomes as they were your bins. 
 
 Second, you could build a local instance of `microbetagDB` locally. 
-This would require a storage of $$ ~700GB $$.
+This would require a storage of ~700GB.
 <!-- REMEMBER! Edit next phrase once coplete -->
 We are now working on an efficient way to go for that. 
 
@@ -182,4 +182,9 @@ This is because `modelseedpy` requires RAST annotated genomes and thus it needs 
 Unfortunately, we have observed that this is not always stable.
 
 
+## Can't import files on my macOS
 
+Make sure you are not using aliases pointing to the files you need to import.
+Sometimes you may use aliases even without knowing, 
+for example when you drag and drop a file on Finder, you create a shortcut of the file there, but the file is actually located in its original location.
+Make sure you use the right path and not the shortcut when you are about to import a file on MGG. 
