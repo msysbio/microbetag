@@ -76,7 +76,7 @@ Yet, if applied in small datasets it can also lead to no network inference and t
 
 
 {: .no_toc }
-### What is the *children taxa* ?
+### What is the *Consider children taxa* parameter?
 
 This parameter is only valid if the taxonomy database selected is `Other`. 
 In this case, `microbetag` tries to use the taxonomies provided to their closest NCBI Taxonomy. 
@@ -108,17 +108,14 @@ If that happens, you need to kill the process of the Cytoscape instance.
 For example, in a Linux system, you would have to check on your `htop` panel which is the `PID` for Cytoscape and then run `kill <PID>`.
 
 
-## GTDB versioning
+## GTDB and microbetagDB versioning
 
 GTDB releases a new version once a year, most of the time in April increasing its number of genomes to a great extent from version to version. 
-Yet, the number of high quality genomes is not increasing that fast.
-In addition, as the number of high quality genomes increases, the pairs for `microbetagDB` to store increases exponentially. 
-Thus, every year, `microbetag` makes sure it integrates the new genomes that are members of the genome clusters already there. 
-Yet, new calculations will be performed only once a finer way to store the billions of complements is developed.
-
-
-
-
+Even the number of high quality genomes is not increasing that fast, the pairs for `microbetagDB` to store increases exponentially.
+We intend to develop a new feature to export new reference genomes and run precalculations over them once a year, following GTDB versioning. 
+<!-- Thus, `microbetag` to integrate the new genomes that are members of the genome clusters already there, meaning `microbetagDB` will try to follow the GTDB updates.
+Yet, new calculations will be performed only once a finer way to store the billions of complements is developed. -->
+Yet, this is still work-in-progress.
 
 
 <!-- ## Why using the `get_children` feature? 

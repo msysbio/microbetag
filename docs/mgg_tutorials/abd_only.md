@@ -16,7 +16,8 @@ description: "tutorial using only an abundance table as input"
 
 
 
-In case that a co-occurrence network is not available, *microbetag* can come up with one using [FlashWeave](https://doi.org/10.1016/j.cels.2019.08.002).
+In this case a co-occurrence network is **not** available so, *microbetag* will come up with one using [FlashWeave](https://doi.org/10.1016/j.cels.2019.08.002).
+In case you already have a network, and you would like `microbetag` to use it, please check on the [Using a network](./from_net.md) tutorial.
 
 {: .important-title}
 > UP LIMIT FOR ABUNDANCE TABLE RECORDS
@@ -59,22 +60,25 @@ Once clicking on that, a parameter-setting box will pop up, asking for values on
 
 ![settings](../../assets/images/app/parameters_no_net.png)
 
+For a thorough description of these parameters, please check the table on the [Run microbetag Cytoscape app](./mgg_totorials.md) tutorial as well as the relative [FAQs](../faq.md#setting-the-parameters-right).
 
 Please make sure you set the input type as `abundance_table` and you select the correct [taxonomy scheme](../input.md#input-files).
 It is crucial to also set the [FlashWeave related parameters](../faq.md#when-to-enable-the-sensitive-and-heterogeneous-arguments) in a way they address your abundance table idiosyncrasy.
+<!-- In this case, we need `microbetag` to come up with a network as we only provide an abundance table; thus, we set the `Choose input type` to `abundance_table`.  -->
+In our tutorial example, since the taxonomy scheme was Silva we choose this to map our taxa against.
 
+The `get_children` can be useful in cases of non-trivial taxonomies for which there is no genomic information on microbetagDB for the species level, but there is such at lower levels (strains). 
+
+Last but not least, we set the `Sensitive` parameter as `True` since we have a relatively low number of sequences;
+this way FlashWeave may detect more subtle associations because it considers the full range of abundance variations.
+However, this also makes the computation more intensive and slower, especially with large datasets.
+See [FAQ](../faq.md) for more. 
 
 {: .important}
 We suggest you do the network inference step as well as the mapping to the GTDB taxonomy before using *microbetag* through the Cytoscape App as this would provide you extra freedom on they network inference and gain dramatically in computing time on the server.
 
 
-Once you set the parameters of your choice, you are ready to sent your query to the server by clicking *ok*. 
-In this case, we need `microbetag` to come up with a network as we only provide an abundance table; thus, we set the `Choose input type` to `abundance_table`. 
-Also, since our taxonomy scheme was Silva we choose this to map our taxa against. 
-Last but not least, we set the `Sensitive` parameter as `True` since we have a relatively low number of sequences; 
-this way FlashWeave may detect more subtle associations because it considers the full range of abundance variations. 
-However, this also makes the computation more intensive and slower, especially with large datasets.
-See [FAQ](../faq.md) for more. 
+Once you set the parameters of your choice, you are ready to sent your query to the server by clicking *ok*.
 
 ![send_data](../../assets/images/app/sendingDataToServer.png)
 
@@ -83,6 +87,9 @@ See [FAQ](../faq.md) for more.
 After a few minutes (based on your data and the steps you have asked for) a *microbetag-*annotated network will pop up automatically on your Cytoscape instance.
 
 ![annotated_net](../../assets/images/app/annotated_net_no_net.png)
+
+
+To explore the annotated network continue with [*Investigating the annotations* tutorial](./roaming.md).
 
 
 {: .important-title}

@@ -11,12 +11,17 @@ description: "tutorial using an abundance table and and edge list as input"
 ## .. starting from a co-occurrence network
 
 
+In case you already have a co-occurrence network based on your data, you can ask `microbetag` to directly annotate it.
+In this tutorial, we show how to run `microbetag` using a network of your own.
+
 {: .important-title}
 > INPUT FILES USED IN THIS TUTORIAL
 >
-> Last, we run an example where a network is already available. In this case, we use the [`vitAbund.tsv`][1] file as our abundance table and the [`edgelist.tsv`][2] file as our network file.
- 
-
+> The network we will use ([`edgelist.tsv`][2]) comes from the study of [Hessler et *al.* (2023)](https://doi.org/10.1038/s41467-023-40360-4).
+> We would like to thank the authors for sharing their data.
+> The abundance table ([`vitAbund.tsv`][1]) however does not represent the one of the actual study.
+> It is a pseudo abundance table that only includes the **bin names, exactly as they are called in the network file**, to *highlight* that **it is not the abundance data** that are of interest now.
+> Hessler et *al.* investigated factors that control community organization in mine tailings-derived laboratory microbial consortia and were able to link a *Variovorax* species as an important source of thiamine.
 
 If you already have a network, then you need to provide **both the network and the abundance table** and **make sure that the sequence identifiers in those two files are the same**; 
 meaning that the *node ids of the network are present in the abundance table in the column representing the sequence identifier*.
@@ -84,6 +89,9 @@ This will take significantly less time and here is the returned network:
 
 
 ![annotated_net](../../assets/images/app/annotatedNetwork.png)
+
+
+Now, you can go through the [*Investigating the annotations*](./roaming.md) tutorial to check how good `microbetag` did with *Variovorax* - related annotations.
 
 
 [1]:{{ site.url }}/microbetag/download/mgg/vitAbund.tsv

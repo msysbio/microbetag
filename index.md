@@ -27,11 +27,11 @@ background, documentation and a use case
 
 ## About
 
-Microbial interactions play a fundamental role in deciphering the underlying mechanisms that govern ecosystem functioning. 
-Co-occurrence networks have been widely used for inferring microbial associations or/and interactions from metagenomic data. 
-However, spurious associations and tool - dependence confine the network inference. 
-The integration of previous evidence or/and knowledge can increase or decrease the confidence level of the retrieved associations. 
-This way, associations can be further investigated and more reliable conclusions can be drawn.  
+Microbial interactions play a fundamental role in deciphering the underlying mechanisms that govern ecosystem functioning.
+Co-occurrence networks have been widely used for inferring microbial associations or/and interactions from metagenomic data.
+However, spurious associations and tool - dependence confine the network inference.
+The integration of previous evidence or/and knowledge can increase or decrease the confidence level of the retrieved associations.
+This way, associations can be further investigated, and more reliable conclusions can be drawn.
 
 
 *`microbetag`* implements data integration techniques to annotate both the nodes (taxa) and the edges (predicted associations) of such a network 
@@ -52,12 +52,17 @@ Their comparison in each pair of correlated taxa evaluates their corresponding a
 
 
 ## How to use 
+`microbetag` is a software ecosystem with different software packages to use based on the tasks you are going for.
 
+The most common use is through its graphical interface, a Cytoscape app called `MGG`.
 [Cytoscape](https://cytoscape.org) is a well-established, widely used software for network data integration, analysis, and visualization.
-`microbetag` is available as a [Cytoscape App](https://apps.cytoscape.org/apps/mgg); we call the CytoscapeApp MGG.
-To use it you need to first make sure you have Cytoscape installed on your machine; if not you can do this from the [Cytoscape Install page](https://cytoscape.org/download.html)
-Then, **after lunching Cytoscape**, you may visit the [Cytoscape Appstore](https://apps.cytoscape.org/apps/mgg) and install MGG by pressing the `Install` button.
-Alternatively, you may click `Apps > App manager..` after lunching Cytoscape, then search for "microbetag" in the pop-up box and click  "Install".
+
+<!-- `microbetag` is available as a [Cytoscape App](https://apps.cytoscape.org/apps/mgg) -->
+To use `MGG` you need to first make sure you have Cytoscape installed on your machine; if not you can do this from the [Cytoscape Install page](https://cytoscape.org/download.html)
+Then, there are two ways to install MGG in Cytoscape: 
+Either from through the Cytoscape app store on a browser or from within Cytoscape.
+In the first case, you need to **first lunching Cytoscape**, and then visit the [MGG Cytoscape Appstore page](https://apps.cytoscape.org/apps/mgg). By clicking the `Install` button `MGG` will be automatically added on your Cytoscape.
+Alternatively, to install `MGG` from within Cytoscape, you may click `Apps > App Store > Show App Store`, then search for "microbetag" in the pop-up box and follow this will guide you to the MGG page.
 
 Once MGG is installed, you are ready to use `microbetag` either on the fly, by providing an OTUs/ASVs (amplicon data) and optionally a network, if you already have one, or locally, if you want to apply the annotations on your own bins/MAGs. In the last case, you will also have to install [Docker](https://www.docker.com) or [Singularity](https://sylabs.io) and pull the `microbetag` image that allows you to do so (see [Additional tutorials](docs/tutorials/tutorials.md) for more).
 

@@ -74,23 +74,21 @@ You may find more on that issue on the [*Input files*](../input.md#input-files) 
 Then, as you will see in the following two cases, you will have to set the values to a set of parameters to describe your input data but also what annotation steps you would like `microbetag` to perform.
 
 
-| Variable      | Description                       | Value |
-|---------------|-----------------------------------|-------|
-|`input_category`| In case you already have a network, set it as `network` and load it; otherwise set it as `abundance_table`. In both cases you need to provide the abundance table though| `abundance_table` \| `network` |
-| `taxonomy` | In case a user's taxonomy is to be used, denotes which taxonomy scheme to be used from microbetag | [`GTDB` \| `dada2` \| `qiime2`]
-| `phenDB`            | return phenotypic traits based on phen models  | bool |
-| `faprotax`          | return annotations using the FAPROTAX database | bool |
-| `pathway_complement`| return pathway complementarities between associated nodes | bool |
-| `seed_scores`       | return complementarity and cooperation scores based on metabolic reconstructions seed sets | bool |
-| `manta`             | return clusters of nodes on the network using the manta package | bool | 
-| `get_children`      | use genomes of children taxa of the taxa in the abundance table based on the NCBI Taxonomy scheme | bool |
-| `heterogeneous`     | (FlashWeave) enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (FlashWeaveHE)| bool | 
-| `sensitive`     | (FlashWeave) enable fine-grained associations (FlashWeave-S, FlashWeaveHE-S), sensitive=false results in the fast modes FlashWeave-F or FlashWeaveHE-F | bool | 
+|Parameter | Variable      | Description                       | Value |
+|----------|---------------|-----------------------------------|-------|
+|Choose input type         |`input_category`| In case you already have a network, set it as `network` and load it; otherwise set it as `abundance_table`. In both cases you need to provide the abundance table though| `abundance_table` | `network` |
+|Choose taxonomy database| `taxonomy` | In case a user's taxonomy is to be used, denotes which taxonomy scheme to be used from microbetag | [`GTDB` \| `dada2` \| `qiime2`]
+|phenDB annotations         | `phenDB`            | return phenotypic traits based on phen models  | bool |
+|FAPROTAX annotations       | `faprotax`          | return annotations using the FAPROTAX database | bool |
+|Pathway Complementarity    | `pathway_complement`| return pathway complementarities between associated nodes | bool |
+|Seed scores and complements| `seed_scores`       | return complementarity and cooperation scores based on metabolic reconstructions seed sets | bool |
+|Network clustering         | `manta`             | return clusters of nodes on the network using the manta package | bool | 
+|Consider children taxa     | `get_children`      | use genomes of children taxa of the taxa in the abundance table based on the NCBI Taxonomy scheme, relevant only if you use `Other` taxonomy | bool |
+|heterogeneous              | `heterogeneous`     | (FlashWeave) enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (FlashWeaveHE) | bool | 
+|sensitive                  | `sensitive`     | (FlashWeave) enable fine-grained associations (FlashWeave-S, FlashWeaveHE-S), sensitive=false results in the fast modes FlashWeave-F or FlashWeaveHE-F | bool | 
 
 
+The column `Variables` in the above table provides the variable names you need to use in case you are about to use `microbetag` from Python (see [tutorial](../tutorials/python.md)).
 
-
-
-
-
-
+The datasets to be used in all cases except of the [*Using a network*](./from_net.md) tutorial, are subsets of abundance tables with no special biological meaning.
+However, in the *Using a network* case, we do use the network of [Hessler et *al.* (2023)](https://doi.org/10.1038/s41467-023-40360-4) who we would like to thank for sharing their data.

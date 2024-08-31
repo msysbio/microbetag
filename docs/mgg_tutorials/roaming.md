@@ -8,6 +8,16 @@ description: "tutorial on how to parse the annotated network using the MGG app"
 
 
 ## *"Roaming"* across annotated nodes and edges
+{: .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
+
+--
+
 
 Once an annotated network is returned (or [loaded](../tutorials/load.md)), you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returned.
 We will use the `microbetag`-annogated network of the 
@@ -37,9 +47,18 @@ the **Nodes** and the **Edges** panels.
 By default, the **Nodes** panel is selected. 
 Let's start with that then!
 
+{: .note}
+Remember that you can always use the Cytoscape core features on a `microbetag`-annotated network.
+That means for example, in case you would prefer a different style than the one provided, you can always change node and edges colors and shapes etc. You can do this always for groups of nodes/edges. Anything you could do with a network on Cytoscape is still an option for a `microbetag`-annotated network.
+
+
+## Investigating nodes' annotations
+
 By clicking on the *Show Species* button, all nodes that were not mapped to a genome will be masked. 
 
 ![show_species](../../assets/images/app/showSpecies.png)
+
+
 
 
 Or you can choose/click directly any node on the network and check the `Nodes` Panel 
@@ -52,12 +71,12 @@ or several at the same time
 ![selcted_nodes](../../assets/images/app/nodePanelMultiNodes.png)
 
 
+### Filter for traits
 
-Further, you may select among a list of annotations under the `PhenDb/FAPROTAX filters` with `AND` and `OR` relationships.
+You may select among a list of annotations under the `PhenDb/FAPROTAX filters` with `AND` and `OR` relationships.
 For example, I was curious about the Nitrite-oxidizing bacteria (NOB) on my network
 
 ![NOB](../../assets/images/app/NOB.png)
-
 
 
 Likewise, you may go through the annotations on the edges of the network.
@@ -70,10 +89,13 @@ Edges are either
 
 
 
+## Investigating edges' annotations
+
 Now, you can click on the **Edges** button on the bottom of the MGG panel to *jump* to the Edges annotations.
 
-By clinking on a potential metabolic interaction edge, 
-the donor and the beneficiary species, along with their corresponding sequence identifiers will be displayed
+### Potential pathway complementarities
+
+By clinking on a potential metabolic interaction edge, the donor and the beneficiary species, along with their corresponding sequence identifiers will be displayed
 highlighting who potentially benefits from the other.
 
 Then, for cases where pathway complementarities have been returned for this association, a panel will be available for each pair of genomes that were mapped to those two taxa. 
@@ -89,8 +111,8 @@ The screenshot below illustrates the highlighted complementarity in the biosynth
 ![methionine_kegg_map](../../assets/images/app/keggMap.png)
 
 
+### Potential seed complementarities
 
-Moreover, *microbetag* may also return seed complements. 
 Like in the case of the pathway complementarities, a new panel is displayed when seed complements are available for an edge.
 Here is an example:
 

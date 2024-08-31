@@ -175,7 +175,8 @@ Thus, the $$MI_{Competition}$$ between metabolic network A and B is $$(1/3) / 2 
 {: .highlight }
 The $$1/3$$ term represents the confidence level of the seed group node. 
 
-Among SeedSetA, metabolites A and F are found within the metabolic network B but only metabolite A is within non-SeedSetB, thus the MIComplementarity index between metabolic network A and metabolic network B is 0.5.
+Among $$SeedSetA$$, metabolites A and F are found within the metabolic network B but only metabolite A is within $$\cap SeedSetB$$, 
+thus the $$MI_{Complementarity}$$ index between metabolic network A and metabolic network B is 0.5.
 These indexes can be used in various types of metabolic networks. 
 
 In the framework of `microbetag`, all GTDB representative genomes were used to come up 
@@ -183,8 +184,8 @@ with draft genome-scale reconstructions using [`modelseedpy`](https://github.com
 with its default gapfilling algorithm and a complete medium. 
 Then, all GEMs pair-wised combinations were considered and using [`PhyloMInt`](https://github.com/mgtools/PhyloMint)
 their $$ MI_{Complementarity} $$ and $$ MI_{Competition} $$ scores were calculated. 
-microbetag annotates all **edges** between species/strain level taxonomically assigned nodes with such scores, 
-considering all the representative GTDB genomes mapping to the corresponding NCBI Taxonomy ids of the nodes.
+`microbetag` annotates all **edges** between species/strain level taxonomically assigned nodes with such scores, 
+considering all the representative GTDB genomes mapping to the corresponding NCBI Taxonomy Ids of the nodes.
 
 `microbetag` makes use of the seed and the non-seed (i.e., compounds a genome can produce on its own) sets of each genome and gets the overlap of the seed set of $genome_A$ with the non-seed set of $genome_B$. 
 This way, it exports how $species_B$ could benefit $species_A$ and vice-versa.

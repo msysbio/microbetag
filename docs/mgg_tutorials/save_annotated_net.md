@@ -9,9 +9,9 @@ description: "tutorial on how to save your current work"
 It is rather common for Cytoscape users to save the whole session they are working with as a `.cys` file by simply clicking on `File > Save Session As...` and giving a name to their session. 
 
 {: .warning}
-Due to a buG in the current MGG implementation, if you save your `microbetag`-annotated network as a session, then you most probably will not be able to parse the seed and pathway complementarities **once you re-open** the session. 
+In the current MGG implementation, if you save your `microbetag`-annotated network as a session, then you most probably will not be able to parse the seed and pathway complementarities **once you re-open** the session. 
 
-We already work on fixing the bug so we support this really handy Cytoscape feature. 
+We already work on supporting saving the session feature of Cytoscape.
 
 Until then, one can save a `microbetag`-annotated network as described here, in order to have all the MGG features once they re-open it:
 

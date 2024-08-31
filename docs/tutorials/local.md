@@ -53,8 +53,9 @@ On top of the abundance table and your genomes/bins/MAGs, to go for this case yo
 
 Running `microbetag` using your own genomes/bins/MAGs requires **significant** computing time and/or resources.
 In this tutorial, we will use a very short number of bins (7) to showcase the various steps `microbetag` implements. 
-In our experience, memory can hard be an issue, and `microbetag` is more often than not thread-limited. 
-
+Yet, it still gets more than a couple of hours to go through all the different steps to get all the possible supported annotations.
+In our experience, memory (RAM) requirements should not be a challenge; memory would be an issue only with really large networks. 
+`microbetag` is more often than not thread-limited, i.e. it needs computing power to go through the annotation steps. 
 
 {: .important-title}
 > INPUT FILES USED IN THIS TUTORIAL
@@ -88,12 +89,10 @@ For example, if you have already GEMs reconstructed based on your genomes, you m
 - `seed_complementarity`: since this is the most time and resource consuming step, the user may choose not to go for it. By setting this to `Fasle`, none of the steps for GEMs reconstruction or seed complementarity inference will be performed.
 
 
-- `flashweave_args`: all the arguments under this umbrella term are related to how `FlashWeave` will perform in case a 
+- `flashweave_args`: all the arguments under this umbrella term are related to how `FlashWeave` will perform, check on the [FAQs](../faq.md#when-to-enable-the-sensitive-and-heterogeneous-arguments) but also the [FlashWeave GitHub repo](https://github.com/meringlab/FlashWeave.jl) for more.
 
 {: .note}
 > Please, go through the parameters of the `config.yml` file carefully and make sure you keep this file in your `io_path`.
-
-
 
 
 ## Output 
@@ -153,7 +152,6 @@ It creates a folder called `ORFs` in the `output_directory` and for each genome/
 - `.faa`: the reading frames as aminoacid sequences
 - `.ffn`: the reading frames as nucleic acid sequences
 
-`microbetag` will make use of the `.faa` files but since these files can be of use for a great range of tasks, we decided to keep them. 
 
 {: .important-title}
 > SKIP THE ORFs PREDICTION (`prodigal`) STEP 
@@ -174,7 +172,7 @@ It creates a folder called `ORFs` in the `output_directory` and for each genome/
 
 `microbetag` makes use of the `hmmsearch` tool and the `kofam_database` profiles to check which KOs are present in each of your genomes.
 In the `output_directory`, `microbetag` creates a folder called `KEGG_annotations` and there it builds a folder called `hmmout`, where it keeps all the 24.728 `.hmmout` files for each genome.  
-Once all the `.hmmout` files are there for all the genomes/bins under study, `microbetag` build a file called `ko_merged.txt` based on the DiTing implementation, that looks like this:
+Once all the `.hmmout` files are there for all the genomes/bins under study, `microbetag` builds a file called `ko_merged.txt` based on the DiTing implementation, that looks like this:
 
 | bin_id	|    contig_id                       |	ko_term     |
 |:---------:|:----------------------------------:|:------------:|
@@ -182,7 +180,7 @@ Once all the `.hmmout` files are there for all the genomes/bins under study, `mi
 | bin_48	| SCN18_26_2_15_R4_B_scaffold_93_80	 |  K08086      |
 | bin_41	| SCN18_26_2_15_R1_F_scaffold_206_63 |	K03503      |
 
-and it is the **key** file for `microbetag` to proceed with the pathway complementarity step. 
+This file is the main component for `microbetag` to proceed with the pathway complementarity step. 
 
 
 {: .important-title}
@@ -219,13 +217,10 @@ and it is the **key** file for `microbetag` to proceed with the pathway compleme
 > Running `microbetag` locally using your own genomes/bins/MAGs can take significant computing time and resources.
 > In this tutorial, we use only a short number of bins that has almost no biological significance.
 > What we want to accomplish here is to make sure that you can run `microbetag` locally.
-> Using only this short number of bins (7) and a normal Linux machine and allocating 2 cpus (`threads`) for this run, where we asked all the steps to be performed, it takes almost 1 hour to be completed.
->
-> KEGG annotation using `hmmsearch` computes 24.728 KO profiles for each of your genomes; i.e. under the `KEGG_annotations/hmmout` path of your `io_path`, you will have 
->
-> It worths mentioning though, that if you break 
-
-
+> Indicatively, using a Linux machine and allocating 2 CPUs it took more than 1 hour for the KO annotation of just those 7 bins.
+> Running the complete workflow could get up to 6-7 hours based on the approach you will choose to reconstruct your GEMs. 
+> 
+> `carveme` is much more robust in running smoothly and faster since it does not require a RAST connection (see following paragraph). 
 
 
 
@@ -343,13 +338,20 @@ This post process step is necessary since we use a complete medium to gapfill th
 Once you have installed Docker locally, you may run 
 
 ```bash
-docker pull hariszaf/microbetag:v1.0.0
+docker pull hariszaf/microbetag:v1.0.2
 ```
 
 to get microbetag locally.
 
+{: .important-title}
+> Version is essential! 
+> 
+> Please, make sure you are aware of the version you are using. 
+> Latest versions may fix reported bugs or have new features. 
+> It is important to always be aware of the version you are using and report it when you are about to submit any issues. 
 
-Then, you need to get a copy of the kofam database to allow the annotation of your sequences with KEGG ORTHOLOGY terms. 
+
+Then, you need to get a copy of the `kofam` database to allow the annotation of your sequences with KEGG ORTHOLOGY terms. 
 You may get this by running the following chunk of code: 
 
 
@@ -421,7 +423,7 @@ docker run --rm -it  \
     --volume=./microbetagDB/ref-dbs/kofam_database/:/microbetag/microbetagDB/ref-dbs/kofam_database/ \
     --volume=$PWD/gurobi.lic:/opt/gurobi/gurobi.lic:ro \
     --entrypoint /bin/bash  \
-    microbetag:v1.0.0
+    hariszaf/microbetag:v1.0.2
 ```
 
 The `--volume` flag allows you to mount a local directory to a specific path in the container.
@@ -454,7 +456,7 @@ These technologies are widely used in High Performance Computing (HPC) systems.
 In case you are about to use `microbetag` in such a system, you first need to build a Singularity image (`.simg`) based on the Docker one:
 
 ```bash
-sudo singularity build microbetag_v101.simg docker://hariszaf/microbetag:v1.0.1
+sudo singularity build microbetag_v102.simg docker://hariszaf/microbetag:v1.0.2
 ```
 
 You will need to have sudo rights to run this command. 
