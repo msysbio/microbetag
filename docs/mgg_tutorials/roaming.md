@@ -16,12 +16,16 @@ description: "tutorial on how to parse the annotated network using the MGG app"
 1. TOC
 {:toc}
 
---
+---
 
 
-Once an annotated network is returned (or [loaded](../tutorials/load.md)), you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returned.
-We will use the `microbetag`-annogated network of the 
-[last example-case](./from_net.md).
+{: .important-title}
+> INPUT FILES USED IN THIS TUTORIAL
+>
+> We will use the `microbetag`-annogated network of the [network-based example-case](./from_net.md); you can get directly its corresponding `microbetag` - annotated network from [here][1].
+
+Once an annotated network is returned (or [loaded](../tutorials/load.md)) on your Cytoscape main panel, you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returned.
+
 
 Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequence was able to be mapped on *microbetag*.
 
@@ -59,8 +63,6 @@ By clicking on the *Show Species* button, all nodes that were not mapped to a ge
 ![show_species](../../assets/images/app/showSpecies.png)
 
 
-
-
 Or you can choose/click directly any node on the network and check the `Nodes` Panel 
 
 ![selcted_node](../../assets/images/app/nodePanel.png)
@@ -69,6 +71,10 @@ Or you can choose/click directly any node on the network and check the `Nodes` P
 or several at the same time
 
 ![selcted_nodes](../../assets/images/app/nodePanelMultiNodes.png)
+
+
+For more about how the PhenDB-like traits are assigned in each node you may have a look [here](../modules/modules.md#based-on-phendb) and for a thorough list of all the traits supported, you may check the corresponding [table](../modules/phen-traits.md).
+In addition, for the FAPROTAX-based annotations, you may have a look [here](../modules/modules.md#based-on-faprotax) for how it works, and you can go through the whole list of potential traits supported in this [table](../modules/faprotax-functions.md).
 
 
 ### Filter for traits
@@ -95,8 +101,7 @@ Now, you can click on the **Edges** button on the bottom of the MGG panel to *ju
 
 ### Potential pathway complementarities
 
-By clinking on a potential metabolic interaction edge, the donor and the beneficiary species, along with their corresponding sequence identifiers will be displayed
-highlighting who potentially benefits from the other.
+By clicking on a potential metabolic interaction edge, the donor and the beneficiary species, along with their corresponding sequence identifiers will be displayed.
 
 Then, for cases where pathway complementarities have been returned for this association, a panel will be available for each pair of genomes that were mapped to those two taxa. 
 For each pair of genomes, a list with the potential metabolic complementarities is then returned. 
@@ -129,4 +134,4 @@ Also, a new column provides the ModelSEED compound id that was actually found as
 ![kegg_seed_map](../../assets/images/app/seedKeggMap.png)
 
 
-
+[1]:{{ site.url }}/microbetag/download/mgg/hessler_microbetag_network.cx

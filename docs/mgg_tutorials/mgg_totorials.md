@@ -76,8 +76,8 @@ Then, as you will see in the following two cases, you will have to set the value
 
 |Parameter | Variable      | Description                       | Value |
 |----------|---------------|-----------------------------------|-------|
-|Choose input type         |`input_category`| In case you already have a network, set it as `network` and load it; otherwise set it as `abundance_table`. In both cases you need to provide the abundance table though| `abundance_table` | `network` |
-|Choose taxonomy database| `taxonomy` | In case a user's taxonomy is to be used, denotes which taxonomy scheme to be used from microbetag | [`GTDB` \| `dada2` \| `qiime2`]
+|Choose input type         |`input_category`| In case you already have a network, set it as `network` and load it; otherwise set it as `abundance_table`. In both cases you need to provide the abundance table though| [`abundance_table` \| `network`] |
+|Choose taxonomy database| `taxonomy` | In case a user's taxonomy is to be used, denotes which taxonomy scheme to be used from microbetag | [`GTDB` \| `dada2` \| `qiime2`] |
 |phenDB annotations         | `phenDB`            | return phenotypic traits based on phen models  | bool |
 |FAPROTAX annotations       | `faprotax`          | return annotations using the FAPROTAX database | bool |
 |Pathway Complementarity    | `pathway_complement`| return pathway complementarities between associated nodes | bool |

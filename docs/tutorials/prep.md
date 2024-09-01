@@ -34,7 +34,7 @@ v1.0.1
 > we will use the following 2 files: 
 > 
 > - the [`seq_ab_tab.tsv`][1] as our abundance table, which in its last column instead of a taxonomy includes the **ASV sequence**
-> - [`config.yml`][2] required for the `microbetag_prep` to run
+> - the [`config.yml`][2] where you may set your arguments for how to run the `microbetag_prep` image
 
 
 ## The *preparation* step
@@ -207,13 +207,15 @@ Assuming you downloaded the data from the link above in your `Downloads`:
 mv ~/Downloads/seq_ab_tab.tsv my_microbetag_prep/
 ```
 
-Now, you need to get the [`config.yml`][2] file and move it or keep a copy of it in the `my_microbetag_prep` folder. 
-<!-- If you have already downloaded this then you need to move/copy it in the `my_microbetag_prep` folder too. 
+Now, you need to get the `config.yml` file and move it or keep a copy of it in the `my_microbetag_prep` folder. 
+<!-- 
+If you have already downloaded this then you need to move/copy it in the `my_microbetag_prep` folder too. 
 If you have not, then you may run 
 ```bash
 cd my_microbetag_prep  # to move into your folder
 wget https://raw.githubusercontent.com/hariszaf/microbetag/preprocess/test/config.yml
-``` -->
+``` 
+-->
 
 Your `my_microbetag_prep` folder should now look like:
 
