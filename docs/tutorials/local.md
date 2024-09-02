@@ -63,7 +63,8 @@ In our experience, memory (RAM) requirements should not be a challenge; memory w
 > A complete example of running `microbetag` locally using the `modelseedpy` library for GEM reconstruction with all the intermediate files produced can be found in the [`dev_io_microbetag`](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag) folder of the `user-bins` branch on the GitHub repo.
 > 
 > In the initial run, there are only 3 input files:
-> - the [`config.yml`][1] file; allows you to set all the relative parameters for `microbetag` to run
+> - the <a href="{{ site.url }}/microbetag/download/local/config.yml" download="config.yml"><code>config.yml</code></a> file; allows you to set all the relative parameters for `microbetag` to run
+<!-- [`config.yml`][1] file; allows you to set all the relative parameters for `microbetag` to run -->
 > - an **abundance table** (following the format of the Cytoscape app tutorial) called [`thirty_Samples.tsv`][2], and
 > - its corresponding edge list ([`edgelist.csv`][3])
 >
@@ -383,12 +384,12 @@ One may provide just an abundance table and the corresponding bins/MAGs sequence
 
 In case you do not already have GENREs for your bins/MAGs, `microbetag` supports two ways for the reconstruction of metabolic networks: 
 - using `modelseedpy` that required RAST annotation of your bins and are based on the [ModelSEED resource](https://modelseed.org) and identifiers, 
-- using `carveme` that can be performed in both DNA and protein sequences, make use of the [BiGG identifiers](http://bigg.ucsd.edu) and required a Gurobi license (see section []())
+- using `carveme` that can be performed in both DNA and protein sequences, make use of the [BiGG identifiers](http://bigg.ucsd.edu) and required a Gurobi license (see section [GEM reconstruction step](./local.md#gem-reconstruction-step))
 This can be a rather time-consuming step, especially using `modelseedpy`.
 
 As you may already have gene predictions for your bins/MAGs, or even protein annotations, you may also provide them to `microbetag`, so those steps can be skipped. 
-If you have already built metabolic networks, then in case they are based on either ModelSEED or BiGG identifiers, you may provide them so seed scores and seed complementarity can be 
-computed directly on the, 
+If you have already built metabolic networks, then in case they are based on either ModelSEED or BiGG identifiers, you may provide them so seed scores and seed complementarities can be 
+computed directly on them.
 
 
 
