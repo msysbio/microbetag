@@ -48,14 +48,14 @@ Open Cytoscape and then click on `File > Import > Network from file` and browse 
 
 You will then see another pop up box like this: 
 
-![init](/assets/images/app/prep_import_Network.png) 
+![init]({{ site.baseurl }}/assets/images/app/prep_import_Network.png) 
 
 Cytoscape needs always to have a *source* and a *target* node, even in cases of undirected graphs, such as the co-occurrence networks.
 Therefore, click on the first two column headers and set one as the source and the other as the target by clicking on the corresponding symbols: 
 
-![source](/assets/images/app/source.png)
+![source]({{ site.baseurl }}/assets/images/app/source.png)
 
-![target](/assets/images/app/target.png)
+![target]({{ site.baseurl }}/assets/images/app/target.png)
 
 
 Finally, you need to always set the column that `microbetag` will consider as your weight column, in this case, we have only one column with a weight however in cases that a network is not built like that, may have several. 
@@ -63,7 +63,7 @@ Thus, you need to click on the corresponding column header and set it as `microb
 Now `microbetag` is able to recognize which column to handle as the *weight* of your network.
 By clicking `OK` your network will be shown on Cytoscape's main panel. 
 
-![weight](/assets/images/app/weight.png)
+![weight]({{ site.baseurl }}/assets/images/app/weight.png)
 
 Now you are ready to import your abundance table. 
 Go to `Apps > MGG > Import Data > Import Abundance Data` and browse to the `GTDB_tax_assigned_abundance_table.tsv` file returned from the `microbetag_prep` running.
@@ -77,7 +77,7 @@ Once you make sure you have loaded what you wanted, you are ready to ask `microb
 Just click `Apps > MGG > Get Annotated Network`.
 Set the parameters as discussed in the [*Run `microbetag` from a co-occurrence network*](../mgg_tutorials/from_net.md) section.
 
-![params](/assets/images/app/prepSettings.png)
+![params]({{ site.baseurl }}/assets/images/app/prepSettings.png)
 
 
 Then, click `OK`. 
@@ -96,8 +96,8 @@ on `File > Import > Network from file`.
 
 Make sure you enable the MGG style and cyPanels:
 
-![style](/assets/images/app/visualStyle.png)
-![panels](/assets/images/app/show_panels.png)
+![style](/{{ site.baseurl }}assets/images/app/visualStyle.png)
+![panels]({{ site.baseurl }}/assets/images/app/show_panels.png)
 
 
 

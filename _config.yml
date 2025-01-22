@@ -16,45 +16,43 @@
 title: "microbetag"
 description: A place with the background and the *how to* of the *microbetag* tool - currently in production
 
-# baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 # url: "https://just-the-docs.com" # the base hostname & protocol for your site, e.g. http://example.com
 repository: just-the-docs/just-the-docs # for github-metadata
 
-permalink: pretty
+permalink:
+  pretty
 
- # Build settings
+  # Build settings
 markdown: kramdown
 
-
-
-
 exclude:
- # from https://github.com/jekyll/jekyll/blob/master/lib/site_template/_config.yml:
-   - .sass-cache/
-   - .jekyll-cache/
-   - gemfiles/
-   - Gemfile
-   - Gemfile.lock
-   - node_modules/
-   - vendor/bundle/
-   - vendor/cache/
-   - vendor/gems/
-   - vendor/ruby/
- # specific to the theme website:
-   - bin/
-   - lib/
-   - "*.gemspec"
-   - "*.gem"
-   - LICENSE.txt
-   - package.json
-   - package-lock.json
-   - Rakefile
-   - README.md
-   - CODE_OF_CONDUCT.md
-   - docker-compose.yml
-   - Dockerfile
- # theme test code
-   - fixtures/
+  # from https://github.com/jekyll/jekyll/blob/master/lib/site_template/_config.yml:
+  - .sass-cache/
+  - .jekyll-cache/
+  - gemfiles/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules/
+  - vendor/bundle/
+  - vendor/cache/
+  - vendor/gems/
+  - vendor/ruby/
+  # specific to the theme website:
+  - bin/
+  - lib/
+  - "*.gemspec"
+  - "*.gem"
+  - LICENSE.txt
+  - package.json
+  - package-lock.json
+  - Rakefile
+  - README.md
+  - CODE_OF_CONDUCT.md
+  - docker-compose.yml
+  - Dockerfile
+  # theme test code
+  - fixtures/
 
 # Set a path/url to a logo that will be displayed instead of the title
 #logo: "/assets/images/just-the-docs.png"
@@ -123,10 +121,8 @@ nav_external_links:
   - title: microbetag docs on GitHub
     url: https://github.com/hariszaf/microbetag/tree/gh-pages
 
-
 # # Set favicon icon
 # favicon_ico: assets/images/favicon.ico
-
 
 # Footer content
 # appears at the bottom of every page's main content
@@ -135,13 +131,11 @@ nav_external_links:
 back_to_top: true
 back_to_top_text: "Back to top"
 
-footer_content: "Copyright &copy; 2017-2020 Patrick Marsceill. Distributed by an <a href=\"https://github.com/just-the-docs/just-the-docs/tree/main/LICENSE.txt\">MIT license.</a> <a href=\"https://www.netlify.com/\">This site is powered by Netlify.</a>"
+footer_content: 'Copyright &copy; 2017-2020 Patrick Marsceill. Distributed by an <a href="https://github.com/just-the-docs/just-the-docs/tree/main/LICENSE.txt">MIT license.</a> <a href="https://www.netlify.com/">This site is powered by Netlify.</a>'
 
 # Footer last edited timestamp
 last_edit_timestamp: true # show or hide edit time - page must have `last_modified_date` defined in the frontmatter
 last_edit_time_format: "%b %e %Y at %I:%M %p" # uses ruby's time format: https://ruby-doc.org/stdlib-2.7.0/libdoc/time/rdoc/Time.html
-
-
 
 # Footer "Edit this page on GitHub" link text
 gh_edit_link: true # show or hide edit this page link
