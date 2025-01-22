@@ -1,5 +1,5 @@
 ---
-# layout: default
+layout: default
 title: Cytoscape tutorials
 nav_order: 3
 has_children: true
@@ -8,7 +8,7 @@ permalink: /docs/mgg_tutorials
 usemath: true
 ---
 
-![microbetag CyApp](../assets/images/cyApp.png){: width=25% }
+![microbetag CyApp](/assets/images/cyApp.png){: width=25% }
 
 
 
@@ -46,7 +46,7 @@ Make sure **you first lunch Cytoscape** and then visit Cytoscape Appstore.
 If you have already visited the MGG page on Cytoscape Appstore, **lunch Cytoscape and refresh the Cytoscape Appstore page**.
 You should now see an **Install** button.
 
-![mgg install](../assets/images/install_button_mgg.png)
+![mgg install](/assets/images/install_button_mgg.png)
 
 By clicking it, it will be automatically integrated on your Cytoscape. 
 If you visit Cytoscape Appstore and you have not lunched Cytoscape, you will see a *Download* button instead of the *Install*.
@@ -57,7 +57,7 @@ You can also get `MGG` from within Cytoscape by clicking on the `Apps` tab of th
 
 Once the app is installed, you may click on the `Apps` tab, and you will find *MGG* there.
 
-![mgg_overall](../assets/images/app/mainMenu.png)
+![mgg_overall](/assets/images/app/mainMenu.png)
 
 
 

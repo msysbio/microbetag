@@ -62,7 +62,7 @@ The taxonomy assigned to each OTU/ASV (amplicon data) or bin (shotgun data) on t
 As an example, here is how the FAPROTAX output looks like for the **denitrification** function for three samples (columns): 
 
 
-![faprotax example denitrif](../../assets/images/faprotax_denitrification.png)
+![faprotax example denitrif](/assets/images/faprotax_denitrification.png)
 
 FAPROTAX returns only the ASVs present in the (user provided) abundance table that are related to the **denetrification** function.
 Numbers represent the ASV abundance in each sample. 
@@ -93,7 +93,7 @@ For example `NOB` : *species under study is part of the clade of NOB*.
 
 Here is an example of how two GTDB genomes look like: 
 
-![phen traits example](../../assets/images/phen_traits_fmt.png)
+![phen traits example](/assets/images/phen_traits_fmt.png)
 
 
 microbetag annotates all network nodes (corresponding to OTUs/ASVs/bins that have been identified to species/strain level) mapped to a representative GTDB genome with these functional traits and scores.
@@ -113,7 +113,7 @@ Here is an example where Acidiferrobacter sp. SPIII3
 (GCA_003184265.1) potentially shares K01626 to complete the Shikimate pathway (M00022) of
 Prochlorococcus marinus AS9601 (GCA_000015645.1).
 
-![complementarity in kegg example](../../assets/images/kegg_example.png){: width=80% }
+![complementarity in kegg example](/assets/images/kegg_example.png){: width=80% }
 
 As several genomes can be mapped to the same NCBI Taxonomy id, microbetag returns all possible complementarities
 between all the donor's and the beneficary's genomes. 
@@ -127,7 +127,7 @@ microbetag annotates all **edges** where both nodes represent species/strain lev
 Based on Borenstein *et al.* (2008) [5] a metabolic network's “seed set” is the set of compounds that, based on the network topology, are exogenously acquired".
 Here is an example (based on the [Borenstein lab webpage](https://borensteinlab.sites.tau.ac.il/items-1/netseed)):
 
-![seed concept](../../assets/images/seed_concept_example.png)
+![seed concept](/assets/images/seed_concept_example.png)
 
 
 Node A is a seed, as it cannot be activated by any other node in the network.
@@ -162,7 +162,7 @@ $$
 
 Here is a toy example to calculate the two indices as shown in the PhyloMInt paper:
 
-![seed scores example](../../assets/images/seed-scores-examples.png)
+![seed scores example](/assets/images/seed-scores-examples.png)
 Figure from the [PhyloMInt paper](https://doi.org/10.1371/journal.pcbi.1007951.g006).
 <!-- In metabolic pathway A, SeedSetA consists of metabolites A, F, G, and H; 
 metabolites F, G, and H form a seed group. 
@@ -193,13 +193,13 @@ Seed and non-seed sets were first exported as sets of ModelSEED compounds, since
 Then, compounds were mapped to KO terms and only those participating in KEGG modules were considered for the overlap analysis.
 The effect of such a metabolic interaction for $species_A$ can be visualized through KEGG maps that visualize relative pathways. 
 For example, in the following map we see that O-Acetyl-L-serine can be provided and support an alternative way to the beneficiary species for producing L-cysteine.
-![seedCompl](../../assets/images/app/seedKeggMap.png)
+![seedCompl](/assets/images/app/seedKeggMap.png)
 
 
 
 
 
-<!-- ![netcooperate seed example](../../assets/images/seed_network_example.png)
+<!-- ![netcooperate seed example](/assets/images/seed_network_example.png)
 
 In this example, we have a pair of simple networks. The top network has two seed groups, one of size one and the other size three (circled with a double line). The bottom network has three seed groups, two singletons, and one two-node seed group (circled with a double line). Seeds of one network present in the other are circled (solid lines: present, but not a seed of, the second network; dashed lines: present as a seed of the second network). The Biosynthetic Support Score of the top network on the bottom (i.e. treating the top as a parasite of the bottom) is 1.0. Note that all seed groups (but not all seeds) are present in the bottom network, and that node F is a seed of both networks. The Metabolic Complementarity Index of the top network on the bottom (i.e. treating both networks as co-occurring microbes) is 0.5. Because node F is a seed of the bottom network, it is not complementary to the top network’s seed set. -->
 

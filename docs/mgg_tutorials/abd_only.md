@@ -32,33 +32,29 @@ If your data include more sequencing records, then you will have to use the [`mi
 
 Once clicking on *Import Data* you currently see only the *Import Abundance Data* option.
 
-<!-- ![load_data](../assets/images/app/importData.png)  -->
-![import_abundance](../../assets/images/app/importAbundData.png)
+![import_abundance](/assets/images/app/importAbundData.png)
 
 
 By clicking on it, a pop-up box will ask you to provide your abundance table.
 Select it with you mouse and then open it. 
 
-<!-- ![open_data](../assets/images/app/openFile.png) -->
-![open_data](../../assets/images/app/Open_abund.png)
+![open_data](/assets/images/app/Open_abund.png)
 
 You can view the imported data by clicking on the *Check Data Files* feature, for the case of the abundance table:
 
-![check_abund_option](../../assets/images/app/checkOptionAbundData.png)
+![check_abund_option](/assets/images/app/checkOptionAbundData.png)
 
 Once clicking that, a table will pop up where you can go through the data you have imported as the abundance table. 
 Keep in mind that in case you have more than a few samples, or your abundaces have a long number of digirs, you will need to double-click to a column at a time to be able to see its values. 
 
 
-<!--  -->
-
 You can now ask for a *microbetag-*annotated network by clicking on the corresponding feature:
 
-![get_annotated_network](../../assets/images/app/getaAnnotatedNet.png)
+![get_annotated_network](/assets/images/app/getaAnnotatedNet.png)
 
 Once clicking on that, a parameter-setting box will pop up, asking for values on a number of parameters **essential** for the successful network inference and their corresponding annotation.
 
-![settings](../../assets/images/app/parameters_no_net.png)
+![settings](/assets/images/app/parameters_no_net.png)
 
 For a thorough description of these parameters, please check the table on the [Run microbetag Cytoscape app](./mgg_totorials.md) tutorial as well as the relative [FAQs](../faq.md#setting-the-parameters-right).
 
@@ -80,13 +76,13 @@ We suggest you do the network inference step as well as the mapping to the GTDB 
 
 Once you set the parameters of your choice, you are ready to sent your query to the server by clicking *ok*.
 
-![send_data](../../assets/images/app/sendingDataToServer.png)
+![send_data](/assets/images/app/sendingDataToServer.png)
 
 
 
 After a few minutes (based on your data and the steps you have asked for) a *microbetag-*annotated network will pop up automatically on your Cytoscape instance.
 
-![annotated_net](../../assets/images/app/annotated_net_no_net.png)
+![annotated_net](/assets/images/app/annotated_net_no_net.png)
 
 
 To explore the annotated network continue with [*Investigating the annotations* tutorial](./roaming.md).

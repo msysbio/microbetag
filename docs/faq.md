@@ -55,7 +55,7 @@ In each iteration a **pair of taxa** is tested to be directly associated or not 
 Apparently, the abundance table is all FlashWeave cares about!
 The figure below comes from the Supplemental Information of the [FlashWeave paper](https://www.sciencedirect.com/science/article/pii/S2405471219302716#appsec3).
 
-![four_cases](../assets/images/flashweave_cases.png)
+![four_cases](/assets/images/flashweave_cases.png)
 
 
 ***Sensitive*** modes of FlashWeave use **full abundance** information (*"continuous"*), while fast modes (i.e., the `sensitive` parameter is not selected) work on discretized abundances.
@@ -63,7 +63,7 @@ As a rule-of-thumb, the `sensitive` module requires further computing resources 
 However, in other cases, especially when the number of samples is low, **not** choosing the `sensitive` mode can also lead to errors.
 This is because FlashWeave fails to infer any relationship at all, so there is no network for `microbetag` to annotate! :information_desk_person:
 
-![sens_hetero](../assets/images/sensitive_heterogeneous.png)
+![sens_hetero](/assets/images/sensitive_heterogeneous.png)
 
 The `heterogeneous` module (FlashWeaveHE) makes the assumption that zeroes in large, heterogeneous data sets are mostly structural. 
 Thus, it only considers samples in which both OTUs/ASVs have a non-zero abundance as reliable for association prediction. 

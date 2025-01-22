@@ -229,7 +229,7 @@ If you feel confident with the terminal, you can do so by `nano`, `vim` or any o
 Otherwise, you can always go to the `my_microbetag_prep` folder and double-click on the `config.yml` file.
 In this case, you will see something like:
 
-![gedit](../../assets/images/config.png)
+![gedit](/assets/images/config.png)
 
 
 No matter how you edit the file, you need to make sure the following: 
