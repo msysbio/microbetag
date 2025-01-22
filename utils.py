@@ -5,28 +5,24 @@ Author:
     - Haris Zafeiropoulos
 """
 
-import os
-import re
-import sys
-import ast
+import os, re, sys
+import ast, shutil
 import json
 import time
 import cobra
-import shutil
 import pickle
 import random
+import logging
 import subprocess
 import itertools
+import config
+import pyshorteners
 import pandas as pd
+import networkx as nx
 from tqdm import tqdm
 import multiprocessing
+from typing import List
 from joblib import Parallel, delayed
-import logging
-# Set up custom logging format
-logging.basicConfig(
-    format='%(levelname)s: %(message)s',  # Define the format without "root:"
-    level=logging.WARNING  # Set the logging level
-)
 
 
 # Handling data related
@@ -72,7 +68,20 @@ class SetEncoder(json.JSONEncoder):
 
 def get_files_with_suffixes(directory, suffixes):
     """
+    Recursively retrieves files from a specified directory and its subdirectories
+    that have extensions matching a given list of suffixes.
 
+    Parameters:
+    directory (str): The root directory to start the search.
+    suffixes (list of str): A list of file suffixes (extensions) to match.
+                            Each suffix should include the dot (e.g., '.txt', '.csv').
+
+    Returns:
+    list of str: A list of full paths to files that match any of the specified suffixes.
+
+    Example:
+    >>> get_files_with_suffixes('/path/to/directory', ['.txt', '.csv'])
+    ['/path/to/directory/file1.txt', '/path/to/directory/subdir/file2.csv']
     """
     matching_files = []
     for root, _, files in os.walk(directory):
@@ -82,7 +91,7 @@ def get_files_with_suffixes(directory, suffixes):
     return matching_files
 
 
-def flatten(list_of_lists):
+def flatten(list_of_lists: List):
    """
    This function takes a list of lists and flattens it until it returns a list with
    all the components of the initial one.
@@ -94,7 +103,7 @@ def flatten(list_of_lists):
    return list_of_lists[:1] + flatten(list_of_lists[1:])
 
 
-def run_until_done(command):
+def run_until_done(command: str):
     """
     Function to run recursively a command until
     """
@@ -106,7 +115,7 @@ def run_until_done(command):
         run_until_done(command)
 
 
-def file_exists_and_nonzero(filename):
+def file_exists_and_nonzero(filename: str):
     """
     Check if a file exists and its size is nonzero.
 
@@ -119,7 +128,7 @@ def file_exists_and_nonzero(filename):
     return os.path.exists(filename) and os.path.getsize(filename) > 0
 
 
-def split_list(input_list, chunk_size):
+def split_list(input_list: List, chunk_size: int):
     """
     Split a list to sublists of a size.
     """
@@ -127,7 +136,7 @@ def split_list(input_list, chunk_size):
 
 
 # FlashWeave related
-def ensure_flashweave_format(conf):
+def ensure_flashweave_format(conf: config.Config):
     """
     Build an OTU table that will be in a FlashWeave-based format.
     """
@@ -144,7 +153,7 @@ def ensure_flashweave_format(conf):
     return 1
 
 
-def ensure_same_namespace_after_fw(conf):
+def ensure_same_namespace_after_fw(conf: config.Config):
     """
     [TODO] can be removed but let's wait
     Inconsistencies from D300244:bin_000023 in the abundance table to D300244.bin_000023 in FlashWeave.
@@ -155,8 +164,11 @@ def ensure_same_namespace_after_fw(conf):
     df1 = pd.DataFrame(bin_names.to_list(), columns=["bin_names"])
     net = pd.read_csv(conf.network, sep="\t", skiprows=2, header = None)
     bin_names_in_net = net.iloc[:,0]
+    logging.info("Bin names in net:"); logging.info(bin_names_in_net)
+
     df2 = pd.DataFrame(bin_names_in_net.to_list(), columns=["bin_names_in_net"])
-    diff_chars = set()
+    diff_chars = []
+
     for index, row in df1.iterrows():
         try:
             id1 = row['bin_names']
@@ -164,15 +176,18 @@ def ensure_same_namespace_after_fw(conf):
         except:
             continue
         if id1 != id2:
-            diff_chars = find_id_differences(id1, id2)
-            # if diff_chars:
-            #     print(f"Difference found: '{diff_chars}'")
-            # else:
-            #     print(f"IDs '{id1}' and '{id2}' are identical")
+            diff_chars.append(find_id_differences(id1, id2))
+
     # We need to replace the bin names network file with the delimiter of the abundance table file
-    if len(diff_chars) > 0:
-        for case in diff_chars:
-            os.system('sed -i "s/{}/{} /g" {}'.format(case[1], case[0], conf.network))
+    diff_chars = [item for item in diff_chars if item is not None]
+    unique_diff_chars = [list(x) for x in set(tuple(sublist) for sublist in diff_chars)]
+    if len(unique_diff_chars) > 0:
+        for case in unique_diff_chars:
+            try:
+                logging.info("case", case)
+                os.system('sed -i "s/{}/{} /g" {}'.format(case[1], case[0], conf.network))
+            except:
+                logging.warn(case, "was found not to be as in the abundance table but not fixed")
     return 1
 
 
@@ -186,6 +201,8 @@ def find_id_differences(id1, id2):
     """
     # Find indices where the IDs differ
     diff_indices = [i for i, (c1, c2) in enumerate(zip(id1, id2)) if c1 != c2]
+    logging.info(id1, id2)
+    logging.info(diff_indices)
     # Split IDs based on the differing indices
     id1_parts = [id1[:i] for i in diff_indices + [len(id1)]]
     id2_parts = [id2[:i] for i in diff_indices + [len(id2)]]
@@ -193,7 +210,7 @@ def find_id_differences(id1, id2):
     if id1_parts[:-1] == id2_parts[:-1]:
         diff_chars = [(c1, c2) for c1, c2 in zip(id1_parts[-1], id2_parts[-1]) if c1 != c2]
         return diff_chars
-    return None  # IDs are identical
+    # return None  # IDs are identical
 
 
 # Annotation related
@@ -245,7 +262,7 @@ def kegg_annotation(faa, basename, out_dir, db_dir, ko_dic, threads):
     threads:
     """
     logging.info('KEGG annotation for %s', basename)
-    paras = []
+    params = []
     for knum, info in ko_dic.items():
 
         output = os.path.join(out_dir, knum + '.' + str(basename) + '.hmmout')
@@ -269,18 +286,20 @@ def kegg_annotation(faa, basename, out_dir, db_dir, ko_dic, threads):
             threshold_method = '-E'
             outtype = '--tblout'
 
-        paras.append((threshold_method, info[0], outtype, output, hmm_db, faa))
+        params.append((threshold_method, info[0], outtype, output, hmm_db, faa))
 
-    logging.info("Number of KEGG processes to be performed: %s", str(len(paras)))
+    logging.info("Number of KEGG processes to be performed: %s", str(len(params)))
     process = multiprocessing.Pool(threads)
-    process.map(hmmsearch, paras)
+    process.map(hmmsearch, params)
 
 
-def hmmsearch(paras):
+def hmmsearch(params: List):
     """
     Function to invoke hmmsearch software.
+
+    params: list of parameters to be passed to the hmmsearch function.
     """
-    (threshold_method, threshold, outtype, output, hmm_db, faa) = paras
+    (threshold_method, threshold, outtype, output, hmm_db, faa) = params
     cmd_para = [
         'hmmsearch',
         threshold_method, threshold,
@@ -297,9 +316,9 @@ def hmmsearch(paras):
         logging.warning("Something wrong with KEGG hmmsearch!")
 
 
-def ko_list_parser(ko_list):
+def ko_list_parser(ko_list: str):
     """
-    parse ko_list file into a dict object - based on DiTing
+    Parses ko_list file into a dict object - based on DiTing
 
     :param ko_list: path of the file ko_list
     :return: a dictionary mapping knum to threshold and score_type
@@ -365,7 +384,7 @@ def load_merged_ko_file(merged_ko):
 
 
 # Pathway complementarity related
-def build_kegg_url(kegg_map, clean_path, missing_kos):
+def build_kegg_url(kegg_map, clean_path, missing_kos, shortener=None):
     """
     Build url to colorify the related to the module kegg map based on the KO terms
     of the beneficiary (pink) and those it gets from the donor (green)
@@ -374,8 +393,6 @@ def build_kegg_url(kegg_map, clean_path, missing_kos):
     color_mapp_base_url = "https://www.kegg.jp/kegg-bin/show_pathway?"
     present_kos_color   = "%09%23EAD1DC/"
     complemet_kos_color = "%09%2300A898/"
-    print("clean_path:", clean_path)
-    print("missing_path", missing_kos)
     # Make a url pointing at a colored kegg map based on what's on the beneficiary's genome and what it gets as complement from the donor
     beneficiarys_kos = ""
     complements_kos  = ""
@@ -387,9 +404,12 @@ def build_kegg_url(kegg_map, clean_path, missing_kos):
     try:
         # [NOTE] In rare cases, the module might not have a related map, thus kegg_map would be of NoneType and the join() would return an error.
         url_ko_map_colored = "".join([color_mapp_base_url, kegg_map,  "/", beneficiarys_kos, complements_kos])
+        if shortener is not None:
+            logging.info("Shortening the URL.")
+            url_ko_map_colored = shortener.tinyurl.short(url_ko_map_colored)
     except:
         url_ko_map_colored = "N/A"
-    print("url", url_ko_map_colored)
+
     return url_ko_map_colored
 
 
@@ -423,6 +443,7 @@ def export_pathway_complementarities(config, bins_kos_df):
 
     bin_kos_per_module = {}
     # Iterate over each column in the second dataframe
+    logging.info("Step 1, KOs related to a module present on each bin.")
     for bin_id in bins_kos_df.columns:
         bin_kos_per_module[bin_id] = {}  # Initialize inner dictionary for each bin
         for module, definition_ko_terms in definitions_df.items():
@@ -444,6 +465,8 @@ def export_pathway_complementarities(config, bins_kos_df):
 
     # If alts.json not available
     if not os.path.exists(config.alts_file):
+
+        logging.info("Step 2, build alts.json file.")
 
         # Iterate through bins
         bins_alternatives = {}
@@ -502,8 +525,18 @@ def export_pathway_complementarities(config, bins_kos_df):
     # Step 3: extract potential complementarities from other bins
     if not os.path.exists(config.compl_file):
 
+        logging.info("Step 3. Build pathCompls.json file.")
+        unique_url_input = {}
+        # Init shortener
+        shortener = pyshorteners.Shortener() if config.tinyurl else None
+        logging.info("======================SHORTENER IN PATH COMPL ==================")
+        logging.info(shortener)
+        logging.info("======================")
+
         complements = {}
-        for beneficiary_bin_id, all_bin_module_alternatives in bins_alternatives.items():
+        for beneficiary_bin_id, all_bin_module_alternatives in tqdm(
+            bins_alternatives.items(), desc="Processing bins", unit="bin"
+        ):
             complements[beneficiary_bin_id] = {}
             for donor_bin_id in bin_kos_per_module:
                 complements[beneficiary_bin_id][donor_bin_id] = []
@@ -513,16 +546,24 @@ def export_pathway_complementarities(config, bins_kos_df):
                         is_subset = set(missing_kos_for_alternative).issubset(set(donors_kos_relativ_to_module))
                         if is_subset:
                             alternative = ast.literal_eval(alternative)
-                            # beneficiarys_kos_for_alt = set(alternative) - set(missing_kos_for_alternative)
-                            try:
-                                module_map = module_to_map[module]
-                                url = build_kegg_url(module_map, list(alternative), list(set(missing_kos_for_alternative)))  ## used to be: beneficiarys_kos_for_alt
-                            except:
-                                url = ""
+                            pc_comb = (module, tuple(missing_kos_for_alternative), tuple(alternative))
+                            if pc_comb not in unique_url_input:
+                                try:
+                                    module_map = module_to_map[module]
+                                    url = build_kegg_url(module_map,
+                                                        list(alternative),
+                                                        list(set(missing_kos_for_alternative)),
+                                                        shortener)
+                                except:
+                                    url = ""
+                                    pass
+                                unique_url_input[pc_comb] = url
+
+                            # Build list with the complete complement
                             pot_compl = [module,
                                         missing_kos_for_alternative,
                                         alternative,
-                                        url
+                                        unique_url_input[pc_comb]
                                         ]
                             complements[beneficiary_bin_id][donor_bin_id].append(pot_compl)
         # Write the pathCompls.json file
@@ -534,7 +575,7 @@ def export_pathway_complementarities(config, bins_kos_df):
 
 
 # GENRE related
-class build_genres():
+class GEMSReconstruction():
     """
     Class to first RAST annotate and the build Genome Scale Metabolic Reconstructions
     using modelseedpy
@@ -693,10 +734,11 @@ class build_genres():
         if self.config.input_for_recon_type == "bins_fasta":
             gene_predictor_path = self.config.prodigal if self.config.gene_predictor == "prodigal" else self.config.reconstructions
             faa_files = [
-                os.path.join(gene_predictor_path, file)
-                for file in os.listdir(gene_predictor_path)
-                if file.endswith("faa")
+                os.path.join(gene_predictor_path, tfile)
+                for tfile in os.listdir(gene_predictor_path)
+                if tfile.endswith(".faa")
             ]
+            logging.info(faa_files)
             self.run_carve(faa_files)
 
         elif self.config.input_for_recon_type in ["coding_regions", "proteins_faa"]:
@@ -707,17 +749,24 @@ class build_genres():
             self.run_carve(faa_files, dna=self.config.input_for_recon_type == "coding_regions")
 
     def run_carve(self, faa_files, dna=False):
+        """
+        Build a GEM using carveme for a list of
+        """
         for faa in faa_files:
             bin_id = os.path.splitext(os.path.basename(faa))[0]
             xml = os.path.join(self.config.genres, f"{bin_id}.xml")
             carve_params = ["carve", "--solver", "gurobi", "-o", xml]
             if os.path.exists(xml) and os.path.getsize(xml) > 0:
-                logging.info("An .xml file for this bin is already available. This will be used for seed complementarities and carve step will be skiped.")
+                logging.info("""
+                An .xml file for this bin is already available.
+                This will be used for seed complementarities and carve step will be skiped."""
+                )
                 continue
             if dna:
                 carve_params.append("--dna")
             carve_params.append(faa)
             carve_command = " ".join(carve_params)
+
             os.system(carve_command)
 
     def fgs_annotate_genomes(self):
@@ -785,10 +834,22 @@ def run_phylomint(config):
     os.system(phylomint_cmd)
 
 
-class export_seed_complementarities():
+class ExportSeedComplementarities():
     """
     Class to  export seed complements.
     Needs a config object to initiate it.
+
+    # conda activate microbetag
+    import yaml
+    from config import Config
+    from utils import ExportSeedComplementarities
+
+    config_file = "tests/dev_io_microbetag/config.yml"
+    with open(config_file, 'r') as yaml_file:
+        config = Config(yaml.safe_load(yaml_file), config_file)
+
+    seed_complements = ExportSeedComplementarities(config)
+    seed_complements.update()
     """
     def __init__(self, config):
         self.seeds = config.seeds
@@ -898,7 +959,7 @@ class export_seed_complementarities():
             updated_nonSeeds[model_id] = models_nonSeeds
 
             s2 = time.time()
-            logging.info(str(s2-s1), "s{% load econds for a .xm_tags %}l")
+            logging.info(f"{s2-s1} seconds for a .xm_tags load")
 
         logging.info("Update function is done and about to save updated json files.")
 
@@ -1134,7 +1195,7 @@ def order_seed_complements(r):
     return sorted_data
 
 
-def build_url_with_seed_complements(seed_complements, nonseeds, kmap):
+def build_url_with_seed_complements(seed_complements, nonseeds, kmap, shortener=None):
     base_url = "https://www.kegg.jp/kegg-bin/show_pathway?"
     url = "".join([base_url, kmap]) + "/"
     # present_compounds_color = "%09%23ff0000/"
@@ -1146,7 +1207,49 @@ def build_url_with_seed_complements(seed_complements, nonseeds, kmap):
         url += compound + present_compounds_color
     for compound in seed_complements:
         url += compound + complemet_compounds_color
+    if shortener is not None:
+        logging.info("Shortening the URL.")
+        url =  shortener.tinyurl.short(url)
     return url
+
+
+# Base .cx
+def build_edge_list(edgelist, metadata_file=None):
+    """
+    Read an edge list and build a dataframe with the corresponding NCBI IDs for each pair,
+    if and only if both OTUs have been mapped to an NCBI tax ID.
+    NOTE: edge_list_of_ncbi_ids() on microbetagApp
+
+    Parameters:
+    - edgelist (str): Path to the edge list file.
+    - metadata_file (str, optional): Path to the metadata file containing elements to exclude.
+
+    Returns:
+    - pd.DataFrame: Filtered edge list with NCBI tax IDs.
+    - pd.DataFrame (optional): Edges that were excluded based on metadata.
+    """
+    # Read the edge list into a DataFrame
+    pd_edgelist = pd.read_csv(edgelist, sep="\t", skiprows=2, header=None, names=["node_a", "node_b", "score"])
+
+    if metadata_file:
+        # Read the metadata file and create a list of elements to exclude
+        elements_to_exclude = pd.read_csv(metadata_file, sep="\t", header=None, index_col=0).index.to_list()
+
+        # Define a mask to filter out rows with nodes in the exclusion list
+        mask = ~pd_edgelist.apply(lambda row: any(env in row['node_a'] or env in row['node_b'] for env in elements_to_exclude), axis=1)
+
+        # Separate DataFrame based on the mask
+        pd_filtered_edgelist = pd_edgelist[mask].copy()
+        pd_metadata_edges = pd_edgelist[~mask].copy()
+
+        # Create 'pair-of-taxa' column for filtered edges
+        pd_filtered_edgelist["pair-of-taxa"] = pd_filtered_edgelist['node_a'] + ":" + pd_filtered_edgelist["node_b"]
+
+        return pd_filtered_edgelist, pd_metadata_edges
+    else:
+        # Return the original edge list if no metadata file is provided
+        pd_edgelist["pair-of-taxa"] = pd_edgelist['node_a'].astype(str) + ":" + pd_edgelist["node_b"]
+        return pd_edgelist
 
 
 # Annotated .cx network related
@@ -1202,47 +1305,82 @@ def read_cyjson(filename, direction=False):
     return graph
 
 
-def build_base_graph(edgelist_as_a_list_of_dicts, microb_id_taxonomy, cfg):
+def get_edgelist(conf):
+    # Load edgelist
+    if conf.flashweave:
+        edgelist = pd.read_csv(conf.network, sep="\t", skiprows=2, header=None)
+    else:
+        edgelist = pd.read_csv(conf.network, sep="\t")
+    return edgelist
+
+
+def build_base_graph(conf):  # edgelist_as_a_list_of_dicts, microb_id_taxonomy,
     """
     Runs if manta has been asked for from the user.
     manta gets a .cyjs input file.
     This function builds an non-annotated graph using only the scores and the taxonomies of the taxa of the network.
     It get a list of dictionaries where each dictionary is an edge and returns the basenetwork in a .cyjs format.
     """
+
+    edgelist = get_edgelist(conf)
+    edgelist.columns = ["node_a", "node_b", "microbetag::weight"]
+    edgelist_as_a_list_of_dicts = edgelist.to_dict(orient="records")
+    abundance_table_df = pd.read_csv(conf.abundance_table, sep="\t")
+    microb_id_taxonomy = abundance_table_df[ [abundance_table_df.columns[0], abundance_table_df.columns[-1] ]]
+    microb_id_taxonomy.columns = ["sequence_id", "taxonomy"]
+
     base_network = {}
     base_network["elements"] = {}
     nodes = []
     edges = []
     processed_nodes = set()
     counter = 1
+
     for edge in edgelist_as_a_list_of_dicts:
-        taxon_a = edge["node_a"]  # microbetag_id
-        taxonomy_a = microb_id_taxonomy.loc[microb_id_taxonomy['microbetag_id'] == taxon_a, 'taxonomy'].item()
-        if taxon_a not in processed_nodes:
-            processed_nodes.add(taxon_a)
-            node_a = build_a_base_node(taxon_a, microb_id_taxonomy, cfg)
+        # Node A
+        node_name_a = edge["node_a"]
+        is_taxon = False
+        if node_name_a in conf.seq_ids:
+            taxonomy_a = microb_id_taxonomy.loc[microb_id_taxonomy['sequence_id'] == node_name_a, 'taxonomy'].item()
+            is_taxon = True
+        if node_name_a not in processed_nodes:
+            processed_nodes.add(node_name_a)
+            node_a = build_a_base_node(node_name_a, microb_id_taxonomy, is_taxon)
             nodes.append(node_a)
-        taxon_b = edge["node_b"]
-        taxonomy_b = microb_id_taxonomy.loc[microb_id_taxonomy['microbetag_id'] == taxon_b, 'taxonomy'].item()
-        if taxon_b not in processed_nodes:
-            processed_nodes.add(taxon_b)
-            node_b = build_a_base_node(taxon_b, microb_id_taxonomy, cfg)
+
+        # Node B
+        node_name_b = edge["node_b"]
+        is_taxon = False
+        if node_name_b in conf.seq_ids:
+            try:
+                taxonomy_b = microb_id_taxonomy.loc[microb_id_taxonomy['sequence_id'] == node_name_b, 'taxonomy'].item()
+            except:
+                print(node_name_b)
+                raise ValueError("F")
+            is_taxon = True
+
+        if node_name_b not in processed_nodes:
+            processed_nodes.add(node_name_b)
+            node_b = build_a_base_node(node_name_b, microb_id_taxonomy, is_taxon)
             nodes.append(node_b)
+
+        # Edge A-B
         new_edge = {}
         new_edge["data"] = {}
         new_edge["data"]["id"] = str(counter)
-        new_edge["data"]["source"] = taxon_a
-        new_edge["data"]["source-ncbi-tax-id"] = microb_id_taxonomy[microb_id_taxonomy["seqId"] == taxon_a]["ncbi_tax_id"]
-        new_edge["data"]["target"] = taxon_b
-        new_edge["data"]["target-ncbi-tax-id"] = microb_id_taxonomy[microb_id_taxonomy["seqId"] == taxon_b]["ncbi_tax_id"]
+        new_edge["data"]["source"] = node_name_a
+        new_edge["data"]["target"] = node_name_b
         new_edge["data"]["selected"] = False
-        new_edge["data"]["shared_name"] = taxonomy_a.split(";")[-1] + "-" + taxonomy_b.split(";")[-1]
+
+        new_edge["data"]["shared_name"] = node_name_a.split(";")[-1] + "-" + node_name_b.split(";")[-1]
+
         new_edge["data"]["SUID"] = str(counter)
         new_edge["data"]["name"] = "co-occurrence"
-        new_edge["data"]["weight"] = float(edge["score"])
+        new_edge["data"]["weight"] = float(edge["microbetag::weight"])
         new_edge["selected"] = False
         edges.append(new_edge)
         counter += 1
+
     # Ensure .cyjs format
     base_network["elements"]["nodes"] = nodes
     base_network["elements"]["edges"] = edges
@@ -1252,21 +1390,26 @@ def build_base_graph(edgelist_as_a_list_of_dicts, microb_id_taxonomy, cfg):
     return base_network
 
 
-def build_a_base_node(taxon, map_seq, cfg):
+def build_a_base_node(node_name, map_seq, is_taxon: bool):
     """
     Builds a node for the base network.
     [TODO] Remove not necessary entries.
     """
-    case = map_seq[map_seq["seqId"] == taxon]
     node = {}
     node["data"] = {}
-    node["data"]["id"] = taxon
+    node["data"]["id"] = node_name
     node["data"]["selected"] = False
-    node["data"]["taxonomy"] = case["taxonomy"].item()
-    node["data"]["degree_layout"] = 1
-    node["data"]["name"] = case["taxonomy"].item().split(cfg["delimiter"])[-1]
-    node["data"]["GTDB-representative"] = case["gtdb_gen_repr"]
-    node["data"]["taxonomy-level"] = case["ncbi_tax_level"].item()
+
+    if is_taxon:
+        case = map_seq[map_seq["sequence_id"] == node_name]
+        node["data"]["taxonomy"] = case["taxonomy"].item()
+        node["data"]["name"] = case["taxonomy"].item().split(";")[-1]
+        try:
+            node["data"]["GTDB-representative"] = case["gtdb_gen_repr"]
+        except:
+            logging.info("Custom genome, thus no GTDB one used for predictions.")
+            pass
+
     return node
 
 

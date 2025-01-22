@@ -14,6 +14,11 @@ Essential parameters:
 
 """
 
+
+"""
+DEPRECATED
+"""
+
 # [TODO] Make flashweave running with 2 workers ( -p 2 ); change ARGS accordingly
 
 # import flashweave
@@ -25,6 +30,9 @@ sensitive = parse(Bool, ARGS[3])
 heterogeneous = parse(Bool, ARGS[4])
 metadata = parse(Bool, ARGS[5])
 
+
+println("HELLO FRIEND FROM FLASHWEAVE SCRIPT", flush=true)
+
 if metadata
 
    meta_data_path     = ARGS[6]
@@ -34,7 +42,7 @@ if metadata
                                  sensitive = sensitive,
                                  heterogeneous = heterogeneous,
                                  transposed = true,
-				 n_obs_min = 3
+                                 n_obs_min = 3
                               )
 
 else
