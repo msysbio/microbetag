@@ -16,9 +16,9 @@
 title: "microbetag"
 description: A place with the background and the *how to* of the *microbetag* tool - currently in production
 
-baseurl: "" # the subpath of your site, e.g. /blog
-# url: "https://just-the-docs.com" # the base hostname & protocol for your site, e.g. http://example.com
-repository: just-the-docs/just-the-docs # for github-metadata
+baseurl: "/microbetag" # the subpath of your site, e.g. /blog
+url: "https://hariszaf.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+repository: hariszaf/microbetag # for github-metadata
 
 permalink:
   pretty
