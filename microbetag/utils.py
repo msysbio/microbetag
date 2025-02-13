@@ -1,0 +1,362 @@
+"""
+Aim:
+    Utils for the microbetag pipeline
+Author:
+    - Haris Zafeiropoulos
+"""
+import os, re
+import json
+import time
+import random
+import logging
+import glob
+import pandas as pd
+from typing import List
+
+
+
+# Handling data related
+def get_library_version(library_name):
+    import pkg_resources
+    try:
+        version = pkg_resources.get_distribution(library_name).version
+        return version
+    except pkg_resources.DistributionNotFound:
+        return "Library not found"
+    except Exception as e:
+        return str(e)
+
+
+class SetEncoder(json.JSONEncoder):
+    """
+    Custom JSON encoder that handles serialization of Python sets.
+
+    This encoder extends the functionality of the standard JSONEncoder to support
+    serializing Python sets. JSON does not have a native representation for sets,
+    so this encoder converts sets to lists before serializing them.
+
+    Usage:
+        When serializing data to JSON using json.dump() or json.dumps(), specify
+        cls=SetEncoder to use this custom encoder.
+
+    References:
+        - json.JSONEncoder: https://docs.python.org/3/library/json.html#json.JSONEncoder
+    """
+    def default(self, obj):
+        """
+        Override the default method of JSONEncoder to handle serialization of sets.
+        Notes:
+            If the object is a set, it is converted to a list before serialization.
+            Otherwise, the default behavior of JSONEncoder.default() is used.        Notes:
+            If the object is a set, it is converted to a list before serialization.
+            Otherwise, the default behavior of JSONEncoder.default() is used.
+        """
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)
+
+
+def get_files_with_suffixes(directory, suffixes):
+    """
+    Recursively retrieves files from a specified directory and its subdirectories
+    that have extensions matching a given list of suffixes.
+
+    Parameters:
+    directory (str): The root directory to start the search.
+    suffixes (list of str): A list of file suffixes (extensions) to match.
+                            Each suffix should include the dot (e.g., '.txt', '.csv').
+
+    Returns:
+    list of str: A list of full paths to files that match any of the specified suffixes.
+
+    Example:
+    >>> get_files_with_suffixes('/path/to/directory', ['.txt', '.csv'])
+    ['/path/to/directory/file1.txt', '/path/to/directory/subdir/file2.csv']
+    """
+    matching_files = []
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if any(file.endswith(suffix) for suffix in suffixes):
+                matching_files.append(os.path.join(root, file))
+    return matching_files
+
+
+def flatten(list_of_lists: List):
+   """
+   This function takes a list of lists and flattens it until it returns a list with
+   all the components of the initial one.
+   """
+   if len(list_of_lists) == 0:
+      return list_of_lists
+   if isinstance(list_of_lists[0], list):
+      return flatten(list_of_lists[0]) + flatten(list_of_lists[1:])
+   return list_of_lists[:1] + flatten(list_of_lists[1:])
+
+
+def run_until_done(command: str):
+    """
+    Function to run recursively a command until
+    """
+    if os.system(command) == 0:
+        return 1
+    else:
+        time.sleep(random.randint(2, 10))
+        logging.warning("recurscive run of: %s", command)
+        run_until_done(command)
+
+
+def file_exists_and_nonzero(filename: str):
+    """
+    Check if a file exists and its size is nonzero.
+
+    Args:
+        filename (str): The path to the file.
+
+    Returns:
+        bool: True if the file exists and its size is nonzero, False otherwise.
+    """
+    return os.path.exists(filename) and os.path.getsize(filename) > 0
+
+
+def split_list(input_list: List, chunk_size: int):
+    """
+    Split a list to sublists of a size.
+    """
+    return [input_list[i:i + chunk_size] for i in range(0, len(input_list), chunk_size)]
+
+
+def find_id_differences(id1, id2):
+    """
+    Gets:
+        id1: bin name in the abundance table
+        id2: bin name in the network file
+    Returns:
+        diff_chars: (character_in_abundance_table, character_in_network_file)
+    """
+    # Find indices where the IDs differ
+    diff_indices = [i for i, (c1, c2) in enumerate(zip(id1, id2)) if c1 != c2]
+    logging.info(id1, id2)
+    logging.info(diff_indices)
+    # Split IDs based on the differing indices
+    id1_parts = [id1[:i] for i in diff_indices + [len(id1)]]
+    id2_parts = [id2[:i] for i in diff_indices + [len(id2)]]
+    # Check if the parts are the same
+    if id1_parts[:-1] == id2_parts[:-1]:
+        diff_chars = [(c1, c2) for c1, c2 in zip(id1_parts[-1], id2_parts[-1]) if c1 != c2]
+        return diff_chars
+
+
+def many_to_one_files(dir_with_files, merged_file):
+    """
+    Makes a single file out of all files in a directory by concatenating having rows of one after the other
+
+    """
+    command = " ".join([
+        "find", dir_with_files,
+        "-type", "f",
+        "-name", 'K*',
+        "-print0",
+        "|",
+        "xargs", "-0", "cat", ">", merged_file
+    ])
+    os.system(command)
+
+
+def ko_list_parser(ko_list: str):
+    """
+    Parses ko_list file into a dict object - based on DiTing
+
+    :param ko_list: path to the ko_list file that comes from the kofam database https://www.genome.jp/ftp/db/kofam/
+    :return: a dictionary mapping knum to threshold and score_type
+    :rtype: dict
+    """
+    ko_dic = {}  # { knum : [threshold, score_type] }
+    with open(ko_list) as fi:
+        next(fi)  # skip the first line (header)
+        for line in fi:
+            knum, threshold, score_type = line.split('\t')[0:3]
+            if threshold == '-':
+                continue
+            else:
+                ko_dic[knum] = [threshold, score_type]
+    return ko_dic
+
+
+def merge_ko(hmmout_dir, output):
+    """
+    Parses the KO<>.<bin>.hmmout files produced by the kegg_annotation() function
+    to create a single 3-column file (output) with the bin_id, the corresponding conting and the KO that wa mapped to it.
+    The function then returns a dictionary with the bin ids as the keys and the set of KOs found to each as the value.
+
+    :param hmmout_dir (str): path to the .hmmout files
+    :param output (str): path/filename to save the output file
+    """
+    if not os.path.exists(output):
+        with open(output, 'w') as fo:
+            fo.write('bin_id\tcontig_id\tko_term\n')
+
+        for bin_id in os.listdir(hmmout_dir):
+            bin_folder = os.path.join(hmmout_dir, bin_id)
+            bin_file = ".".join([bin_id, "hmmout.all"])
+            bin_kos_file = os.path.join(bin_folder, bin_file)
+
+            os.system(" ".join([
+                "cat", bin_kos_file, ">>", output
+            ])
+            )
+
+
+def bin_kos_to_file(hmmout_dir, bin_id):
+    """
+    Builds a 3-col file for a bin and remove the KO-specific output files of hmmsearch
+
+    :param hmmout_dir: Directory to the hmmout files
+    :param ko_tmp:
+    """
+    # Write 3-cols entries in tmp file
+    bin_kos_file = os.path.join(hmmout_dir, "".join([bin_id, "_kos.tsv"]))
+    if not os.path.exists(bin_kos_file):
+        open(bin_kos_file, 'w').close()
+
+    for hmmout_file in os.listdir(hmmout_dir):
+        try:
+            basename, gene_id, k_number = parse_hmmout(hmmout_file, hmmout_dir)
+            with open(bin_kos_file, 'a') as fo:
+                fo.write(basename + '\t' + gene_id + '\t' + k_number + '\n')
+        except:
+            # Ignore non-informative lines
+            pass
+
+    # Remove .hmmout files
+    bin_hmmout = os.path.join(hmmout_dir, ".".join([bin_id, "hmmout.all"]))
+    print(bin_hmmout)
+    many_to_one_files(hmmout_dir, bin_hmmout)
+    for p in glob.glob(hmmout_dir, recursive=True):
+        if os.path.isfile(p) and p.endswith(".hmmout"):
+            os.remove(p)
+
+
+def parse_hmmout(hmmout_file, hmmout_dir):
+    """
+    Parses the output of the hmmsearch
+
+    :param hmmout_file (str): Filename of the .hmmout file
+    :param hmmout_dir (str): Directory where hmmout_file is located
+    :return basename (str): Bin id
+    :return gene_id (str): Gene id
+    :retrun k_number (str): KEGG ORTHOLOGY term found
+    """
+    if hmmout_file.endswith('.hmmout'):
+        kobasename = hmmout_file.rsplit('.', 1)[0]
+        basename = kobasename.split('.', 1)[1]
+        hmmout_file_path = os.path.join(hmmout_dir, hmmout_file)
+        with open(hmmout_file_path, 'r') as fi:
+            for line in fi:
+                if not line.startswith('#'):
+                    gene_id, _ = line.split()[0:2]  # under _ the accession
+                    lines = line.split()
+                    if re.match(r'[0-9]+$', lines[2]):
+                        k_number = lines[3]
+                    else:
+                        k_number = lines[2]
+                    return basename, gene_id, k_number
+
+
+def load_merged_ko_file(merged_ko):
+    """
+    Load the 3-columns KEGG annotations file as built from the merge_ko()
+
+    Input:
+        merged_ko (str): path to 3-columns output file of the merge_ko()
+
+    Returns:
+        pivot_df (pd.DataFrame): a presence-absence (1/0) df where KOs are the rows and bin_ids the columns
+
+    """
+    df = pd.read_csv(merged_ko, sep="\t")
+    column_names = df.columns.tolist()
+    bin_id, _, ko = column_names[:3]
+    # bins_kos = df.groupby('bin_id')['ko_term'].apply(set).to_dict()
+
+    # Pivot the DataFrame to have 'kegg_id' as rows and 'bin_id' as columns
+    unique_combinations = df.drop_duplicates().copy()
+    unique_combinations.loc[:, 'presence'] = 1
+    pivot_df = unique_combinations.pivot_table(index=ko, columns=bin_id, values='presence', fill_value=0)
+
+    return pivot_df  # keep one | used to alse return the bins_kos
+
+
+def convert_to_json_serializable(obj):
+    """
+    Recursively serializes entries of an object, i.e. a set is converted to a list, a list is split to its items
+    and a dictionary keeps its key and their values get serialized
+    """
+    if isinstance(obj, (int, float, str, bool, type(None))):
+        return obj
+    elif isinstance(obj, set):
+        return list(obj)
+    elif isinstance(obj, list):
+        return [convert_to_json_serializable(item) for item in obj]
+    elif isinstance(obj, dict):
+        return {key: convert_to_json_serializable(value) for key, value in obj.items()}
+    else:
+        try:
+            return json.dumps(obj)
+        except TypeError:
+            return str(obj)
+
+
+def ensure_flashweave_format(conf):
+    """
+    Build an OTU table that will be in a FlashWeave-based format.
+    """
+
+    flashweave_table = pd.read_csv(conf.abundance_table, sep="\t").iloc[:, :-1]
+    float_col = flashweave_table.select_dtypes(include=['float64'])
+
+    for col in float_col.columns.values:
+        flashweave_table[col] = flashweave_table[col].astype('int64')
+
+    flashweave_table.iloc[:, 0] = flashweave_table.iloc[:, 0].astype(str)
+    flashweave_table.to_csv(conf.flashweave_abd_table, sep='\t', index=False)
+
+    return 1
+
+
+def ensure_same_namespace_after_fw(conf):
+    """
+    [TODO] can be removed but let's wait
+    Inconsistencies from D300244:bin_000023 in the abundance table to D300244.bin_000023 in FlashWeave.
+    Keep the routine in general along with the find_id_differences().
+    """
+    abd = pd.read_csv(conf.flashweave_abd_table, sep="\t")
+    bin_names = abd.iloc[:,0]
+    df1 = pd.DataFrame(bin_names.to_list(), columns=["bin_names"])
+    net = pd.read_csv(conf.network, sep="\t", skiprows=2, header = None)
+    bin_names_in_net = net.iloc[:,0]
+    logging.info("Bin names in net:"); logging.info(bin_names_in_net)
+
+    df2 = pd.DataFrame(bin_names_in_net.to_list(), columns=["bin_names_in_net"])
+    diff_chars = []
+
+    for index, row in df1.iterrows():
+        try:
+            id1 = row['bin_names']
+            id2 = df2.loc[index, 'bin_names_in_net']
+        except:
+            continue
+        if id1 != id2:
+            diff_chars.append(find_id_differences(id1, id2))
+
+    # We need to replace the bin names network file with the delimiter of the abundance table file
+    diff_chars = [item for item in diff_chars if item is not None]
+    unique_diff_chars = [list(x) for x in set(tuple(sublist) for sublist in diff_chars)]
+    if len(unique_diff_chars) > 0:
+        for case in unique_diff_chars:
+            try:
+                logging.info("case", case)
+                os.system('sed -i "s/{}/{} /g" {}'.format(case[1], case[0], conf.network))
+            except:
+                logging.warn(case, "was found not to be as in the abundance table but not fixed")
+    return 1
+
