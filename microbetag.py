@@ -18,8 +18,7 @@ Author:
 
 __version__ = "v1.0.2"
 
-import os
-import sys
+import os, sys
 import logging
 
 # Set up custom logging format
@@ -63,10 +62,14 @@ if sys.argv[1] == 'v' or sys.argv[1] == 'version':
 
 import yaml
 import subprocess
-from utils import *
-from config import Config
-from build_cx_annotated_graph import *
-from julia.api import Julia
+
+from microbetag.utils import *
+from microbetag.tools import *
+from microbetag.config import Config
+from microbetag.genres import GEMSReconstruction
+from microbetag.build_cx_annotated_graph import *
+from microbetag.pathway_complementarity import export_pathway_complementarities
+from microbetag.seed_complementarity import ExportSeedComplementarities
 
 config_file = sys.argv[1]
 
@@ -84,10 +87,14 @@ if config.precalc_only:
     logging.info("microbetag is about to perform the precalculations for your list of bins/MAGs only. No network will be built.")
 
 elif not os.path.exists(config.network) or os.path.getsize(config.network) == 0:
-    logging.info("\n Using the abundance table provided, microbetag is about to build a co-occurrence network using FlashWeave.\n")
-    logging.info("Checking for format support.")
+    logging.info(
+        "Using the abundance table provided, microbetag is about to build a co-occurrence network using FlashWeave.\n"
+    )
+    # Checking for format support.
     ensure_flashweave_format(conf=config)
 
+    # Run FlashWeave
+    from julia.api import Julia
     logging.info("Fix FlashWeave arguments from config.")
     pair_args = set()
     for arg, values in config.flashweave_args.items():
@@ -204,23 +211,26 @@ for model in phen_models:
         ]
         predict_trait_command = " ".join(predict_traits_params)
         if os.system(predict_trait_command) != 0:
-            logging.error("TSIRIMPIM") ; sys.exit(0)
+            logging.error("TSIRIMPIM") ; sys.exit(0)   # TODO: fix the error message
 
 # ----------------
 # Prodigal - using DiTing interface
 # ----------------
-if len(os.listdir(config.prodigal)) == 0:
-    if config.pathway_complementarity or config.seed_complementarity:
+if config.pathway_complementarity or config.seed_complementarity:
+    if len(os.listdir(config.prodigal)) != len(config.bins_ids):
         logging.info("[STEP  ] PREDICTING ORFs WITH PRODIGAL THROUGH DiTing")
+
         if config.bin_filenames is None:
-            logging.error("""
-            Bins files have not been provided and they are required for the precalculation steps of microbetag.
-            Provide the path to the directory with your bins/MAGs under the bins_fasta parameter of the config.yml file.""")
+            logging.error(
+                "Bins files have not been provided and they are required for the precalculation steps of microbetag."
+                "Provide the path to the directory with your bins/MAGs under the bins_fasta parameter of the config.yml file."
+            )
         for bin_fa in config.bin_filenames:
             bin_filename = os.path.basename(bin_fa)
             bin_id, extension = os.path.splitext(bin_filename)
+            bin_fa = os.path.join(config.bins_path, bin_fa)
+            logging.info(f"Running Prodigal for {bin_id}")
             run_prodigal(bin_fa, bin_id, config.prodigal)
-
 
 # ----------------
 # Pathway complementarity
@@ -236,13 +246,28 @@ if config.pathway_complementarity:
 
         ko_list = os.path.join(config.kegg_db_dir, 'ko_list')
         ko_dic = ko_list_parser(ko_list)
+
+        hmmout_dir = config.kegg_pieces_dir
         config.ko_merged = os.path.join(config.kegg_annotations, 'ko_merged.txt')
 
         for bn in config.bin_filenames:
             bin_id, extension = os.path.splitext(bn)
-            faa = os.path.join(config.prodigal, bin_id + '.faa')
-            kegg_annotation(faa, bin_id, config.kegg_pieces_dir, config.kegg_db_dir, ko_dic, config.threads)
+            bin_kos_dir = os.path.join(hmmout_dir, bin_id)
+            os.makedirs(bin_kos_dir, exist_ok=True)
 
+            for afile in os.listdir(bin_kos_dir):
+                if afile.endswith(".hmmout.all"):
+                    continue
+
+            for bn in config.bin_filenames:
+                faa = os.path.join(config.prodigal, bin_id + '.faa')
+                # A folder with KO predictions (a single hmmout file for each KO) per bin
+                check = kegg_annotation(faa, bin_id, config.kegg_pieces_dir, config.kegg_db_dir, ko_dic, config.threads)
+                # Out of the 24K hmmout files, make a single one with the predictions as backup and one with the 3-columns
+                if check:
+                    bin_kos_to_file(hmmout_dir=bin_kos_dir , bin_id=bin_id)
+
+        # Make the 3-columns files with all bins and their KOs
         merge_ko(config.kegg_pieces_dir, config.ko_merged)
 
     else:
@@ -379,21 +404,25 @@ if config.network_clustering:
     manta_command = " ".join(manta_params)
 
     # Run manta
-    m1 = time.time()
-    if os.system(manta_command) != 0:
-        e = """\
-            The manta clustering algorithm failed.
-            Most likely this is because clusters could not be grouped based on the provided network and the parameters setup of manta.
-            Yet, microbetag will continue to the following steps without considering for clusters.
-        """
-        logging.warn(e)
-        # Changed cfg so the buld_cx_annotated_graph function will not fail.
-        config["manta"] = False
-    else:
-        logging.info("""manta ran fine.""")
-    m2 = time.time()
-    time = " ".join(["Network clustering with manta took:", str(m2 - m1), "sec"])
-    logging.info(time)
+    try:
+        m1 = time.time()
+        if os.system(manta_command) != 0:
+            e = """\
+                The manta clustering algorithm failed.
+                Most likely this is because clusters could not be grouped based on the provided network and the parameters setup of manta.
+                Yet, microbetag will continue to the following steps without considering for clusters.
+            """
+            logging.warning(e)
+            # Changed cfg so the buld_cx_annotated_graph function will not fail.
+            config.network_clustering = False
+        else:
+            logging.info("""manta ran fine.""")
+        m2 = time.time()
+        time = " ".join(["Network clustering with manta took:", str(m2 - m1), "sec"])
+        logging.info(time)
+    except Exception as e:
+        logging.warning(e)
+        config.network_clustering = False
 
 # ----------------
 # Annotate network in .cx format
