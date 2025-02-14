@@ -27,40 +27,44 @@ Notes:
 """
 import time
 import requests
+import gzip
 
 """
 Part A:
     Map KEGG terms to their corresponding ModelSEED compounds.
 """
-modelseed_compounds_metadata = open("modelseedDB_compounds.tsv", "r")
+
 modelseedId_to_keggId = {}
 keggId_to_modelSeedId = {}
 counter = 0
 all_lines = 0
-for line in modelseed_compounds_metadata:
-    all_lines += 1
-    modelseedId = line.split("\t")[0]
-    keggId_parts = line.split("\t")[18].split("KEGG")
-    if len(keggId_parts) > 1:
-        keggId = keggId_parts[1][2:]
-        if "|" in keggId:
-            keggId = keggId.split("|")[0]
-        if ";" in keggId:
-            modelseedId_to_keggId[modelseedId] = keggId
-            keggIds = keggId.split(";")
-            for keggId in keggIds:
+
+compressed_file = "modelseedDB_compounds.tsv.gz"
+with gzip.open(compressed_file, "rt") as f:
+    for line in f:
+        all_lines += 1
+        modelseedId = line.split("\t")[0]
+        keggId_parts = line.split("\t")[18].split("KEGG")
+        if len(keggId_parts) > 1:
+            keggId = keggId_parts[1][2:]
+            if "|" in keggId:
+                keggId = keggId.split("|")[0]
+            if ";" in keggId:
+                modelseedId_to_keggId[modelseedId] = keggId
+                keggIds = keggId.split(";")
+                for keggId in keggIds:
+                    if keggId not in keggId_to_modelSeedId:
+                        keggId_to_modelSeedId[keggId] = modelseedId
+                    else:
+                        keggId_to_modelSeedId[keggId] += ";" + modelseedId
+            else:
                 if keggId not in keggId_to_modelSeedId:
                     keggId_to_modelSeedId[keggId] = modelseedId
                 else:
                     keggId_to_modelSeedId[keggId] += ";" + modelseedId
+                modelseedId_to_keggId[modelseedId] = keggId
         else:
-            if keggId not in keggId_to_modelSeedId:
-                keggId_to_modelSeedId[keggId] = modelseedId
-            else:
-                keggId_to_modelSeedId[keggId] += ";" + modelseedId
-            modelseedId_to_keggId[modelseedId] = keggId
-    else:
-        counter += 1
+            counter += 1
 
 print("ModelSEED compounds with not a corresponding KEGG one:", str(counter))
 print("ModelSEED compound ids in total:", all_lines)
