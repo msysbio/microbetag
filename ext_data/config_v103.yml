@@ -3,7 +3,7 @@
 # For example, if you are running the hariszaf/microbetag:v1.0.2 
 # then, you need to make sure that the config.yml template also corresponds to the v1.0.2. 
 
-# version: v1.0.2
+# version: v1.0.3
 # Author: Haris Zafeiropoulos
 # Date: Dec, 2024
 
@@ -13,7 +13,7 @@
 # ------
 
 abundance_table_file: 
-  fileName: 
+  file_path: 
   description: "Filename of the abundance table file.
   The taxonomy scheme in this case is irrelevant.
   However, you need to make sure that the sequence identifiers used in this table, are the same
@@ -25,20 +25,21 @@ abundance_table_file:
   type: string
 
 bins_fasta:
-  folderName: my_bins
+  dir_path: my_bins
   description: Name of the folder with the bins .fasta files.
   required: False
   type: string
 
 
 orfs:
-  folderName: 
+  dir_path: 
   description: In case Operating Reading Frames (ORFs) have been already computed (e.g., using Prodigal), you may provide the path to the folder with the .fna files. 
   required: False
   type: Path
 
+
 edge_list:
-  file:
+  file_path: input_files/edgelist.csv
   description: "If co-occurrence network already available, please provide its edge list; a 2 column tab separated file."
   required: False
   examples: 
@@ -46,8 +47,20 @@ edge_list:
   type: string
 
 
+sequence_id_taxonomy_map:
+  file_path: input_files/seq2taxonomy.tsv
+  description: >
+    A file
+  required: 
+    value: false
+    when: 
+  examples:
+    - 
+  type: string
+
+
 output_directory: 
-  folderName: mgg_prec
+  dir_path: microbetag_run_carve
   description: Name of the output folder that will be built inside the io_path directory.
   required: True
   type: string
@@ -97,7 +110,7 @@ pathway_complement_percentage:
   type: float
 
 ko_merged_file:
-  path: KEGG_annotations/ko_merged.txt
+  file_path: microbetag_run_carve/KEGG_annotations/ko_merged.txt
   description: "A merged 3-column file with bins, contigs and the annotated KO term for all your genomes/bins. Needs to have a header and keep this order. You may have this from a previous microbetag run, or from annotations outside the microbetag software. 
   Here is a example: 
   bin_id	            contig_id	                                                KO
@@ -108,7 +121,7 @@ ko_merged_file:
   type: Path
 
 kofam_database:
-  path: /home/luna.kuleuven.be/u0156635/kofam_database
+  dir_path: /home/luna.kuleuven.be/u0156635/kofam_database
   description: "After downloading KOfam database from ftp://ftp.genome.jp/pub/db/kofam/ and decompress it. 
   You will get profile HMMs in profiles/ directory and a ko_list file.
 
@@ -150,7 +163,7 @@ input_type_for_seed_complementarities:
 # Metabolic network reconstruction: there parameters should be considered only in case seed complementarity is about to be performed and metabolic networks are not already available
 # -----
 sequence_files_for_reconstructions:
-  folderName: 
+  dir_path: 
   required: 
     value: True
     when: if input_type_for_seed_complementarities != "bins_fasta". Could be either .fna or .faa files.
@@ -212,7 +225,7 @@ network_clustering:
 # Flashweave
 # -----
 metadata_file:
-  fileName: 
+  file_path: 
   description: 
   type:
   required: False
