@@ -1,9 +1,10 @@
-import os
+import os, sys
 import shutil
 import logging
 import multiprocessing
 from typing import List
 
+from .utils import get_files_with_suffixes, get_library_version
 
 
 def run_phylomint(config):
@@ -153,3 +154,80 @@ def kegg_annotation(faa, basename, out_dir, db_dir, ko_dic, threads):
     process.map(hmmsearch, params)
 
     return True
+
+
+
+def phenotrex_genotype(config):
+    """
+    """
+    if not os.path.exists(config.genotypes_file):
+
+        logging.info("Get phenotrex predictions")
+
+        suffixes = [".fa", ".fasta", ".gz"]
+        bin_files = get_files_with_suffixes(config.bins_path, suffixes)
+        bin_files_in_a_row = " ".join(bin_files)
+
+        # Build genotypes
+        if get_library_version("scikit-learn") != "1.3.2":
+            os.system("python3 -m pip install scikit-learn==1.3.2")
+        compute_genotype_params = [ "phenotrex",
+                                    "compute-genotype",
+                                    "--out",
+                                    config.genotypes_file,
+                                    "--threads",
+                                    str(config.threads),
+                                    bin_files_in_a_row
+        ]
+        compute_genotype_command = " ".join(compute_genotype_params)
+
+        if os.system(compute_genotype_command) != 0:
+            logging.info("Try phenotrex genotype for the second time.")
+            if os.system(compute_genotype_command) != 0:
+                logging.error("asda")
+                sys.exit(0)
+
+
+def phenotrex_predict(config):
+    """
+    """
+    import subprocess
+    # Get predictions
+    phen_models = [os.path.join(config.phen_classes, model) for model in os.listdir(config.phen_classes)]
+
+    for model in phen_models:
+        model_name =  os.path.basename(model)
+        model_predictions_output = "".join([
+            config.predictions_path, "/", model_name[:-4], ".prediction.tsv"
+        ])
+        if os.path.exists(model_predictions_output):
+            logging.info("Predictions already exist for model: %s", model_name)
+        else:
+            predict_traits_params = [
+                "phenotrex",
+                "predict",
+                "--genotype",
+                config.genotypes_file,
+                "--classifier",
+                model,
+                "--min_proba",
+                str(config.min_proba),
+                "--verb >",
+                model_predictions_output
+            ]
+            predict_trait_command = " ".join(predict_traits_params)
+
+            # try:
+            #     os.system(predict_trait_command)
+            # except:
+            #     logging.error("TSIRIMPIM")
+            #     raise SystemError
+            try:
+                subprocess.run(predict_trait_command, shell=True, check=True)
+            except subprocess.CalledProcessError as e:
+                logging.error("TSIRIMPIM: Command execution failed with return code %s", e.returncode)
+                logging.error("Error output: %s", e.stderr if e.stderr else "No additional error details.")
+                raise SystemError from e
+            except Exception as e:
+                logging.error("TSIRIMPIM: An unexpected error occurred.")
+                raise SystemError from e

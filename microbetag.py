@@ -16,7 +16,7 @@ Author:
 
 """
 
-__version__ = "v1.0.2"
+__version__ = "v1.0.3"
 
 import os, sys
 import logging
@@ -67,7 +67,7 @@ from microbetag.utils import *
 from microbetag.tools import *
 from microbetag.config import Config
 from microbetag.genres import GEMSReconstruction
-from microbetag.build_cx_annotated_graph import *
+from microbetag.build_mtg_cx2 import *
 from microbetag.pathway_complementarity import export_pathway_complementarities
 from microbetag.seed_complementarity import ExportSeedComplementarities
 
@@ -117,9 +117,7 @@ elif not os.path.exists(config.network) or os.path.getsize(config.network) == 0:
     jl = Julia(compiled_modules=False)
     jl.using("FlashWeave")
 
-    logging.info(learn_in)
-
-
+    # Run FlashWeave based on presence/absence of a metadata file
     if config.metadata_file:
         logging.info("Running FlashWeaeve along with a metadata file.")
         logging.info(
@@ -158,65 +156,15 @@ if config.abundance_table is not None:
 # ----------------
 # phen annotations
 # ----------------
-if not os.path.exists(config.genotypes_file):
+logging.info("[STEP] PREDICTING PHENOTYPIC TRAITS")
+phenotrex_genotype(config=config)
+phenotrex_predict(config=config)
 
-    logging.info("[STEP] PREDICTING PHENOTYPIC TRAITS")
-
-    suffixes = [".fa", ".fasta", ".gz"]
-    bin_files = get_files_with_suffixes(config.bins_path, suffixes)
-    bin_files_in_a_row = " ".join(bin_files)
-
-    # Build genotypes
-    if get_library_version("scikit-learn") != "1.3.2":
-        os.system("python3 -m pip install scikit-learn==1.3.2")
-    compute_genotype_params = [ "phenotrex",
-                                "compute-genotype",
-                                "--out",
-                                config.genotypes_file,
-                                "--threads",
-                                str(config.threads),
-                                bin_files_in_a_row
-    ]
-    compute_genotype_command = " ".join(compute_genotype_params)
-
-    if os.system(compute_genotype_command) != 0:
-        logging.info("Try phenotrex genotype for the second time.")
-        if os.system(compute_genotype_command) != 0:
-            logging.error("asda")
-            sys.exit(0)
-
-# Get predictions
-folder_path = "microbetagDB/ref-dbs/phenDB/classes/"
-phen_models = [os.path.join(folder_path, model) for model in os.listdir(folder_path)]
-
-for model in phen_models:
-    model_name =  os.path.basename(model)
-    model_predictions_output = "".join([
-        config.predictions_path, "/", model_name[:-4], ".prediction.tsv"
-    ])
-    if os.path.exists(model_predictions_output):
-        logging.info("Predictions already exist for model: %s", model_name)
-    else:
-        predict_traits_params = [
-            "phenotrex",
-            "predict",
-            "--genotype",
-            config.genotypes_file,
-            "--classifier",
-            model,
-            "--min_proba",
-            str(config.min_proba),
-            "--verb >",
-            model_predictions_output
-        ]
-        predict_trait_command = " ".join(predict_traits_params)
-        if os.system(predict_trait_command) != 0:
-            logging.error("TSIRIMPIM") ; sys.exit(0)   # TODO: fix the error message
 
 # ----------------
 # Prodigal - using DiTing interface
 # ----------------
-if config.pathway_complementarity or config.seed_complementarity:
+if (config.pathway_complementarity or config.seed_complementarity) and config.ko_merged is None:
     if len(os.listdir(config.prodigal)) != len(config.bins_ids):
         logging.info("[STEP  ] PREDICTING ORFs WITH PRODIGAL THROUGH DiTing")
 
@@ -437,7 +385,7 @@ if config.precalc_only is False:
 
     # Build cx2 with ndex2 library
     if build_ndex2_net(config.microbetag_annotated_network_file):
-        os.remove(config.microbetag_annotated_network_file)
+        # os.remove(config.microbetag_annotated_network_file)
         logging.info("The .cx file was uploaded to NDEx successfully.")
 
 config.export_to_log()

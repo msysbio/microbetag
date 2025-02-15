@@ -63,8 +63,10 @@ def all_alternatives(bin_kos_per_module, modules_definitions_json_map, alts_outp
     # Iterate through bins
     bins_alternatives = {}
     for bin_id in bin_kos_per_module:
+
         complete_modules = set()
         alternatives_to_gap = {}
+
         for module, kos_on_its_own in bin_kos_per_module[bin_id].items():
             if module in structurals:
                 continue
@@ -86,10 +88,12 @@ def all_alternatives(bin_kos_per_module, modules_definitions_json_map, alts_outp
                         alternatives_to_gap[module][str(path)] = gaps
                     else:
                         alternatives_to_gap[module][str(path)] = gaps
+
         # Remove complete modules for the alternatived dict
         for key in complete_modules:
             if key in alternatives_to_gap:
                 del alternatives_to_gap[key]
+
         # Get shortert alternative for each
         for module, path_gaps in alternatives_to_gap.items():
             tmp = tmp2 = alternatives_to_gap[module].copy()
@@ -103,15 +107,17 @@ def all_alternatives(bin_kos_per_module, modules_definitions_json_map, alts_outp
                 if len(gaps) > min_val + 1 or path not in shortest_alternatives:
                     del tmp[path]
             alternatives_to_gap[module] = tmp
+
+        # Assign alternatives found to be potentially filled for the bin under study
         bins_alternatives[bin_id] = alternatives_to_gap
 
-        # Write alts.json file
-        with open(alts_output_file, "w") as file:
-            json.dump(bins_alternatives, file, cls=SetEncoder)
+    # Write alts.json file
+    with open(alts_output_file, "w") as file:
+        json.dump(bins_alternatives, file, cls=SetEncoder)
 
-        logging.info("Step 2, the alternatives of each bin's modules were enumerated.")
+    logging.info("Step 2, the alternatives of each bin's modules were enumerated.")
 
-        return bins_alternatives
+    return bins_alternatives
 
 
 def all_complements(bin_kos_per_module, bins_alternatives, module_to_map, compl_output_file, tinyurl=False):
@@ -225,6 +231,8 @@ def export_pathway_complementarities(config, bins_kos_df):
 
     # Keep track of the KOs related to a module present on each bin
     bin_kos_per_module = taxon_kos_per_module(bins_kos_df, config.ko_terms_per_module_definition)
+
+    print(bin_kos_per_module.keys())
 
     # If alts.json not available
     if not os.path.exists(config.alts_file):

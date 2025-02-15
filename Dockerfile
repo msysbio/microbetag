@@ -11,7 +11,7 @@ FROM microbetag_base:latest
 LABEL maintainer = "Haris Zafeiropoulos" 
 LABEL contact    = "haris.zafeiropoulos@kuleuven.be"
 LABEL build_date = "2025-02-06"
-LABEL version    = "v1.0.2"
+LABEL version    = "v1.0.3"
 
 
 # Copy microbetag utils 
@@ -25,6 +25,8 @@ RUN pip install pyshorteners ndex2
 
 ADD microbetag/ ./microbetag/
 ADD microbetag.py  ./
+
+ADD tests/ ./tests
 
 ADD LICENSE ./
 

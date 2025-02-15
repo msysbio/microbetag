@@ -3,6 +3,10 @@ __pycache__/
 
 # Ignore pip install dist/ 
 dist/
+build/
+*.egg-info/
+
+
 
 # Build and Release Folders
 bin-debug/
@@ -82,15 +86,9 @@ dada2familiesNcbiIds
 *.contigs.fa
 bins/
 
-elos_bins.tsv
-kos_on_modules_graph.tsv
 
 # Ignore the output of the installation.sh script 
 microbetag_env
-
-# Ignore .json files under the scripts folder udner the microbetagDB
-microbetagDB/scripts/*.json 
-microbetag/microbetagDB/ref-dbs/kofam_database/profiles/
 
 # Ignore the GTDB db with 16S 
 gtdb_16s.RData
@@ -101,7 +99,6 @@ kofam_database/
 # Ignore the output folder of the stand alone tool
 #microbetag_run/
 hmmout/
-
 PhyloMint/
 MetaNetX/
 

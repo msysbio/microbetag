@@ -1,12 +1,10 @@
 """
-Aim:
-    Utils for the microbetag pipeline
-Author:
-    - Haris Zafeiropoulos
+Utils supporting tasks for file parsing and formating
 """
 import os, re
 import json
 import time
+import copy
 import random
 import logging
 import glob
@@ -25,6 +23,9 @@ def get_library_version(library_name):
         return "Library not found"
     except Exception as e:
         return str(e)
+
+def resolve_file_path(base_dir, file_path):
+    return os.path.join(base_dir, file_path) if file_path else None
 
 
 class SetEncoder(json.JSONEncoder):
@@ -191,19 +192,20 @@ def merge_ko(hmmout_dir, output):
     :param hmmout_dir (str): path to the .hmmout files
     :param output (str): path/filename to save the output file
     """
-    if not os.path.exists(output):
-        with open(output, 'w') as fo:
-            fo.write('bin_id\tcontig_id\tko_term\n')
-
-        for bin_id in os.listdir(hmmout_dir):
-            bin_folder = os.path.join(hmmout_dir, bin_id)
-            bin_file = ".".join([bin_id, "hmmout.all"])
-            bin_kos_file = os.path.join(bin_folder, bin_file)
-
-            os.system(" ".join([
+    # Under any circumstances microbetag will overwrite the ko_merged.txt file
+    with open(output, 'w') as fo:
+        fo.write('bin_id\tcontig_id\tko_term\n')
+    # Iterate through the bin folders in the hmmout folder
+    for bin_id in os.listdir(hmmout_dir):
+        bin_folder = os.path.join(hmmout_dir, bin_id)
+        bin_file = "_".join([bin_id, "kos.tsv"])
+        bin_kos_file = os.path.join(bin_folder, bin_file)
+        # Append
+        os.system(
+            " ".join([
                 "cat", bin_kos_file, ">>", output
             ])
-            )
+        )
 
 
 def bin_kos_to_file(hmmout_dir, bin_id):
@@ -232,6 +234,7 @@ def bin_kos_to_file(hmmout_dir, bin_id):
     print(bin_hmmout)
     many_to_one_files(hmmout_dir, bin_hmmout)
     for p in glob.glob(hmmout_dir, recursive=True):
+        print(p)
         if os.path.isfile(p) and p.endswith(".hmmout"):
             os.remove(p)
 
@@ -338,7 +341,6 @@ def ensure_same_namespace_after_fw(conf):
 
     df2 = pd.DataFrame(bin_names_in_net.to_list(), columns=["bin_names_in_net"])
     diff_chars = []
-
     for index, row in df1.iterrows():
         try:
             id1 = row['bin_names']
@@ -360,3 +362,136 @@ def ensure_same_namespace_after_fw(conf):
                 logging.warn(case, "was found not to be as in the abundance table but not fixed")
     return 1
 
+
+# building the net
+
+def extend_complements(complements_json,
+                       descrps_path,
+                       max_scratch_alt,
+                       pathway_complement_percentage,
+                       pathway_complements_dir):
+    """
+    Extends pathway complement annotations based on given settings and descriptions.
+
+    Parameters:
+        - complements_json: Path to the complements JSON file.
+        - descrps_path: Path to the KEGG MODULES description file.
+        - max_scratch_alt: Maximum number of alternative complements allowed.
+        - pathway_complement_percentage: Maximum allowable percentage of required KOs that must be present.
+        - pathway_complements_dir: Directory to save the extended complements JSON file.
+        complements_dict (dict): Dictionary of complements loaded from a JSON file.
+        descrps_path (str): Path to the module descriptions file (tab-separated file with no header).
+
+    Returns:
+        dict: Pathway Complementarities in a dictionary to be assigned in the mgg format
+
+    Builds:
+        pathway_complements_extended: JSON file with the dictionary returned
+    """
+    # Load and process module descriptions
+    descrps = pd.read_csv(descrps_path, sep="\t", header=None)
+    descrps.columns = ["category", "moduleId", "description"]
+    column_order = ["moduleId", "description", "category"]
+    descrps = descrps[column_order]
+
+    # Deep copy the complements dictionary
+    complements_dict = json.load(open(complements_json))
+    complements_dict_ext = copy.deepcopy(complements_dict)
+
+    # Process complements
+    for beneficiary_bin, potential_donors in complements_dict.items():
+        for potential_donor, compls in potential_donors.items():
+            if compls:
+                complements_dict_ext[beneficiary_bin][potential_donor] = {}
+                for compl in compls:
+                    module_id = compl[0][3:]  # Extract module ID
+                    kos_to_get = compl[1]     # KOs required to complete the pathway
+                    complet_alt = compl[2]   # Alternative complements
+
+                    # Skip if the complement is too complex based on settings
+                    if len(complet_alt) == len(kos_to_get) > max_scratch_alt:
+                        continue
+
+                    # Skip if the percentage exceeds the threshold
+                    perce = len(kos_to_get) / len(complet_alt)
+                    if perce > pathway_complement_percentage:
+                        continue
+
+                    # Prepare the complement string
+                    compl_str = [x if isinstance(x, str) else ";".join(x) for x in compl[1:]]
+
+                    # Fetch module description details
+                    triplet = descrps[descrps["moduleId"] == module_id].values.tolist()[0]
+
+                    # Add extended complement details
+                    complements_dict_ext[beneficiary_bin][potential_donor][
+                        len(complements_dict_ext[beneficiary_bin][potential_donor])
+                        ] = triplet + compl_str
+
+    # Save extended complements to JSON
+    extended_path_compl_json = os.path.join(pathway_complements_dir, "pathway_complements_extended.json")
+    with open(extended_path_compl_json, "w") as f:
+        json.dump(complements_dict_ext, f)
+
+    return complements_dict_ext
+
+
+def extend_faprotax(conf):
+
+    bin_faprotax_traits = {}
+    fapro_sub_tables = [os.path.join(conf.faprotax_sub_tables, file) for file in os.listdir(conf.faprotax_sub_tables)]
+    for file in fapro_sub_tables:
+        trait_name, _ = os.path.splitext(os.path.basename(file))
+        trait = pd.read_csv(file, sep="\t", skiprows=1)
+        bins_with_trait = trait[conf.sequence_id_column_name].dropna()
+        for bin_id in bins_with_trait:
+            bin_faprotax_traits.setdefault(bin_id, []).append(trait_name)
+
+    faprotax_traits = list(flatten_list(bin_faprotax_traits.values()))
+
+    return bin_faprotax_traits, faprotax_traits
+
+
+def load_phenotypic_traits(conf):
+    """PhenDB-like traits"""
+    logging.info("Loading phenotypic traits")
+    bin_phen_traits = {}
+    phentraits = set()
+
+    prediction_files = [os.path.join(conf.predictions_path, file) for file in os.listdir(conf.predictions_path)]
+    for file in prediction_files:
+        if os.path.getsize(file) == 0:
+            continue
+
+        trait = pd.read_csv(file, sep="\t", skiprows=1)
+        trait_name = os.path.basename(file).split(".prediction.tsv")[0]
+        trait_filtered = trait[trait['Trait present'].notna()]
+        trait_dict = trait_filtered.to_dict(orient="records")
+
+        for case in trait_dict:
+            bin_id, _ = os.path.splitext(case["Identifier"])
+            if bin_id not in bin_phen_traits:
+                bin_phen_traits[bin_id] = {}
+            phentraits.add(trait_name)
+            bin_phen_traits[bin_id][trait_name] = {
+                "presence": case["Trait present"],
+                "confidence": case["Confidence"]
+            }
+
+    return bin_phen_traits, phentraits
+
+
+
+
+def flatten_list(lista, flat_list=[]):
+    """
+    Recursive function taking as input a nested list and returning a flatten one.
+    E.g. ['GCF_003252755.1', 'GCF_900638025.1', 'GCF_003252725.1', 'GCF_003253005.1', 'GCF_003252795.1', ['GCF_000210895.1'], ['GCF_000191405.1']]
+    becomes ['GCF_003252755.1', 'GCF_900638025.1', 'GCF_003252725.1', 'GCF_003253005.1', 'GCF_003252795.1'].
+    """
+    for i in lista:
+        if isinstance(i, list):
+            flatten_list(i, flat_list)
+        else:
+            flat_list.append(i)
+    return set(flat_list)

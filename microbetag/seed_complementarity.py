@@ -5,6 +5,7 @@ import cobra
 import shutil
 import pickle
 import logging
+import tarfile
 import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
@@ -226,7 +227,6 @@ class ExportSeedComplementarities():
         bin151-contigs  [cpd03049, cpd00239, cpd03831, cpd11466, cpd00...                                                 []  [cpd03049, cpd00239, cpd03831, cpd11466, cpd00...  [cpd03049, cpd00239, cpd03831, cpd11466, cpd00...
         bin19-contigs   [cpd01777, cpd00055, cpd00121, cpd00482, cpd00...  [cpd01777, cpd00055, cpd00121, cpd00338, cpd00...                                                 []  [cpd00145, cpd21480, cpd01777, cpd02160, cpd00...
         """
-
         # Function to calculate overlap
         def calculate_overlap(seed_set, non_seed_set):
             return list(set(seed_set) & set(non_seed_set))
@@ -280,7 +280,15 @@ class ExportSeedComplementarities():
         shutil.move(self.updated_seed_sets, bigg_seeds)
         shutil.move(self.updated_non_seed_sets, bigg_non_seeds)
 
-        metanetx = pd.read_csv(self.metanetx_compounds, sep="\t", skiprows=353, header=None)
+        # Open the tar.gz file
+        with tarfile.open(self.metanetx_compounds, "r:gz") as tar:
+            # List files in the archive to identify the one you want to read
+            file_names = tar.getnames()  # Returns a list of files in the tar.gz
+            # Extract the file of interest as a file-like object
+            file_to_read = tar.extractfile(file_names[0])
+            if file_to_read:
+                metanetx = pd.read_csv(file_to_read, delimiter="\t", skiprows=353, header=None)  # Adjust delimiter as needed
+
         metanetx.columns = ["source", "id", "description"]
         metanetx[['source_namespace', 'source_id']] = metanetx['source'].str.split(pat=':', n=1, expand=True)
         metanetx.drop(columns=['source'], inplace=True)

@@ -1,9 +1,13 @@
+"""
+Handlers classes allowing the different steps
+"""
+
 import os, sys
 import csv
 import pickle
 import logging
 import pandas as pd
-
+from .utils import resolve_file_path
 
 class PathwayComplementarity:
     """
@@ -11,7 +15,7 @@ class PathwayComplementarity:
     """
     def __init__(self, config):
         self.conf = config
-        self.mount = config.mount
+        self.base_dir = config.base_dir
         self.output_dir = config.output_dir
 
         # KEGG related paths to be filled based on user's settings
@@ -35,17 +39,17 @@ class PathwayComplementarity:
         if kofam_db is None:
             return self.handle_missing_kofam_db()
         else:
-            return os.path.join(self.mount, kofam_db) if self.mount else kofam_db
+            return os.path.join(self.base_dir, kofam_db)
 
     def handle_missing_kofam_db(self):
         """Handles the case when the KOfam database path is missing."""
-        container_kofam_db = "/microbetag/microbetagDB/ref-dbs/kofam_database/"
+        container_kofam_db = "/microbetag/mtg_maps_models/ref-dbs/kofam_database/"
         if not os.path.exists(container_kofam_db):
             logging.error(
-                "Please provide the path to the KOfam database. "
-                "If not available, download it from ftp://ftp.genome.jp/pub/db/kofam/. "
-                "If running microbetag through a container, mount kofam_db under "
-                "/microbetag/microbetagDB/ref-dbs/kofam_database/."
+                "Please provide the path to the KOfam database."
+                "If not available, download it from ftp://ftp.genome.jp/pub/db/kofam/."
+                "If running microbetag through a container, mount kofam_db under"
+                "/microbetag/mtg_maps_models/ref-dbs/kofam_database/."
             )
             sys.exit(0)
         else:
@@ -61,12 +65,13 @@ class PathwayComplementarity:
             # Maximum length of compl
             max_scratch_alt = conf.yaml.get("max_length_for_complement_from_scratch", {}).get("value")
             self.max_scratch_alt = (
-                max_scratch_alt
-                if max_scratch_alt is not None
+                max_scratch_alt if max_scratch_alt is not None
                 else 1
             )
             # S
-            self.setup_ko_merged()
+            ko_merged = self.conf.yaml.get("ko_merged_file", {}).get("file_path")
+            self.ko_merged = resolve_file_path(self.base_dir, ko_merged)
+            # self.setup_ko_merged()
             if self.ko_merged is None:
                 self.setup_kegg_annotations()
                 self.kegg_db_dir = self.get_kofam_db_path()
@@ -75,7 +80,7 @@ class PathwayComplementarity:
         """Sets up the KO merged file."""
         ko_merged = self.conf.yaml.get("ko_merged_file", {}).get("file_path")
         if ko_merged:
-            self.ko_merged = os.path.join(self.mount, ko_merged) if self.mount else ko_merged
+            self.ko_merged = os.path.join(self.base_dir, ko_merged)
 
     def output_dirs(self, config):
         """Paths to output folders and files"""
@@ -95,14 +100,14 @@ class MappingPaths:
     Sets paths to mapping files
     """
     def __init__(self, config):
-        kegg_mappings = os.path.join(config.cwd, "microbetagDB/mappings/kegg_mappings/")
+        kegg_mappings = os.path.join(config.cwd, "microbetag/mtg_maps_models/kegg_mappings/")
         self.kegg_mappings = kegg_mappings
         self.ko_terms_per_module_definition = os.path.join(kegg_mappings, "kegg_terms_per_module.tsv")
         self.modules_definitions_json_map = os.path.join(kegg_mappings, "module_definition_map.json")
         self.kegg_modules_to_maps = os.path.join(kegg_mappings, "module_map_pairs.tsv")
         self.seed_ko_mo = os.path.join(self.kegg_mappings, "seedId_keggId_module.tsv")
         self.module_descriptions = os.path.join(kegg_mappings, "module_descriptions")
-        self.metanetx_compounds = os.path.join(config.cwd, "microbetagDB/mappings/MetaNetX/chem_xref.tsv")
+        self.metanetx_compounds = os.path.join(config.cwd, "mtg_maps_models/MetaNetX/chem_xref.tar.gz")
 
 
 class Faprotax:
@@ -110,8 +115,8 @@ class Faprotax:
         """
         Sets paths to files to be used when running FAPROTAX
         """
-        self.faprotax_txt = os.path.join(config.cwd, "microbetagDB/ref-dbs/FAPROTAX_1.2.7/FAPROTAX.txt")
-        self.faprotax_script = os.path.join(config.cwd, "microbetagDB/ref-dbs/FAPROTAX_1.2.7/collapse_table.py")
+        self.faprotax_txt = os.path.join(config.cwd, "mtg_maps_models/ref-dbs/FAPROTAX_1.2.7/FAPROTAX.txt")
+        self.faprotax_script = os.path.join(config.cwd, "mtg_maps_models/ref-dbs/FAPROTAX_1.2.7/collapse_table.py")
         self.faprotax_output_dir = os.path.join(config.output_dir, "faprotax")
         self.faprotax_funct_table = os.path.join(self.faprotax_output_dir, "functional_otu_table.tsv")
         self.faprotax_sub_tables = os.path.join(self.faprotax_output_dir, "sub_tables")
@@ -210,9 +215,9 @@ class AbdTableHandler():
         # Metadata file
         metadata_file = config.yaml.get("metadata_file", {}).get("file_path")
         self.metadata_file = (
-            os.path.join(config.mount, metadata_file)
-            if config.mount and metadata_file
-            else metadata_file
+            os.path.join(config.base_dir, metadata_file)
+            if metadata_file
+            else None
         )
         if metadata_file is not None:
             df = pd.read_csv(self.metadata_file, sep="\t", index_col = 0, header=None)
@@ -220,11 +225,7 @@ class AbdTableHandler():
 
         # microbetag data product to enable running FlashWeave; the user will never have to worry for it.
         abd_flashweave = "abd_table_for_flashweave.tsv"
-        self.flashweave_abd_table = (
-            os.path.join(config.mount, abd_flashweave)
-            if config.mount
-            else abd_flashweave
-        )
+        self.flashweave_abd_table = os.path.join(config.base_dir, abd_flashweave)
 
 
 class SeedComplementarityHandler:
@@ -232,11 +233,9 @@ class SeedComplementarityHandler:
         """
         Handles seed complementarity settings.
 
-        :param conf: Configuration dictionary.
-        :param mount: Mount path for external files.
-        :param bins_path: Path to bins used for reconstructions if needed.
+        :param config: Configuration dictionary.
         """
-        self.mount = config.mount
+        self.base_dir = config.base_dir
         self.bins_path = config.bins_path
 
         # Default to False unless explicitly set
@@ -274,7 +273,7 @@ class SeedComplementarityHandler:
             reconstr_files = config.yaml.get("sequence_files_for_reconstructions", {}).get("dir_path")
             if reconstr_files is None:
                 raise ValueError("Please provide a valid path for sequence files for reconstructions.")
-            self.for_reconstructions = os.path.join(self.mount, reconstr_files) if self.mount and reconstr_files else reconstr_files
+            self.for_reconstructions = os.path.join(self.base_dir, reconstr_files)
 
 
 class BinsHandler:
@@ -384,7 +383,7 @@ def detect_separator(file_path):
         return dialect.delimiter
 
 
-# [NOTE] OUT OF SCOPRE BUT CURRENTLY USEFUL
+# [NOTE] OUT OF SCOPE BUT CURRENTLY USEFUL
 def local_seed_url():
     """
     Builds KEGG urls for seed complements.
@@ -392,7 +391,7 @@ def local_seed_url():
 
     """
     from .utils import load_seed_complement_files, build_url_with_seed_complements
-    kmap = load_seed_complement_files("/microbetag/microbetagDB/mappings/kegg_mappings/")
+    kmap = load_seed_complement_files("/microbetag/mtg_maps_models/mappings/kegg_mappings/")
 
     output_folder = "/data/entero_klebsiella/seeds_complementarity/"
 
