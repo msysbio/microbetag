@@ -13,13 +13,15 @@
 # ------
 
 abundance_table_file: 
-  file_name: 
+  file_path: 
   description: >
     Filename of the abundance table file.
     The taxonomy scheme is irrelevant in the case of the stand-alone tool.
     However, ensure that the sequence identifiers in this table match those in your network (if provided) 
     and in your bins/.faa/.xml files in case you provide relevant input files.
-  required: True
+  required: 
+    value: false
+    when: 
   examples: 
     - thirty_Samples.tsv
     - counts_genomes_taxonomies.tsv
@@ -29,7 +31,9 @@ bins_fasta:
   dir_path: my_bins
   description: >
     Name of the folder with the bins .fasta files.
-  required: False
+  required: 
+    value: false
+    when: 
   type: string
 
 orfs:
@@ -37,23 +41,38 @@ orfs:
   description: >
     In case Operating Reading Frames (ORFs) have been already computed (e.g., using Prodigal), 
     you may provide the path to the folder with the .fna files. 
-  required: False
+  required: 
+    value: false
+    when: 
   type: Path
 
 edge_list:
   file:
   description: >
     If co-occurrence network already available, please provide its edge list; a 2 column tab separated file.
-  required: False
+  required: false
   examples: 
     - edgelist.csv
   type: string
+
+
+sequence_id_taxonomy_map:
+  file_path: bin2taxonomy.tsv
+  description: >
+    A file
+  required: 
+    value: false
+    when: 
+  examples:
+    - 
+  type: string
+
 
 output_directory: 
   dir_path: mgg_prec
   description: >
     Name of the output folder that will be built inside the io_path directory.
-  required: True
+  required: true
   type: string
 
 # -----
@@ -62,6 +81,7 @@ output_directory:
 threads:
   value: 2
   description: Number of CPUs to be used.
+  required: false
   type: integer
 
 
@@ -69,7 +89,7 @@ threads:
 # Precalculations only
 # -----
 precalulations_only:
-  value: False
+  value: false
   description: >
     If True, only precalculations will be performed.
     Neither an abundance table nor an existing network will be considered—only the list of bins/MAGs provided 
@@ -78,7 +98,7 @@ precalulations_only:
     In this mode, microbetag ensures that all required precalculations for the requested annotation steps 
     are available. If any are missing, they will be performed. Once all necessary precalculations are complete, 
     the network will be annotated.
-  required: True
+  required: false
   type: bool
 
 # -----
@@ -86,11 +106,11 @@ precalulations_only:
 # the rest of the parameters will not be considered. 
 # -----
 pathway_complementarity:
-  value: True
+  value: true
   description: >
     Set whether pathway complementarities should be calcuated and then used to annotated the edges of the 
     co-occurrence network.
-  required: True
+  required: false
   type: bool
 
 max_length_for_complement_from_scratch:
@@ -99,7 +119,7 @@ max_length_for_complement_from_scratch:
     In some cases, a species may lack KOs related to a module but can acquire a complete alternative from a donor species.
     However, KEGG modules vary in size—some consist of just a couple of KO terms, while others require dozens.
     Set the maximun length of a module that can be exchanged when no module related KO is present in the beneficiary in the first place.
-  required: False
+  required: false
   type: integer
 
 pathway_complement_percentage:
@@ -108,7 +128,7 @@ pathway_complement_percentage:
     The percentage of a module (i.e., the number of KO terms) that a potential donor can provide to a beneficiary.
     For example, if a module consists of 5 KOs and the donor can supply 4 missing ones, such an event is unlikely.
     If no value is specified, all possible complements will be returned.
-  required: False
+  required: false
   type: float
 
 ko_merged_file:
@@ -135,6 +155,9 @@ kofam_database:
     ko_list  profiles
 
     Provide the path to the kofam directory_database directory.
+  required: 
+    value: false
+    when: 
   type: Path
 
 
@@ -142,11 +165,11 @@ kofam_database:
 # Seed complementarity
 # -----
 seed_complementarity:
-  value: True
+  value: true
   description: >
     This is the most time-consuming and challengint step of the workflow. 
     You may perform microbetag with or without it by setting this argument as True or False correspondinly.
-  required: True
+  required: false
   type: bool
 
 input_type_for_seed_complementarities:
@@ -167,7 +190,7 @@ input_type_for_seed_complementarities:
     the .faa files in `sequence_files_for_reconstructions`.
     - If neither of the above is available, set this parameter to bins_fasta and leave `sequence_files_for_reconstructions` blank.
   type: string
-  required: True
+  required: true
 
 
 # -----
@@ -177,7 +200,7 @@ input_type_for_seed_complementarities:
 sequence_files_for_reconstructions:
   dir_path: 
   required: 
-    value: True
+    value: true
     when: if input_type_for_seed_complementarities != "bins_fasta". Could be either .fna or .faa files.
   description: 
   type: string
@@ -240,7 +263,7 @@ network_clustering:
 # Flashweave
 # -----
 metadata_file:
-  file_name: 
+  file_path: 
   description: >
     Only .tsv files are accepted.
   required: false
