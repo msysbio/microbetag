@@ -1,0 +1,30 @@
+cobra
+numpy
+pandas
+networkx
+scikit-learn  #==1.3.2
+scikit-bio
+julia
+pytest-shutil
+biom-format
+ndex2
+PyYAML
+phenotrex[fasta]
+ModelSEEDpy
+pyshorteners
+
+
+
+
+# r-base=4.0.*
+# r-data.table
+# r-stringr
+# r-getopt
+# r-doParallel
+# r-foreach
+# r-R.utils
+# r-stringi
+# r-glpkAPI
+# r-jsonlite
+# r-httr
+# r-devtools
