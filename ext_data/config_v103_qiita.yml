@@ -92,7 +92,7 @@ precalulations_only:
 # Pathway complementarity: if the pathway_complementarity parameter is set as false, the rest of the parameters will not be considered. 
 # -----
 pathway_complementarity:
-  value: true
+  value: false
   description: "Set whether pathway complementarities should be calcuated and then used to annotated the edges of the co-occurrence network."
   required: true
   type: bool
@@ -110,7 +110,7 @@ pathway_complement_percentage:
   type: float
 
 ko_merged_file:
-  file_path: microbetag_run_carve/KEGG_annotations/ko_merged.txt
+  file_path: 
   description: "A merged 3-column file with bins, contigs and the annotated KO term for all your genomes/bins. Needs to have a header and keep this order. You may have this from a previous microbetag run, or from annotations outside the microbetag software. 
   Here is a example: 
   bin_id	            contig_id	                                                KO
@@ -136,7 +136,7 @@ kofam_database:
 # Seed complementarity
 # -----
 seed_complementarity:
-  value: true
+  value: false
   description: This is the most time-consuming and challengint step of the workflow. You may perform microbetag with or without it by setting \
                 this argument as true or false correspondinly.
   required: true
@@ -221,7 +221,7 @@ network_clustering:
   required: false
 
 manta_network:
-  file_path: microbetag_run_carve/plaque_manta_net.cyjs
+  file_path: qiita_plaque/plaque_manta_net.cyjs
   description: >
     In case you have performed manta already in a previous run of microbetag or as a stand-alone tool, 
     you may provide directly its findings in .cyjs format.
