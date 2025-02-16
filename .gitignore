@@ -29,6 +29,10 @@ _site/
 # Backups tmp
 *.bck
 
+# Logs
+*.log
+
+# Licenses
 *.lic
 
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`

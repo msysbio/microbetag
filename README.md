@@ -157,6 +157,13 @@ and assuming you have [installed the MGG CytoscapeApp](https://hariszaf.github.i
 you can now load the `.cx` file in Cytoscape (`File > Import network from file`) and go through the annotations the same way as you would do when running microbetag from within the app. 
 
 
+## Unit-tests
+
+Remember, `unittest` will run your tests in alphabetical order. 
+
+
+
+
 ## Funding
 
 This project is funded by: 

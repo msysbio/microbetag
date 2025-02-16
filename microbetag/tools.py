@@ -7,6 +7,7 @@ from typing import List
 from .utils import get_files_with_suffixes, get_library_version
 
 
+
 def run_phylomint(config):
     """
     Invoke PhyloMInt as edited from microbetag team to support parallel calculation of the seed and non seed sets
@@ -156,7 +157,6 @@ def kegg_annotation(faa, basename, out_dir, db_dir, ko_dic, threads):
     return True
 
 
-
 def phenotrex_genotype(config):
     """
     """
@@ -231,3 +231,44 @@ def phenotrex_predict(config):
             except Exception as e:
                 logging.error("TSIRIMPIM: An unexpected error occurred.")
                 raise SystemError from e
+
+
+def run_manta(config):
+    import time
+    # Build the manta command
+    logging.info("Running manta clustering algorithm.")
+    manta_output_file = "/".join([config.output_dir, 'manta_annotated'])
+    manta_params = [
+        "manta",
+        "-i", config.base_network_file,
+        "-f", "cyjs",
+        "-o", manta_output_file,
+        "--layout"
+    ]
+    manta_command = " ".join(manta_params)
+
+    # Run manta
+    try:
+        m1 = time.time()
+        if os.system(manta_command) != 0:
+            e = """\
+                The manta clustering algorithm failed.
+                Most likely this is because clusters could not be grouped based on the provided network and the parameters setup of manta.
+                Yet, microbetag will continue to the following steps without considering for clusters.
+            """
+            logging.warning(e)
+            # Changed cfg so the buld_cx_annotated_graph function will not fail.
+            config.network_clustering = False
+        else:
+            logging.info("""manta ran fine.""")
+        m2 = time.time()
+        time = " ".join(["Network clustering with manta took:", str(m2 - m1), "sec"])
+        logging.info(time)
+
+    except Exception as e:
+        logging.warning(e)
+        config.network_clustering = False
+
+
+
+

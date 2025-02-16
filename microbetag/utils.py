@@ -2,7 +2,7 @@
 Utils supporting tasks for file parsing and formating
 """
 import os, re
-import json
+import json, csv
 import time
 import copy
 import random
@@ -395,7 +395,9 @@ def extend_complements(complements_json,
     descrps = descrps[column_order]
 
     # Deep copy the complements dictionary
-    complements_dict = json.load(open(complements_json))
+    with open(complements_json, 'r') as file:
+        complements_dict = json.load(file)
+    # complements_dict = json.load(open(complements_json))
     complements_dict_ext = copy.deepcopy(complements_dict)
 
     # Process complements
@@ -458,29 +460,43 @@ def load_phenotypic_traits(conf):
     bin_phen_traits = {}
     phentraits = set()
 
-    prediction_files = [os.path.join(conf.predictions_path, file) for file in os.listdir(conf.predictions_path)]
-    for file in prediction_files:
-        if os.path.getsize(file) == 0:
-            continue
+    all_phen_df = os.path.join(conf.predictions_path, "phen_traits.tsv")    # TODO: consider giving this also as an argument in the config
+    if os.path.exists(all_phen_df):
+        df = pd.read_csv(all_phen_df, sep="\t")
+        df = df.drop("NCBI_ID", axis=1)
+        phentraits = {x for x in df.columns if "Score" not in x}
+        phentraits.remove("gtdb_id")
+        list_of_dics = df.to_dict(orient="records")
 
-        trait = pd.read_csv(file, sep="\t", skiprows=1)
-        trait_name = os.path.basename(file).split(".prediction.tsv")[0]
-        trait_filtered = trait[trait['Trait present'].notna()]
-        trait_dict = trait_filtered.to_dict(orient="records")
+        for entry in list_of_dics:
+            bin_phen_traits[entry["gtdb_id"]] = {}
+            for trait in phentraits:
+                bin_phen_traits[entry["gtdb_id"]][trait] = {
+                    "presence": entry[trait],
+                    "confidence": entry["".join([trait, "Score"])]
+                }
+    else:
+        prediction_files = [os.path.join(conf.predictions_path, file) for file in os.listdir(conf.predictions_path)]
+        for file in prediction_files:
+            if os.path.getsize(file) == 0:
+                continue
 
-        for case in trait_dict:
-            bin_id, _ = os.path.splitext(case["Identifier"])
-            if bin_id not in bin_phen_traits:
-                bin_phen_traits[bin_id] = {}
-            phentraits.add(trait_name)
-            bin_phen_traits[bin_id][trait_name] = {
-                "presence": case["Trait present"],
-                "confidence": case["Confidence"]
-            }
+            trait = pd.read_csv(file, sep="\t", skiprows=1)
+            trait_name = os.path.basename(file).split(".prediction.tsv")[0]
+            trait_filtered = trait[trait['Trait present'].notna()]
+            trait_dict = trait_filtered.to_dict(orient="records")
 
+            for case in trait_dict:
+                bin_id, _ = os.path.splitext(case["Identifier"])
+                if bin_id not in bin_phen_traits:
+                    bin_phen_traits[bin_id] = {}
+                phentraits.add(trait_name)
+                bin_phen_traits[bin_id][trait_name] = {
+                    "presence": case["Trait present"],
+                    "confidence": case["Confidence"]
+                }
+    print(bin_phen_traits)
     return bin_phen_traits, phentraits
-
-
 
 
 def flatten_list(lista, flat_list=[]):
@@ -495,3 +511,64 @@ def flatten_list(lista, flat_list=[]):
         else:
             flat_list.append(i)
     return set(flat_list)
+
+
+def detect_separator(file_path):
+
+    try:
+        with open(file_path, 'r') as file:
+
+            # Get the total file size
+            file.seek(0, 2)  # Move to the end of the file
+            file_size = file.tell()
+
+            # Calculate 1% of the file size
+            one_percent_size = int(file_size * 0.01)
+
+            # Move to the start of the file
+            file.seek(0)
+
+            # Read 1% of the file to detect the delimiter
+            sample = file.read(one_percent_size)
+
+            # Use csv.Sniffer to detect the dialect
+            sniffer = csv.Sniffer()
+            dialect = sniffer.sniff(sample)
+            return dialect.delimiter
+    except:
+        raise TypeError(f"Cannot get delimeter for file {file_path}")
+    # try:
+    #     with open(file_path, "r") as file:
+    #         file.seek(0, 2)  # Move to the end of the file
+    #         file_size = file.tell()  # Get the size of the file
+    #         file.seek(max(file_size - 1000, 0), 0)  # Move to the last 1000 bytes
+    #         sample = file.read(100024)  # Read the last 1000 bytes
+    #         sniffer = csv.Sniffer()
+    #         dialect = sniffer.sniff(sample)
+    #         return dialect.delimiter
+    # except:
+    #     with open(file_path, 'r') as file:
+    #         # Use csv.Sniffer to detect the dialect (separator, quote character, etc.)
+    #         sample = file.read(100024)  # Read the first 100024 bytes
+    #         sniffer = csv.Sniffer()
+    #         dialect = sniffer.sniff(sample)
+    #         return dialect.delimiter
+
+    # finally:
+    #     TypeError(f"I cannot parse your file to get its delimter..")
+
+
+def find_three_column_format(file_path, delimiter):
+    with open(file_path, 'r') as f:
+        for line_num, line in enumerate(f, start=1):
+            # Split by tab and check the number of columns
+            columns = line.strip().split(delimiter)
+            if len(columns) == 3:
+                if isinstance(columns[-1], float):
+                    return line_num, None
+                else:
+                    return line_num, 0
+    raise ValueError(f"The network file {file_path} is not in the 3-columns format required.")
+
+
+

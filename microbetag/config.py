@@ -2,7 +2,8 @@
 import os
 import logging
 from .helpers import *
-from .utils import resolve_file_path
+from .networks import get_edgelist
+from .utils import resolve_file_path, detect_separator
 
 # Set up custom logging format
 logging.basicConfig(
@@ -10,6 +11,15 @@ logging.basicConfig(
     level=logging.WARNING  # Set the logging level
 )
 
+
+def load_abundance(abd_file):
+    delimeter = detect_separator(abd_file)
+    abd_tab_df = pd.read_csv(abd_file, sep=delimeter)
+    sequence_id_column_name = abd_tab_df.columns[0]
+    taxonomy_column_name = abd_tab_df.columns[-1]
+    seq_id_to_taxonomy = abd_tab_df[[sequence_id_column_name, taxonomy_column_name]]
+    seq_id_to_taxonomy.columns = ["sequence_id", "taxonomy"]
+    return seq_id_to_taxonomy, sequence_id_column_name, taxonomy_column_name
 
 class Config:
     """
@@ -62,16 +72,34 @@ class Config:
         if self.abundance_table is None and self.network is None:
             raise ValueError(f"You need to provide at least one between an abundance table and a network's edgelist in 3-column format.")
 
-        # Sequence to taxonomy map -- required if no abundance table is needed
+        # IMPORTANT: Sequence to taxonomy map -- required if no abundance table is needed
         sequence_taxonomy_map = conf.get("sequence_id_taxonomy_map", {}).get("file_path")
         self.sequence_taxonomy_map = resolve_file_path(self.base_dir, sequence_taxonomy_map)
-
 
         if self.abundance_table is None and self.sequence_taxonomy_map is None:
             raise ValueError(
                 f"Since an abundance table is not provided, you need to provide a 2-column file with the sequence id (e.g bin ids)"
                 "and their corresponding taxonomy or taxon name."
             )
+
+        # IMPORTANT: Sequence id to taxonomy map
+        if self.network is None:
+            self.seq_to_taxon_df, self.sequence_id_column_name, self.taxonomy_column_name = load_abundance(self.abundance_table)
+            self.seq_ids = self.sequence_id_column_name["sequence_id"].unique().tolist()
+        elif self.abundance_table is None:
+            delimeter = detect_separator(self.sequence_taxonomy_map)
+            seq_to_taxon_df = pd.read_csv(self.sequence_taxonomy_map, sep=delimeter)
+            seq_to_taxon_df.columns = ["sequence_id", "taxonomy"]
+            self.seq_to_taxon_df = seq_to_taxon_df
+            self.seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
+        else:
+            # NOTE: Not all sequence ids in the seq_ids need to have a taxonomy in this case -- only those coming from the abundance table
+            # Yet, in case that the network has taxa not present in the abundance table, apparently it will lead to errors.
+            network_df = get_edgelist(self)
+            net_seq_ids = pd.concat([network_df.iloc[:, 0], network_df.iloc[:, 1]]).unique().tolist()
+            self.seq_to_taxon_df, self.sequence_id_column_name, self.taxonomy_column_name = load_abundance(self.abundance_table)
+            abd_seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
+            self.seq_ids = net_seq_ids + abd_seq_ids
 
         precalc_only = conf.get("precalulations_only").get("value")
         self.precalc_only = precalc_only if precalc_only in [0,1] else False
@@ -101,7 +129,7 @@ class Config:
         # Build output dir
         os.makedirs(self.output_dir, exist_ok=True)
 
-        self.predictions_path = os.path.join(self.output_dir, "predictions")
+        self.predictions_path = os.path.join(self.output_dir, "phen_predictions")
         os.makedirs(self.predictions_path, exist_ok=True)
 
         # Open Reading Frames
@@ -142,16 +170,24 @@ class Config:
             if net_clust in [0,1]
             else False
         )
+        if self.network_clustering:
+            manta_net = conf.get("manta_network").get("file_path")
+            self.manta_net = (
+                os.path.join(self.base_dir, manta_net)
+                if not None
+                else os.path.join(self.output_dir, 'manta_annotated.cyjs')
+            )
+            self.base_network_file = os.path.join(self.output_dir, "basenet.cyjs")
 
         # Intermediate annoteted network file name
-        self.microbetag_annotated_network_file = os.path.join(self.output_dir, "microbetag_annotated_network.cx")
+        self.microbetag_annotated_network_file = os.path.join(self.output_dir, "pseudo_cx_annotated_net.cx")
         self.tinyurl = (
             conf.get("tinyurl", {}).get("value")
             if conf.get("tinyurl", {}).get("value")
             else False
         )
         # ==========
-        # Init torch
+        # Init torch -- machine learning library
         # ==========
         import torch
         from deepnog.utils import get_weights_path

@@ -1,7 +1,9 @@
 import logging
+import json
 import pandas as pd
 import networkx as nx
 
+from .utils import detect_separator, find_three_column_format
 
 # Base .cx
 def build_edge_list(edgelist, metadata_file=None):
@@ -96,11 +98,11 @@ def read_cyjson(filename, direction=False):
 
 
 def get_edgelist(conf):
-    # Load edgelist
-    if conf.flashweave:
-        edgelist = pd.read_csv(conf.network, sep="\t", skiprows=2, header=None)
-    else:
-        edgelist = pd.read_csv(conf.network, sep="\t")
+    """ Loads a 3-column network file as pd.DataFrame"""
+    delimiter = detect_separator(conf.network)
+    line_num, header = find_three_column_format(conf.network, delimiter)
+    edgelist = pd.read_csv(conf.network, sep=delimiter, skiprows=line_num-1, header=header)
+
     return edgelist
 
 
@@ -115,9 +117,6 @@ def build_base_graph(conf):  # edgelist_as_a_list_of_dicts, microb_id_taxonomy,
     edgelist = get_edgelist(conf)
     edgelist.columns = ["node_a", "node_b", "microbetag::weight"]
     edgelist_as_a_list_of_dicts = edgelist.to_dict(orient="records")
-    abundance_table_df = pd.read_csv(conf.abundance_table, sep="\t")
-    microb_id_taxonomy = abundance_table_df[ [abundance_table_df.columns[0], abundance_table_df.columns[-1] ]]
-    microb_id_taxonomy.columns = ["sequence_id", "taxonomy"]
 
     base_network = {}
     base_network["elements"] = {}
@@ -131,27 +130,20 @@ def build_base_graph(conf):  # edgelist_as_a_list_of_dicts, microb_id_taxonomy,
         node_name_a = edge["node_a"]
         is_taxon = False
         if node_name_a in conf.seq_ids:
-            taxonomy_a = microb_id_taxonomy.loc[microb_id_taxonomy['sequence_id'] == node_name_a, 'taxonomy'].item()
             is_taxon = True
         if node_name_a not in processed_nodes:
             processed_nodes.add(node_name_a)
-            node_a = build_a_base_node(node_name_a, microb_id_taxonomy, is_taxon)
+            node_a = build_a_base_node(node_name_a, conf.seq_to_taxon_df, is_taxon)
             nodes.append(node_a)
 
         # Node B
         node_name_b = edge["node_b"]
         is_taxon = False
         if node_name_b in conf.seq_ids:
-            try:
-                taxonomy_b = microb_id_taxonomy.loc[microb_id_taxonomy['sequence_id'] == node_name_b, 'taxonomy'].item()
-            except:
-                print(node_name_b)
-                raise ValueError("F")
             is_taxon = True
-
         if node_name_b not in processed_nodes:
             processed_nodes.add(node_name_b)
-            node_b = build_a_base_node(node_name_b, microb_id_taxonomy, is_taxon)
+            node_b = build_a_base_node(node_name_b, conf.seq_to_taxon_df, is_taxon)
             nodes.append(node_b)
 
         # Edge A-B

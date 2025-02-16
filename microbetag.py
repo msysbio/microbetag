@@ -67,7 +67,8 @@ from microbetag.utils import *
 from microbetag.tools import *
 from microbetag.config import Config
 from microbetag.genres import GEMSReconstruction
-from microbetag.build_mtg_cx2 import *
+from microbetag.helpers import manta_input_net
+from microbetag.build_mtg_cx2 import build_pseudo_cx, build_ndex2_net
 from microbetag.pathway_complementarity import export_pathway_complementarities
 from microbetag.seed_complementarity import ExportSeedComplementarities
 
@@ -323,61 +324,28 @@ if config.seed_complementarity:
 # ----------------
 # Network clustering
 # ----------------
-if config.network_clustering:
+if config.network_clustering and config.manta_net is None:
 
-    import time
     logging.info("""[STEP]: network clustering using manta and the abundance table""")
-    # edge_list = build_edge_list(config.network, config.metadata_file)
-    # edgelist_as_a_list_of_dicts = edge_list.map(lambda x: str(x) if pd.notna(x) else 'null').to_dict(orient="records")
+    # Build original input file in cyjs format
+    manta_input_net(config)
 
-    # Build base network; no annotations added
-    base_network = build_base_graph(config)  # edgelist_as_a_list_of_dicts,
-    base_network = convert_to_json_serializable(base_network)
-    base_network_file = os.path.join(config.output_dir, "basenet.cyjs")
-    with open(base_network_file, "w") as f:
-        json.dump(base_network, f, indent=4)
+    logging.info(
+        "Base network has been built and saved."
+        "manta is now clustering your network..."
+    )
+    # Run manta on the cyjs network
+    run_manta(config)
 
     logging.info("Base network has been built and saved.")
 
-    # Build the manta command
-    logging.info("Running manta clustering algorithm.")
-    manta_output_file = "/".join([config.output_dir, 'manta_annotated'])
-    manta_params = [
-        "manta",
-        "-i", base_network_file,
-        "-f", "cyjs",
-        "-o", manta_output_file,
-        "--layout"
-    ]
-    manta_command = " ".join(manta_params)
-
-    # Run manta
-    try:
-        m1 = time.time()
-        if os.system(manta_command) != 0:
-            e = """\
-                The manta clustering algorithm failed.
-                Most likely this is because clusters could not be grouped based on the provided network and the parameters setup of manta.
-                Yet, microbetag will continue to the following steps without considering for clusters.
-            """
-            logging.warning(e)
-            # Changed cfg so the buld_cx_annotated_graph function will not fail.
-            config.network_clustering = False
-        else:
-            logging.info("""manta ran fine.""")
-        m2 = time.time()
-        time = " ".join(["Network clustering with manta took:", str(m2 - m1), "sec"])
-        logging.info(time)
-    except Exception as e:
-        logging.warning(e)
-        config.network_clustering = False
 
 # ----------------
 # Annotate network in .cx format
 # ----------------
 if config.precalc_only is False:
     logging.info("[STEP] ANNOTATE NETWORK ")
-    annotated_network = build_cx_annotated_graph(config)
+    annotated_network = build_pseudo_cx(config)
     with open(config.microbetag_annotated_network_file, "w") as f:
             annotated_network2file = convert_to_json_serializable(annotated_network)
             json.dump(annotated_network2file, f)
@@ -386,7 +354,7 @@ if config.precalc_only is False:
     # Build cx2 with ndex2 library
     if build_ndex2_net(config.microbetag_annotated_network_file):
         # os.remove(config.microbetag_annotated_network_file)
-        logging.info("The .cx file was uploaded to NDEx successfully.")
+        logging.info("The pseudo .cx file was converted to CX2 through NDEx successfully.")
 
 config.export_to_log()
 logging.info("A parameters.log file with the parameters used in this run was built.")

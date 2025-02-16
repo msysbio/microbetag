@@ -1,13 +1,14 @@
 """
 Handlers classes allowing the different steps
 """
-
 import os, sys
-import csv
+import json
 import pickle
 import logging
 import pandas as pd
-from .utils import resolve_file_path
+
+from .utils import resolve_file_path, convert_to_json_serializable
+from .networks import build_base_graph
 
 class PathwayComplementarity:
     """
@@ -200,6 +201,9 @@ class AbdTableHandler():
             missing_seq_ids = set(self.seq_ids) - set(config.bins_ids)
 
             if missing_seq_ids:
+                for c in missing_seq_ids:
+                    if not isinstance(c, str):
+                        missing_seq_ids.remove(c) ; missing_seq_ids.add(str(c))
                 missing_seq_ids_str = ', '.join(missing_seq_ids)
                 logging.warn(
                     "There are sequence ids on your abundance table for which there are no"
@@ -374,13 +378,14 @@ class GenresHandler():
         self.phylomint_scores = os.path.join(self.seeds, "phylomint_scores.tsv")
 
 
-def detect_separator(file_path):
-    with open(file_path, 'r') as file:
-        # Use csv.Sniffer to detect the dialect (separator, quote character, etc.)
-        sample = file.read(100024)  # Read the first 100024 bytes
-        sniffer = csv.Sniffer()
-        dialect = sniffer.sniff(sample)
-        return dialect.delimiter
+def manta_input_net(config):
+    """ Build intermediate network file as input for manta """
+
+    manta_input = build_base_graph(config)
+    manta_input_serial = convert_to_json_serializable(manta_input)
+    with open(config.base_network_file, "w") as f:
+        json.dump(manta_input_serial, f, indent=4)
+    return True
 
 
 # [NOTE] OUT OF SCOPE BUT CURRENTLY USEFUL

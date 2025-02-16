@@ -259,6 +259,16 @@ network_clustering:
   required: False
 
 
+manta_network:
+  file_path: 
+  description: >
+    In case you have performed manta already in a previous run of microbetag or as a stand-alone tool, 
+    you may provide directly its findings in .cyjs format.
+  type: string
+  required: false
+  example: 
+    - microbetag/ext_data/input_data/manta.cyjs
+
 # -----
 # Flashweave
 # -----
