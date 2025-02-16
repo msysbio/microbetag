@@ -22,9 +22,14 @@ setup(
         ]
     },
     install_requires=requirements,
-    extras_require={'plotting': ['matplotlib>=2.2.0']},
+    # extras_require={'plotting': ['matplotlib>=2.2.0']},
+    dependency_links=[
+        "git+https://github.com/hariszaf/manta.git@scipy-version#egg=manta"
+    ]
 )
 
 
 # python setup.py  sdist bdist_wheel
 # pip install .
+# in cases you get the strip_trailing_zero error
+# pip install --upgrade setuptools packaging
