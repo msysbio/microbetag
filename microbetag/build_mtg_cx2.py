@@ -19,12 +19,13 @@ import pyshorteners
 import pandas as pd
 from typing import Dict
 
-from .utils import convert_to_json_serializable, extend_complements, flatten_list, extend_faprotax, load_phenotypic_traits
-from .helpers import detect_separator
 from .networks import get_edgelist, read_cyjson
+from .utils import extend_complements, extend_faprotax, load_phenotypic_traits
 from .seed_complementarity import build_url_with_seed_complements, load_seed_complement_files
 
-def build_cx_annotated_graph(conf):
+
+
+def build_pseudo_cx(conf):
     """
     Builds a .cx (version 2) file, the user can then load on Cytoscape and parse it through the MGG app.
 
@@ -37,23 +38,10 @@ def build_cx_annotated_graph(conf):
     # Get pairs of nodes with an association
     unique_associated_pairs = {tuple(row) for _, row in edgelist.iloc[:, :2].iterrows()}
 
-    # Laod a sequence id to taxonomy dictionary from an abundance table..
-    if conf.abundance_table is not None:
-
-        # Load abundance table
-        abundance_table_df = pd.read_csv(conf.abundance_table, sep="\t")
-        seq_id_to_taxonomy = abundance_table_df[[conf.sequence_id_column_name, conf.taxonomy_column_name]]
-        seq_id_to_taxonomy_dic = dict(zip(seq_id_to_taxonomy.iloc[:,0], seq_id_to_taxonomy.iloc[:,1]))
-
-    # .. or from a taxonomy map file
-    elif conf.sequence_taxonomy_map is not None:
-        delimeter = detect_separator(conf.sequence_taxonomy_map)
-        seq_id_to_tax_df = pd.read_csv(conf.sequence_taxonomy_map, sep=delimeter)
-        seq_id_to_taxonomy_dic = seq_id_to_tax_df.set_index(
-            seq_id_to_tax_df.columns[0]
-            )[ seq_id_to_tax_df.columns[1] ].to_dict()
-    else:
-        raise ValueError("Neither an abundance table nor a sequence to taxonomy map file was provided. Please specify one.")
+    # Make the map sequence to taxon df a dictionary
+    seq_id_to_taxonomy_dic = conf.seq_to_taxon_df.set_index(
+        conf.seq_to_taxon_df.columns[0]
+        )[ conf.seq_to_taxon_df.columns[1] ].to_dict()
 
     # Init formatting microbetag annotations
     annotated_cx = []
@@ -132,7 +120,7 @@ def build_cx_annotated_graph(conf):
 
     """SEED complements"""
     logging.info("Loading seeds complementarities")
-    kmap = seed_scores = seed_complements_dict = None
+    kmap = seed_scores = non_seed_sets = seed_complements_dict = None
     if conf.seed_complementarity:
 
         kmap = load_seed_complement_files(conf.kegg_mappings)
@@ -170,8 +158,8 @@ def build_cx_annotated_graph(conf):
         m2 = {"applies_to": "node_table", "n": "::".join(["manta", "assignment"]), "d": "string"}
         cyTableColumns.append(m1)
         cyTableColumns.append(m2)
-        manta_output_file = "/".join([conf.output_dir, 'manta_annotated.cyjs'])
-        manta_net = read_cyjson(manta_output_file)
+        # manta_output_file = conf.manta_net     #  "/".join([conf.output_dir, 'manta_annotated.cyjs'])
+        manta_net = read_cyjson(conf.manta_net)
         clusters = list(manta_net.nodes(data="cluster"))
         assignments = list(manta_net.nodes(data="assignment"))
         positions = list(manta_net.nodes(data="position"))
@@ -212,86 +200,6 @@ def build_cx_annotated_graph(conf):
     # EDGES TABLE
     # ===========
     edges, edgeAttributes = build_mtg_edges(conf, edgelist, seq_to_nodeID, node_counter, complements_dict_ext, seed_scores, seed_complements_dict, non_seed_sets, kmap)
-    # edges = {}; edges["edges"] = []
-    # edgeAttributes = {}; edgeAttributes["edgeAttributes"] = []
-    # edge_counter = node_counter + 1000
-
-    # shortener = pyshorteners.Shortener() if conf.tinyurl else None
-
-    # logging.info("Shortener in the main build_cx function is %s" % shortener)
-
-    # for case in edgelist.iterrows():
-    #     id_a = case[1][0]
-    #     id_b = case[1][1]
-    #     net_id_a = seq_to_nodeID[id_a]  # get the bin_id and then get its corresponding id on the net
-    #     net_id_b = seq_to_nodeID[id_b]
-    #     score = case[1][2]
-    #     # NOTE: In this case, we do not care about the source and the target since it is actually undirectional
-    #     edge = {"@id": edge_counter, "s": net_id_a, "t": net_id_b, "i": "cooccurrence/depletion"}
-    #     edges["edges"].append(edge)
-
-    #     edgeAttributes["edgeAttributes"].append({"po": edge_counter, "n": "microbetag::weight", "v": str(score), "d": "double"})
-    #     if score > 0:
-    #         edgeAttributes["edgeAttributes"].extend([
-    #             {"po": edge_counter, "n": "shared name", "v": " ".join([id_a, "(cooccurss with)", id_b]), "d": "string"},
-    #             {"po": edge_counter, "n": "interaction type", "v": "cooccurrence", "d": "string"}
-    #         ])
-    #     else:
-    #         edgeAttributes["edgeAttributes"].extend([
-    #             {"po": edge_counter, "n": "shared name", "v": " ".join([id_a, "(depletes)", id_b]), "d": "string"},
-    #             {"po": edge_counter, "n": "interaction type", "v": "depletion", "d": "string"}
-    #         ])
-
-    #     edge_counter += 1
-
-    #     """
-    #     Edge for A -> B
-    #     NOTE: we want as source of the edge the DONOR taxo -- since it is the one providing to the BENEFICIARY (target)
-    #     """
-    #     check1 = False
-    #     if conf.pathway_complementarity:
-    #         # Potential pathway compl edge
-    #         pot_edge = {"@id": (edge_counter), "t": net_id_a, "s": net_id_b, "i": "comp_coop"}
-    #         # Path complements A -> B
-    #         check1 = add_edge_pathway_complements(id_a, id_b, complements_dict_ext, edges, edgeAttributes, pot_edge, edge_counter)
-
-    #     check2 = False
-    #     if conf.seed_complementarity:
-
-    #         # Seed complements A -> B
-    #         check2 = add_edge_seed_complements(
-    #             id_a, id_b, seed_complements_dict,
-    #             edges, edgeAttributes, pot_edge, edge_counter, kmap, non_seed_sets, shortener
-    #         )
-
-    #         # Seed scores A -> B
-    #         add_seed_edge_attributes(id_a, id_b, seed_scores, edgeAttributes, edge_counter)
-
-    #     if check1 or check2:
-    #         edge_counter += 1
-
-    #     """
-    #     Edge for B -> A
-    #     """
-    #     if conf.pathway_complementarity:
-    #         pot_edge = {"@id": (edge_counter), "t": net_id_b, "s": net_id_a, "i": "comp_coop"}
-
-    #     # Path complements B -> A
-    #     check1 = False
-    #     if conf.pathway_complementarity:
-    #         check1 = add_edge_pathway_complements(id_b, id_a, complements_dict_ext, edges, edgeAttributes, pot_edge, edge_counter)
-
-    #     check2 = False
-    #     if conf.seed_complementarity:
-
-    #         # Seed complements B -> A
-    #         check2 = add_edge_seed_complements(id_b, id_a, seed_complements_dict, edges, edgeAttributes, pot_edge, edge_counter, kmap, non_seed_sets, shortener)
-
-    #         # Seed scores B -> A
-    #         add_seed_edge_attributes(id_b, id_a, seed_scores, edgeAttributes, edge_counter)
-
-    #     if check1 or check2:
-    #         edge_counter += 1
 
     annotated_cx.append(edges)
     annotated_cx.append(edgeAttributes)
@@ -317,10 +225,174 @@ def build_cx_annotated_graph(conf):
     return annotated_cx
 
 
+def build_mtg_nodes(conf, edgelist, seq_id_to_taxonomy, phen_traits, faprotax_traits, manta_annotations=None, cartesian_layout=None):
+    """
+    Builds the nodes and attributes for the pseudo-CX Microbetag network.
+    """
+    def add_node_attribute(attributes, node_id, name, value, dtype):
+        """Helper function to add a node attribute."""
+        attributes.append({"po": node_id, "n": name, "v": value, "d": dtype})
+
+    def handle_phen_traits(node_id, seq_id, phen_traits, attributes):
+        """Handles phenotypic traits for a node."""
+        if seq_id in phen_traits:
+            for trait, data in phen_traits[seq_id].items():
+                presence = data.get("presence") == "YES"
+                confidence = data.get("confidence", 0.0)
+                add_node_attribute(attributes, node_id, f"phendb::{trait}", presence, "boolean")
+                add_node_attribute(attributes, node_id, f"phendbScore::{trait}Score", str(confidence), "double")
+            return True
+        return False
+
+    def handle_faprotax_traits(node_id, seq_id, faprotax_traits, attributes):
+        """Handles FAPROTAX traits for a node."""
+        if seq_id in faprotax_traits:
+            for term in faprotax_traits[seq_id]:
+                add_node_attribute(attributes, node_id, f"faprotax::{term}", True, "boolean")
+
+    def handle_manta_annotations(node_id, seq_id, manta_annotations, layout, attributes):
+        """Handles manta cluster annotations and Cartesian layout."""
+        if seq_id in manta_annotations:
+            annotation = manta_annotations[seq_id]
+            add_node_attribute(attributes, node_id, "manta::cluster", int(annotation["cluster"]), "integer")
+            add_node_attribute(attributes, node_id, "manta::assignment", annotation["assignment"], "string")
+            layout["cartesianLayout"].append({
+                "node": node_id,
+                "x": annotation["position"]["x"],
+                "y": annotation["position"]["y"]
+            })
+
+    set_of_nodes = set(edgelist.iloc[:, :2].values.ravel())
+    nodes = {"nodes": []}
+    node_attributes = {"nodeAttributes": []}
+    seq_to_node_id = {}
+    node_counter = 1000
+
+    for node_name in set_of_nodes:
+        node_counter += 1
+        node_id = node_counter
+        seq_to_node_id[node_name] = node_id
+
+        # Add basic node information
+        nodes["nodes"].append({"@id": node_id, "n": node_name})
+        add_node_attribute(node_attributes["nodeAttributes"], node_id, "@id", node_name, "string")
+        add_node_attribute(node_attributes["nodeAttributes"], node_id, "name", node_name, "string")
+
+        if node_name in conf.seq_ids:
+            check_mspecies = False
+
+            # Handle phenotypic traits
+            if handle_phen_traits(node_id, node_name, phen_traits, node_attributes["nodeAttributes"]):
+                check_mspecies = True
+
+            # Handle FAPROTAX traits
+            if conf.abundance_table is not None:
+                handle_faprotax_traits(node_id, node_name, faprotax_traits, node_attributes["nodeAttributes"])
+
+            # Add taxonomy information
+            tax_level = "mspecies" if check_mspecies else "other"
+            add_node_attribute(node_attributes["nodeAttributes"], node_id, "microbetag::ncbi-tax-level", tax_level, "string")
+            taxonomy = seq_id_to_taxonomy.get(node_name)
+            if taxonomy:
+                add_node_attribute(node_attributes["nodeAttributes"], node_id, "microbetag::taxonomy", taxonomy, "string")
+            else:
+                logging.info(f"No taxonomy found for node {node_name}")
+
+        # Handle manta annotations if clustering is enabled
+        if conf.network_clustering and manta_annotations:
+            handle_manta_annotations(node_id, node_name, manta_annotations, cartesian_layout, node_attributes["nodeAttributes"])
+
+        # Assign metavariables if metadata is provided
+        if conf.metadata_file is not None and node_name not in conf.seq_ids:
+            add_node_attribute(node_attributes["nodeAttributes"], node_id, "microbetag::ncbi-tax-level", "metavar", "string")
+
+    return nodes, node_attributes, seq_to_node_id, node_counter
 
 
+def build_mtg_edges(conf, edgelist, seq_to_nodeID, node_counter, complements_dict_ext, seed_scores, seed_complements_dict, non_seed_sets, kmap):
 
+    edges = {}; edges["edges"] = []
+    edgeAttributes = {}; edgeAttributes["edgeAttributes"] = []
+    edge_counter = node_counter + 1000
 
+    shortener = pyshorteners.Shortener() if conf.tinyurl else None
+
+    logging.info("Shortener in the main build_cx function is %s" % shortener)
+
+    for case in edgelist.iterrows():
+        id_a = case[1][0]
+        id_b = case[1][1]
+        net_id_a = seq_to_nodeID[id_a]  # get the bin_id and then get its corresponding id on the net
+        net_id_b = seq_to_nodeID[id_b]
+        score = case[1][2]
+        # NOTE: In this case, we do not care about the source and the target since it is actually undirectional
+        edge = {"@id": edge_counter, "s": net_id_a, "t": net_id_b, "i": "cooccurrence/depletion"}
+        edges["edges"].append(edge)
+
+        edgeAttributes["edgeAttributes"].append({"po": edge_counter, "n": "microbetag::weight", "v": str(score), "d": "double"})
+        if score > 0:
+            edgeAttributes["edgeAttributes"].extend([
+                {"po": edge_counter, "n": "shared name", "v": " ".join([id_a, "(cooccurss with)", id_b]), "d": "string"},
+                {"po": edge_counter, "n": "interaction type", "v": "cooccurrence", "d": "string"}
+            ])
+        else:
+            edgeAttributes["edgeAttributes"].extend([
+                {"po": edge_counter, "n": "shared name", "v": " ".join([id_a, "(depletes)", id_b]), "d": "string"},
+                {"po": edge_counter, "n": "interaction type", "v": "depletion", "d": "string"}
+            ])
+
+        edge_counter += 1
+
+        """
+        Edge for A -> B
+        NOTE: we want as source of the edge the DONOR taxo -- since it is the one providing to the BENEFICIARY (target)
+        """
+        check1 = False
+        if conf.pathway_complementarity:
+            # Potential pathway compl edge
+            pot_edge = {"@id": (edge_counter), "t": net_id_a, "s": net_id_b, "i": "comp_coop"}
+            # Path complements A -> B
+            check1 = add_edge_pathway_complements(id_a, id_b, complements_dict_ext, edges, edgeAttributes, pot_edge, edge_counter)
+
+        check2 = False
+        if conf.seed_complementarity:
+
+            # Seed complements A -> B
+            check2 = add_edge_seed_complements(
+                id_a, id_b, seed_complements_dict,
+                edges, edgeAttributes, pot_edge, edge_counter, kmap, non_seed_sets, shortener
+            )
+
+            # Seed scores A -> B
+            add_seed_edge_attributes(id_a, id_b, seed_scores, edgeAttributes, edge_counter)
+
+        if check1 or check2:
+            edge_counter += 1
+
+        """
+        Edge for B -> A
+        """
+        if conf.pathway_complementarity:
+            pot_edge = {"@id": (edge_counter), "t": net_id_b, "s": net_id_a, "i": "comp_coop"}
+
+        # Path complements B -> A
+        check1 = False
+        if conf.pathway_complementarity:
+            check1 = add_edge_pathway_complements(id_b, id_a, complements_dict_ext, edges, edgeAttributes, pot_edge, edge_counter)
+
+        check2 = False
+        if conf.seed_complementarity:
+
+            # Seed complements B -> A
+            check2 = add_edge_seed_complements(id_b, id_a, seed_complements_dict, edges, edgeAttributes, pot_edge, edge_counter, kmap, non_seed_sets, shortener)
+
+            # Seed scores B -> A
+            add_seed_edge_attributes(id_b, id_a, seed_scores, edgeAttributes, edge_counter)
+
+        if check1 or check2:
+            edge_counter += 1
+
+    return edges, edgeAttributes
 
 
 def seqId_faprotax_functions_assignment(path_to_subtables):
@@ -341,8 +413,6 @@ def seqId_faprotax_functions_assignment(path_to_subtables):
             else:
                 seqId_faprotax_assignments[seqId].append(process_name)
     return seqId_faprotax_assignments
-
-
 
 
 def add_edge_pathway_complements(id_x, id_y, complements_dict_ext, edges, edgeAttributes, pot_edge, edge_counter):
@@ -420,112 +490,6 @@ def add_seed_edge_attributes(id_x, id_y, seed_scores, edgeAttributes, edge_count
             {"po": edge_counter, "n": "seed::competition", "v": str(comp), "d": "double"},
             {"po": edge_counter, "n": "seed::cooperation", "v": str(coop), "d": "double"}
         ])
-
-
-def build_ndex2_net(microbetag_net_file):
-    """
-    Wrapper to fire an instance of UpdateCX2Netork class aiming to export a microbetag-annotated network file to .cx2 format
-
-    Arguments
-    ---------
-    microbetag_net_file (str): path to initial microbetag-annotated network file
-
-    Returns
-    --------
-    (boolean): A .cx2 format file was successfully saved or not
-    """
-    try:
-        build_cx2= UpdateCX2Netork(microbetag_net_file)
-        build_cx2.build_cx()
-        return True
-    except Exception as e:
-        logging.error('Error occurred when building cx2. %s' % str(e))
-        return False
-
-
-def build_mtg_nodes(conf, edgelist, seq_id_to_taxonomy, phen_traits, faprotax_traits, manta_annotations=None, cartesian_layout=None):
-    """
-    Builds the nodes and attributes for the pseudo-CX Microbetag network.
-    """
-    def add_node_attribute(attributes, node_id, name, value, dtype):
-        """Helper function to add a node attribute."""
-        attributes.append({"po": node_id, "n": name, "v": value, "d": dtype})
-
-    def handle_phen_traits(node_id, seq_id, phen_traits, attributes):
-        """Handles phenotypic traits for a node."""
-        if seq_id in phen_traits:
-            for trait, data in phen_traits[seq_id].items():
-                presence = data.get("presence") == "YES"
-                confidence = data.get("confidence", 0.0)
-                add_node_attribute(attributes, node_id, f"phendb::{trait}", presence, "boolean")
-                add_node_attribute(attributes, node_id, f"phendbScore::{trait}Score", str(confidence), "double")
-            return True
-        return False
-
-    def handle_faprotax_traits(node_id, seq_id, faprotax_traits, attributes):
-        """Handles FAPROTAX traits for a node."""
-        if seq_id in faprotax_traits:
-            for term in faprotax_traits[seq_id]:
-                add_node_attribute(attributes, node_id, f"faprotax::{term}", True, "boolean")
-
-    def handle_manta_annotations(node_id, seq_id, manta_annotations, layout):
-        """Handles manta cluster annotations and Cartesian layout."""
-        if seq_id in manta_annotations:
-            annotation = manta_annotations[seq_id]
-            add_node_attribute(node_attributes, node_id, "manta::cluster", int(annotation["cluster"]), "integer")
-            add_node_attribute(node_attributes, node_id, "manta::assignment", annotation["assignment"], "string")
-            layout["cartesianLayout"].append({
-                "node": node_id,
-                "x": annotation["position"]["x"],
-                "y": annotation["position"]["y"]
-            })
-
-    set_of_nodes = set(edgelist.iloc[:, :2].values.ravel())
-    nodes = {"nodes": []}
-    node_attributes = {"nodeAttributes": []}
-    seq_to_node_id = {}
-    node_counter = 1000
-
-    for node_name in set_of_nodes:
-        node_counter += 1
-        node_id = node_counter
-        seq_to_node_id[node_name] = node_id
-
-        # Add basic node information
-        nodes["nodes"].append({"@id": node_id, "n": node_name})
-        add_node_attribute(node_attributes["nodeAttributes"], node_id, "@id", node_name, "string")
-        add_node_attribute(node_attributes["nodeAttributes"], node_id, "name", node_name, "string")
-
-        if node_name in conf.seq_ids:
-            check_mspecies = False
-
-            # Handle phenotypic traits
-            if handle_phen_traits(node_id, node_name, phen_traits, node_attributes["nodeAttributes"]):
-                check_mspecies = True
-
-            # Handle FAPROTAX traits
-            if conf.abundance_table is not None:
-                handle_faprotax_traits(node_id, node_name, faprotax_traits, node_attributes["nodeAttributes"])
-
-            # Add taxonomy information
-            tax_level = "mspecies" if check_mspecies else "other"
-            add_node_attribute(node_attributes["nodeAttributes"], node_id, "microbetag::ncbi-tax-level", tax_level, "string")
-            taxonomy = seq_id_to_taxonomy.get(node_name)
-            if taxonomy:
-                add_node_attribute(node_attributes["nodeAttributes"], node_id, "microbetag::taxonomy", taxonomy, "string")
-            else:
-                logging.info(f"No taxonomy found for node {node_name}")
-
-        # Handle manta annotations if clustering is enabled
-        if conf.network_clustering and manta_annotations:
-            handle_manta_annotations(node_id, node_name, manta_annotations, cartesian_layout)
-
-        # Assign metavariables if metadata is provided
-        if conf.metadata_file is not None and node_name not in conf.seq_ids:
-            add_node_attribute(node_attributes["nodeAttributes"], node_id, "microbetag::ncbi-tax-level", "metavar", "string")
-
-    return nodes, node_attributes, seq_to_node_id, node_counter
-
 
 
 class UpdateCX2Netork():
@@ -668,187 +632,22 @@ class UpdateCX2Netork():
         net_cx.write_as_raw_cx2(graphml_file)
 
 
+def build_ndex2_net(microbetag_net_file):
+    """
+    Wrapper to fire an instance of UpdateCX2Netork class aiming to export a microbetag-annotated network file to .cx2 format
 
+    Arguments
+    ---------
+    microbetag_net_file (str): path to initial microbetag-annotated network file
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def build_mtg_edges(conf, edgelist, seq_to_nodeID, node_counter, complements_dict_ext, seed_scores, seed_complements_dict, non_seed_sets, kmap):
-
-    edges = {}; edges["edges"] = []
-    edgeAttributes = {}; edgeAttributes["edgeAttributes"] = []
-    edge_counter = node_counter + 1000
-
-    shortener = pyshorteners.Shortener() if conf.tinyurl else None
-
-    logging.info("Shortener in the main build_cx function is %s" % shortener)
-
-    for case in edgelist.iterrows():
-        id_a = case[1][0]
-        id_b = case[1][1]
-        net_id_a = seq_to_nodeID[id_a]  # get the bin_id and then get its corresponding id on the net
-        net_id_b = seq_to_nodeID[id_b]
-        score = case[1][2]
-        # NOTE: In this case, we do not care about the source and the target since it is actually undirectional
-        edge = {"@id": edge_counter, "s": net_id_a, "t": net_id_b, "i": "cooccurrence/depletion"}
-        edges["edges"].append(edge)
-
-        edgeAttributes["edgeAttributes"].append({"po": edge_counter, "n": "microbetag::weight", "v": str(score), "d": "double"})
-        if score > 0:
-            edgeAttributes["edgeAttributes"].extend([
-                {"po": edge_counter, "n": "shared name", "v": " ".join([id_a, "(cooccurss with)", id_b]), "d": "string"},
-                {"po": edge_counter, "n": "interaction type", "v": "cooccurrence", "d": "string"}
-            ])
-        else:
-            edgeAttributes["edgeAttributes"].extend([
-                {"po": edge_counter, "n": "shared name", "v": " ".join([id_a, "(depletes)", id_b]), "d": "string"},
-                {"po": edge_counter, "n": "interaction type", "v": "depletion", "d": "string"}
-            ])
-
-        edge_counter += 1
-
-        """
-        Edge for A -> B
-        NOTE: we want as source of the edge the DONOR taxo -- since it is the one providing to the BENEFICIARY (target)
-        """
-        check1 = False
-        if conf.pathway_complementarity:
-            # Potential pathway compl edge
-            pot_edge = {"@id": (edge_counter), "t": net_id_a, "s": net_id_b, "i": "comp_coop"}
-            # Path complements A -> B
-            check1 = add_edge_pathway_complements(id_a, id_b, complements_dict_ext, edges, edgeAttributes, pot_edge, edge_counter)
-
-        check2 = False
-        if conf.seed_complementarity:
-
-            # Seed complements A -> B
-            check2 = add_edge_seed_complements(
-                id_a, id_b, seed_complements_dict,
-                edges, edgeAttributes, pot_edge, edge_counter, kmap, non_seed_sets, shortener
-            )
-
-            # Seed scores A -> B
-            add_seed_edge_attributes(id_a, id_b, seed_scores, edgeAttributes, edge_counter)
-
-        if check1 or check2:
-            edge_counter += 1
-
-        """
-        Edge for B -> A
-        """
-        if conf.pathway_complementarity:
-            pot_edge = {"@id": (edge_counter), "t": net_id_b, "s": net_id_a, "i": "comp_coop"}
-
-        # Path complements B -> A
-        check1 = False
-        if conf.pathway_complementarity:
-            check1 = add_edge_pathway_complements(id_b, id_a, complements_dict_ext, edges, edgeAttributes, pot_edge, edge_counter)
-
-        check2 = False
-        if conf.seed_complementarity:
-
-            # Seed complements B -> A
-            check2 = add_edge_seed_complements(id_b, id_a, seed_complements_dict, edges, edgeAttributes, pot_edge, edge_counter, kmap, non_seed_sets, shortener)
-
-            # Seed scores B -> A
-            add_seed_edge_attributes(id_b, id_a, seed_scores, edgeAttributes, edge_counter)
-
-        if check1 or check2:
-            edge_counter += 1
-
-    return edges, edgeAttributes
-
-
-
-
-
-# def build_mtg_edges(conf, edgelist, seq_to_nodeID, node_counter, complements_dict_ext, seed_scores, seed_complements_dict, non_seed_sets, kmap):
-#     """
-#     Builds the edges part of the pseudo-CX microbetag network.
-#     """
-#     edges = {"edges": []}
-#     edgeAttributes = {"edgeAttributes": []}
-#     edge_counter = node_counter + 1000
-
-#     shortener = pyshorteners.Shortener() if conf.tinyurl else None
-#     logging.info("Shortener in the main build_cx function is %s" % shortener)
-
-#     for _, case in edgelist.iterrows():
-#         id_a, id_b, score = case[0], case[1], case[2]
-#         net_id_a, net_id_b = seq_to_nodeID[id_a], seq_to_nodeID[id_b]
-
-#         # Add base edge and attributes
-#         edge_counter = add_base_edge(edges, edgeAttributes, edge_counter, net_id_a, net_id_b, id_a, id_b, score)
-
-#         # Add pathway and seed complementarity edges (A -> B)
-#         edge_counter = add_complementarity_edges(
-#             conf, id_a, id_b, net_id_a, net_id_b, complements_dict_ext, seed_scores,
-#             seed_complements_dict, non_seed_sets, kmap, edges, edgeAttributes,
-#             edge_counter, shortener
-#         )
-
-#         # Add pathway and seed complementarity edges (B -> A)
-#         edge_counter = add_complementarity_edges(
-#             conf, id_b, id_a, net_id_b, net_id_a, complements_dict_ext, seed_scores,
-#             seed_complements_dict, non_seed_sets, kmap, edges, edgeAttributes,
-#             edge_counter, shortener
-#         )
-
-#     return edges, edgeAttributes
-
-# def add_base_edge(edges, edgeAttributes, edge_counter, net_id_a, net_id_b, id_a, id_b, score):
-#     """Adds the base edge and its attributes."""
-#     edge = {"@id": edge_counter, "s": net_id_a, "t": net_id_b, "i": "cooccurrence/depletion"}
-#     edges["edges"].append(edge)
-
-#     edgeAttributes["edgeAttributes"].append({"po": edge_counter, "n": "microbetag::weight", "v": str(score), "d": "double"})
-
-#     interaction_type = "cooccurrence" if score > 0 else "depletion"
-#     shared_name = f"{id_a} ({'cooccurs with' if score > 0 else 'depletes'}) {id_b}"
-
-#     edgeAttributes["edgeAttributes"].extend([
-#         {"po": edge_counter, "n": "shared name", "v": shared_name, "d": "string"},
-#         {"po": edge_counter, "n": "interaction type", "v": interaction_type, "d": "string"}
-#     ])
-
-#     return edge_counter + 1
-
-# def add_complementarity_edges(conf, source_id, target_id, source_net_id, target_net_id, complements_dict_ext, seed_scores,
-#                               seed_complements_dict, non_seed_sets, kmap, edges, edgeAttributes, edge_counter, shortener):
-#     """Adds pathway and seed complementarity edges."""
-#     if conf.pathway_complementarity:
-#         pot_edge = {"@id": edge_counter, "t": target_net_id, "s": source_net_id, "i": "comp_coop"}
-#         if add_edge_pathway_complements(source_id, target_id, complements_dict_ext, edges, edgeAttributes, pot_edge, edge_counter):
-#             edge_counter += 1
-
-#     if conf.seed_complementarity:
-#         pot_edge = {"@id": edge_counter, "t": target_net_id, "s": source_net_id, "i": "comp_coop"}
-#         if add_edge_seed_complements(
-#             source_id, target_id, seed_complements_dict, edges, edgeAttributes,
-#             pot_edge, edge_counter, kmap, non_seed_sets, shortener
-#         ):
-#             edge_counter += 1
-
-#         add_seed_edge_attributes(source_id, target_id, seed_scores, edgeAttributes, edge_counter)
-
-#     return edge_counter
-
-
-
-
-
-
-
-
-
+    Returns
+    --------
+    (boolean): A .cx2 format file was successfully saved or not
+    """
+    try:
+        build_cx2= UpdateCX2Netork(microbetag_net_file)
+        build_cx2.build_cx()
+        return True
+    except Exception as e:
+        logging.error('Error occurred when building cx2. %s' % str(e))
+        return False
