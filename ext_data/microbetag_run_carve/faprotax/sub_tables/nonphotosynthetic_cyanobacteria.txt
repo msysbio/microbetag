@@ -1,3 +1,0 @@
-#
-record	seqId	sample1	sample2	sample4	sample5	sample6	sample7	sample8	sample9	sample10	sample11	sample12	sample13	sample14	sample15	sample16	sample17	sample18	sample19	sample20	sample21	sample22	sample23	sample24	sample25	sample26	sample27	sample28	sample29	sample30
-d__Bacteria;p__Cyanobacteria;c__Vampirovibrionia;o__Obscuribacterales;f__Obscuribacteraceae;g__Ga0077546;s__	bin_33	14	69	50	94	8	90	48	6	94	19	95	25	83	95	72	68	36	22	22	3	77	20	99	22	12	75	21	90	82

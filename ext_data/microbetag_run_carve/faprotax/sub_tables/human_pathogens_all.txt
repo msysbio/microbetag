@@ -1,7 +1,0 @@
-#
-record	seqId	sample1	sample2	sample4	sample5	sample6	sample7	sample8	sample9	sample10	sample11	sample12	sample13	sample14	sample15	sample16	sample17	sample18	sample19	sample20	sample21	sample22	sample23	sample24	sample25	sample26	sample27	sample28	sample29	sample30
-d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Afipia;s__Afipia felis	bin_184	92	4	60	39	70	17	7	10	72	2	67	62	35	98	20	88	50	73	5	58	63	15	60	28	63	13	65	58	44
-d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Afipia;s__	bin_9	86	46	49	61	98	5	53	93	52	24	77	45	15	8	23	6	21	43	49	37	70	14	49	58	22	1	52	91	97
-d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Afipia;s__	bin_15	97	61	49	75	56	81	60	57	76	33	95	99	75	99	91	82	90	5	36	4	38	90	55	92	59	24	90	87	23
-d__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Xanthomonadales;f__Xanthomonadaceae;g__Stenotrophomonas;s__Stenotrophomonas acidaminiphila	bin_38	67	68	94	26	7	51	57	59	61	13	73	28	45	10	67	93	90	73	83	78	68	97	56	50	67	59	69	12	50
-d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Xanthobacteraceae;g__Afipia;s__Afipia sp001897755	bin_50	4	53	58	1	47	61	86	10	74	96	33	42	27	96	35	16	24	30	18	61	91	59	95	75	2	69	16	89	26

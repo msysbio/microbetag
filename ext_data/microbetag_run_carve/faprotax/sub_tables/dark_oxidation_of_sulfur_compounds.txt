@@ -1,3 +1,0 @@
-#
-record	seqId	sample1	sample2	sample4	sample5	sample6	sample7	sample8	sample9	sample10	sample11	sample12	sample13	sample14	sample15	sample16	sample17	sample18	sample19	sample20	sample21	sample22	sample23	sample24	sample25	sample26	sample27	sample28	sample29	sample30
-d__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Rhizobiales;f__Beijerinckiaceae;g__Bosea;s__Bosea sp001898115	bin_273	89	15	43	20	5	49	82	68	88	91	44	26	75	68	80	95	62	52	94	76	29	93	89	100	23	48	32	54	87
