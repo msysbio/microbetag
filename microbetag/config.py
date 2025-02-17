@@ -13,6 +13,14 @@ logging.basicConfig(
 
 
 def load_abundance(abd_file):
+    """
+    Load a tsv/csv format abundance table assuming the sequence id is procided in the first column
+    and the taxonomy in the last one
+
+    :return seq_id_to_taxonomy: A pd.DataFrame with the sequence id and their corresponding genome
+    :return sequence_id_column_name: The name (``str``) of the column with the sequence identifier (e.g. ``seqId``)
+    :return taxonomy_column_name: The name (``str``) of the column with the taxonomy
+    """
     delimeter = detect_separator(abd_file)
     abd_tab_df = pd.read_csv(abd_file, sep=delimeter)
     sequence_id_column_name = abd_tab_df.columns[0]
@@ -150,7 +158,7 @@ class Config:
         self.flashweave_args = conf["flashweave_args"]
 
         # Phenotrex - TODO: check relative path to classes
-        self.phen_classes = "microbetagDB/ref-dbs/phenDB/classes/"
+        self.phen_classes = "microbetag/mtg_maps_models//phenDB/classes/"
         self.genotypes_file = os.path.join(self.output_dir, "train.genotype")
         min_proba = conf.get("min_proba", {}).get("value") ; self.min_proba = min_proba if not None else 0.6
 

@@ -363,8 +363,6 @@ def ensure_same_namespace_after_fw(conf):
     return 1
 
 
-# building the net
-
 def extend_complements(complements_json,
                        descrps_path,
                        max_scratch_alt,
@@ -536,25 +534,6 @@ def detect_separator(file_path):
             return dialect.delimiter
     except:
         raise TypeError(f"Cannot get delimeter for file {file_path}")
-    # try:
-    #     with open(file_path, "r") as file:
-    #         file.seek(0, 2)  # Move to the end of the file
-    #         file_size = file.tell()  # Get the size of the file
-    #         file.seek(max(file_size - 1000, 0), 0)  # Move to the last 1000 bytes
-    #         sample = file.read(100024)  # Read the last 1000 bytes
-    #         sniffer = csv.Sniffer()
-    #         dialect = sniffer.sniff(sample)
-    #         return dialect.delimiter
-    # except:
-    #     with open(file_path, 'r') as file:
-    #         # Use csv.Sniffer to detect the dialect (separator, quote character, etc.)
-    #         sample = file.read(100024)  # Read the first 100024 bytes
-    #         sniffer = csv.Sniffer()
-    #         dialect = sniffer.sniff(sample)
-    #         return dialect.delimiter
-
-    # finally:
-    #     TypeError(f"I cannot parse your file to get its delimter..")
 
 
 def find_three_column_format(file_path, delimiter):
@@ -568,6 +547,3 @@ def find_three_column_format(file_path, delimiter):
                 else:
                     return line_num, 0
     raise ValueError(f"The network file {file_path} is not in the 3-columns format required.")
-
-
-

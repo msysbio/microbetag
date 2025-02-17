@@ -1,10 +1,12 @@
 import os, sys
+import glob
 import shutil
 import logging
+import subprocess
 import multiprocessing
 from typing import List
 
-from .utils import get_files_with_suffixes, get_library_version
+from .utils import get_files_with_suffixes, get_library_version, ensure_flashweave_format, ensure_same_namespace_after_fw
 
 
 
@@ -159,33 +161,62 @@ def kegg_annotation(faa, basename, out_dir, db_dir, ko_dic, threads):
 
 def phenotrex_genotype(config):
     """
+    Get COGs present in your genomes
     """
+
     if not os.path.exists(config.genotypes_file):
 
         logging.info("Get phenotrex predictions")
-
         suffixes = [".fa", ".fasta", ".gz"]
         bin_files = get_files_with_suffixes(config.bins_path, suffixes)
         bin_files_in_a_row = " ".join(bin_files)
 
         # Build genotypes
-        if get_library_version("scikit-learn") != "1.3.2":
-            os.system("python3 -m pip install scikit-learn==1.3.2")
-        compute_genotype_params = [ "phenotrex",
-                                    "compute-genotype",
-                                    "--out",
-                                    config.genotypes_file,
-                                    "--threads",
-                                    str(config.threads),
-                                    bin_files_in_a_row
-        ]
-        compute_genotype_command = " ".join(compute_genotype_params)
+        compute_genotype_params = []
+        if config.cwd != "/microbetag":
+            compute_genotype_params += ["conda run -n phendb"]
 
-        if os.system(compute_genotype_command) != 0:
-            logging.info("Try phenotrex genotype for the second time.")
+        compute_genotype_params += [
+            "phenotrex",
+            "compute-genotype",
+            "--out",
+            config.genotypes_file,
+            "--threads",
+            str(config.threads),
+            bin_files_in_a_row
+        ]
+        # Container - case
+        if config.cwd == "/microbetag":
+
+            sk_init_version = get_library_version("scikit-learn")
+            pheno_init_version = get_library_version("phenotrex")
+
+            sk_required_version = "1.3.2"
+            if sk_init_version != sk_required_version:
+                # os.system("python3 -m pip install scikit-learn==1.3.2")
+                get_sklearn_v = "==".join(["scikit-learn", sk_required_version])
+                subprocess.run([sys.executable, "-m", "pip", "install", get_sklearn_v])
+
+            pheno_required_version = "0.6.0"
+            if pheno_init_version != pheno_required_version:
+                get_pheno_v = "==".join(["phenotrex[fasta]", pheno_required_version])
+                subprocess.run([sys.executable, "-m", "pip", "install", get_pheno_v])
+
+            # Run the command
+            compute_genotype_command = " ".join(compute_genotype_params)
             if os.system(compute_genotype_command) != 0:
-                logging.error("asda")
-                sys.exit(0)
+                logging.info("Try phenotrex genotype for the second time.")
+                if os.system(compute_genotype_command) != 0:
+                    logging.error("asda")
+                    sys.exit(0)
+        # Local case
+        else:
+            compute_genotype_command = " ".join(compute_genotype_params)
+            try:
+                subprocess.run(compute_genotype_command, shell=True, check=True)
+            except Exception as e:
+                logging.error(e)
+                sys.exit(1)
 
 
 def phenotrex_predict(config):
@@ -195,15 +226,25 @@ def phenotrex_predict(config):
     # Get predictions
     phen_models = [os.path.join(config.phen_classes, model) for model in os.listdir(config.phen_classes)]
 
+    # Parse through the phen models (classes)
     for model in phen_models:
         model_name =  os.path.basename(model)
         model_predictions_output = "".join([
             config.predictions_path, "/", model_name[:-4], ".prediction.tsv"
         ])
+
+        # Skip if predictions already computed
         if os.path.exists(model_predictions_output):
             logging.info("Predictions already exist for model: %s", model_name)
+
         else:
-            predict_traits_params = [
+
+            predict_traits_params = []
+            # Local case
+            if config.cwd != "/microbetag":
+                predict_traits_params = ["conda run -n phendb"]
+            # All cases: local and container
+            predict_traits_params += [
                 "phenotrex",
                 "predict",
                 "--genotype",
@@ -215,22 +256,25 @@ def phenotrex_predict(config):
                 "--verb >",
                 model_predictions_output
             ]
+
             predict_trait_command = " ".join(predict_traits_params)
 
-            # try:
-            #     os.system(predict_trait_command)
-            # except:
-            #     logging.error("TSIRIMPIM")
-            #     raise SystemError
             try:
                 subprocess.run(predict_trait_command, shell=True, check=True)
+
             except subprocess.CalledProcessError as e:
-                logging.error("TSIRIMPIM: Command execution failed with return code %s", e.returncode)
-                logging.error("Error output: %s", e.stderr if e.stderr else "No additional error details.")
-                raise SystemError from e
-            except Exception as e:
-                logging.error("TSIRIMPIM: An unexpected error occurred.")
-                raise SystemError from e
+                logging.warn(f"Command execution failed with return code {e}")
+
+    # If no predictions file is present for any classes, probably something went off.
+    if not any(glob.glob(os.path.join(config.predictions_path, "*.prediction.tsv"))):
+        logging.error("No prediction was able to be retrieved with phenotrex. Check your input files.")
+        sys.exit(0)
+
+    # IN CASE OF CONTAINER CONSIDER..
+    # if sk_init_version != sk_required_version:
+    #     cmd = "".join(["python3 -m pip install scikit-learn==", sk_init_version])
+    #     os.system(cmd)
+
 
 
 def run_manta(config):
@@ -271,4 +315,69 @@ def run_manta(config):
 
 
 
+def run_flashweave(config):
 
+    # Checking for format support.
+    ensure_flashweave_format(conf=config)
+
+    # Run FlashWeave
+    from julia.api import Julia
+    logging.info("Fix FlashWeave arguments from config.")
+    pair_args = set()
+    for arg, values in config.flashweave_args.items():
+        if values["required"]:
+            if isinstance(values["value"], bool):
+                pair_args.add( ( arg, str(values["value"]).lower()) )
+            else:
+                logging.error(f'You need to provide values for "{arg}" argument of FlashWeave.') ; sys.exit(0)
+        else:
+            if values["value"] is not None:
+                if values["type"] == "Bool":
+                    pair_args.add( (arg, str(values["value"]).lower()) )
+                else:
+                    pair_args.add( (arg, values["value"]) )
+
+    pair_args.add(("transposed", "true"))
+    learn_in = ",".join(f"{arg[0]}={arg[1]}" for arg in pair_args)
+
+    logging.info("Init Julia through Python")
+    jl = Julia(compiled_modules=False)
+    jl.using("FlashWeave")
+
+    # Run FlashWeave based on presence/absence of a metadata file
+    if config.metadata_file:
+        logging.info("Running FlashWeaeve along with a metadata file.")
+        logging.info(
+            f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", "{config.metadata_file}", {learn_in}))'
+        )
+        jl.eval(f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", "{config.metadata_file}", {learn_in}))')
+    else:
+        logging.info("Running FlashWeaeve.")
+        logging.info(
+            f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", {learn_in}))'
+        )
+        jl.eval(f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", {learn_in}))')
+
+    ensure_same_namespace_after_fw(config)
+
+
+def run_faprotax(config):
+    """ Run FAPROTAX collapse_table.py script """
+    faprotax_params = [
+        "python3", config.faprotax_script,
+        "-i", config.abundance_table,
+        "-o", config.faprotax_funct_table,
+        "-g", config.faprotax_txt,
+        "-c", '"' + "#" + '"',
+        "-d", '"' + config.taxonomy_column_name + '"',
+        "-v",
+        "--force",
+        "-s", config.faprotax_sub_tables,
+    ]
+    faprotax_command = " ".join(faprotax_params)
+    print(faprotax_command)
+    try:
+        process = subprocess.Popen(faprotax_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
+    except:
+        raise TypeError(f"Something went wrong when running FAPROTAX with your abuandance table: {config.abundance_table}")

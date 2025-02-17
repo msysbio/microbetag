@@ -61,7 +61,6 @@ if sys.argv[1] == 'v' or sys.argv[1] == 'version':
     print_version(); sys.exit()
 
 import yaml
-import subprocess
 
 from microbetag.utils import *
 from microbetag.tools import *
@@ -85,81 +84,32 @@ with open(config_file, 'r') as yaml_file:
 # Build network if not available
 # ----------------
 if config.precalc_only:
-    logging.info("microbetag is about to perform the precalculations for your list of bins/MAGs only. No network will be built.")
-
+    logging.info(
+        "microbetag is about to perform the precalculations for your list of bins/MAGs only."
+        "No network will be built."
+    )
 elif not os.path.exists(config.network) or os.path.getsize(config.network) == 0:
     logging.info(
-        "Using the abundance table provided, microbetag is about to build a co-occurrence network using FlashWeave.\n"
+        "[STEP] NETWORK INFERENCE WITH FLASHWEAVE"
+        "Using the abundance table provided, microbetag is about to build a co-occurrence network.\n"
     )
-    # Checking for format support.
-    ensure_flashweave_format(conf=config)
-
-    # Run FlashWeave
-    from julia.api import Julia
-    logging.info("Fix FlashWeave arguments from config.")
-    pair_args = set()
-    for arg, values in config.flashweave_args.items():
-        if values["required"]:
-            if isinstance(values["value"], bool):
-                pair_args.add( ( arg, str(values["value"]).lower()) )
-            else:
-                logging.error(f'You need to provide values for "{arg}" argument of FlashWeave.') ; sys.exit(0)
-        else:
-            if values["value"] is not None:
-                if values["type"] == "Bool":
-                    pair_args.add( (arg, str(values["value"]).lower()) )
-                else:
-                    pair_args.add( (arg, values["value"]) )
-
-    pair_args.add(("transposed", "true"))
-    learn_in = ",".join(f"{arg[0]}={arg[1]}" for arg in pair_args)
-
-    logging.info("Init Julia through Python")
-    jl = Julia(compiled_modules=False)
-    jl.using("FlashWeave")
-
-    # Run FlashWeave based on presence/absence of a metadata file
-    if config.metadata_file:
-        logging.info("Running FlashWeaeve along with a metadata file.")
-        logging.info(
-            f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", "{config.metadata_file}", {learn_in}))'
-        )
-        jl.eval(f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", "{config.metadata_file}", {learn_in}))')
-    else:
-        logging.info("Running FlashWeaeve.")
-        logging.info(
-            f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", {learn_in}))'
-        )
-        jl.eval(f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", {learn_in}))')
-
-    ensure_same_namespace_after_fw(config)
+    run_flashweave(config)
 
 # ----------------
 # FAPROTAX
 # ----------------
 if config.abundance_table is not None:
     logging.info("[STEP] LITERATURE ANNOTATION WITH FAPROTAX")
-    faprotax_params = [
-        "python3", config.faprotax_script,
-        "-i", config.abundance_table,
-        "-o", config.faprotax_funct_table,
-        "-g", config.faprotax_txt,
-        "-c", '"' + "#" + '"',
-        "-d", '"' + config.taxonomy_column_name + '"',
-        "-v",
-        "--force",
-        "-s", config.faprotax_sub_tables,
-    ]
-    faprotax_command = " ".join(faprotax_params)
-    process = subprocess.Popen(faprotax_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
+    run_faprotax(config)
+
 
 # ----------------
 # phen annotations
 # ----------------
-logging.info("[STEP] PREDICTING PHENOTYPIC TRAITS")
-phenotrex_genotype(config=config)
-phenotrex_predict(config=config)
+if config.bin_filenames is not None:
+    logging.info("[STEP] PREDICTING PHENOTYPIC TRAITS")
+    phenotrex_genotype(config=config)
+    phenotrex_predict(config=config)
 
 
 # ----------------
