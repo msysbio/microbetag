@@ -44,13 +44,13 @@ class PathwayComplementarity:
 
     def handle_missing_kofam_db(self):
         """Handles the case when the KOfam database path is missing."""
-        container_kofam_db = "/microbetag/mtg_maps_models/ref-dbs/kofam_database/"
+        container_kofam_db = "/microbetag/microbetag/mtg_maps_models/kofam_database/"
         if not os.path.exists(container_kofam_db):
             logging.error(
                 "Please provide the path to the KOfam database."
                 "If not available, download it from ftp://ftp.genome.jp/pub/db/kofam/."
                 "If running microbetag through a container, mount kofam_db under"
-                "/microbetag/mtg_maps_models/ref-dbs/kofam_database/."
+                "/microbetag/microbetag/mtg_maps_models/kofam_database/."
             )
             sys.exit(0)
         else:
@@ -116,8 +116,8 @@ class Faprotax:
         """
         Sets paths to files to be used when running FAPROTAX
         """
-        self.faprotax_txt = os.path.join(config.cwd, "mtg_maps_models/ref-dbs/FAPROTAX_1.2.7/FAPROTAX.txt")
-        self.faprotax_script = os.path.join(config.cwd, "mtg_maps_models/ref-dbs/FAPROTAX_1.2.7/collapse_table.py")
+        self.faprotax_txt = os.path.join(config.cwd, "mtg_maps_models/FAPROTAX_1.2.10/FAPROTAX.txt")
+        self.faprotax_script = os.path.join(config.cwd, "mtg_maps_models/FAPROTAX_1.2.10/collapse_table.py")
         self.faprotax_output_dir = os.path.join(config.output_dir, "faprotax")
         self.faprotax_funct_table = os.path.join(self.faprotax_output_dir, "functional_otu_table.tsv")
         self.faprotax_sub_tables = os.path.join(self.faprotax_output_dir, "sub_tables")
