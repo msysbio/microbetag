@@ -1,5 +1,0 @@
-#
-record	seqId	sample1	sample2	sample4	sample5	sample6	sample7	sample8	sample9	sample10	sample11	sample12	sample13	sample14	sample15	sample16	sample17	sample18	sample19	sample20	sample21	sample22	sample23	sample24	sample25	sample26	sample27	sample28	sample29	sample30
-d__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Enterobacterales;f__Enterobacteriaceae;g__Klebsiella_A;s__Klebsiella_A michiganensis	bin_182	26	21	4	54	13	34	2	71	3	18	57	10	58	94	90	53	46	85	88	92	30	51	87	100	6	90	76	33	86
-d__Bacteria;p__Actinobacteriota;c__Actinomycetia;o__Actinomycetales;f__Cellulomonadaceae;g__Cellulomonas;s__Cellulomonas sp001898185	bin_95	7	18	1	21	21	49	80	82	92	12	58	81	31	35	57	61	5	1	74	85	66	84	21	85	91	94	70	17	56
-d__Bacteria;p__Actinobacteriota;c__Actinomycetia;o__Actinomycetales;f__Cellulomonadaceae;g__Cellulomonas;s__Cellulomonas sp001898175	bin_113	49	91	29	14	57	16	58	24	44	34	58	31	36	11	21	69	57	34	50	84	95	23	75	44	61	74	79	99	33

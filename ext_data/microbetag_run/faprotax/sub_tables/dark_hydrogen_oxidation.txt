@@ -1,3 +1,0 @@
-#
-record	seqId	sample1	sample2	sample4	sample5	sample6	sample7	sample8	sample9	sample10	sample11	sample12	sample13	sample14	sample15	sample16	sample17	sample18	sample19	sample20	sample21	sample22	sample23	sample24	sample25	sample26	sample27	sample28	sample29	sample30
-d__Bacteria;p__Proteobacteria;c__Gammaproteobacteria;o__Burkholderiales;f__Burkholderiaceae;g__Acidovorax;s__Acidovorax delafieldii	bin_56	15	19	61	92	45	13	41	51	63	9	65	76	69	38	68	55	3	24	69	11	85	84	55	45	8	8	41	51	34
