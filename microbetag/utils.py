@@ -460,18 +460,18 @@ def load_phenotypic_traits(conf):
     bin_phen_traits = {}
     phentraits = set()
 
-    all_phen_df = os.path.join(conf.predictions_path, "phen_traits.tsv")    # TODO: consider giving this also as an argument in the config
+    all_phen_df = os.path.join(conf.predictions_path, "phen_traits.tsv")    # TODO: consider giving this also as an argument in the config -- MAKE SURE THEY GIVE SEQUENCE ID AND NOT GTDB ID !!
     if os.path.exists(all_phen_df):
         df = pd.read_csv(all_phen_df, sep="\t")
-        df = df.drop("NCBI_ID", axis=1)
+        df = df.drop(["NCBI_ID", "gtdb_id"], axis=1)
         phentraits = {x for x in df.columns if "Score" not in x}
-        phentraits.remove("gtdb_id")
+        phentraits.remove("sequence_id")
         list_of_dics = df.to_dict(orient="records")
 
         for entry in list_of_dics:
-            bin_phen_traits[entry["gtdb_id"]] = {}
+            bin_phen_traits[entry["sequence_id"]] = {}
             for trait in phentraits:
-                bin_phen_traits[entry["gtdb_id"]][trait] = {
+                bin_phen_traits[entry["sequence_id"]][trait] = {
                     "presence": entry[trait],
                     "confidence": entry["".join([trait, "Score"])]
                 }
@@ -495,7 +495,6 @@ def load_phenotypic_traits(conf):
                     "presence": case["Trait present"],
                     "confidence": case["Confidence"]
                 }
-    print(bin_phen_traits)
     return bin_phen_traits, phentraits
 
 
