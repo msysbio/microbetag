@@ -6,7 +6,10 @@ import subprocess
 import multiprocessing
 from typing import List
 
-from .utils import get_files_with_suffixes, get_library_version, ensure_flashweave_format, ensure_same_namespace_after_fw
+from .utils import (
+    get_files_with_suffixes, get_library_version, get_tool_location,
+    ensure_flashweave_format, ensure_same_namespace_after_fw
+)
 
 
 
@@ -55,7 +58,10 @@ def hmmsearch(params: List):
 
     params: list of parameters to be passed to the hmmsearch function.
     """
-    (threshold_method, threshold, outtype, output, hmm_db, faa) = params
+    (
+        threshold_method, threshold, outtype, output, hmm_db, faa
+    ) = params
+
     cmd_para = [
         'hmmsearch',
         threshold_method, threshold,
@@ -65,7 +71,9 @@ def hmmsearch(params: List):
         hmm_db,
         faa
     ]
+
     cmd = ' '.join(cmd_para)
+
     try:
         os.system(cmd)
     except:
@@ -85,8 +93,9 @@ def run_prodigal(fasta, basename, outdir):
     fna_file = os.path.join(outdir, basename + '.fna')
     gbk_file = os.path.join(outdir, basename + '.gbk')
 
+    PRODIGAL = get_tool_location("prodigal")
     cmd_para = [
-                'prodigal', '-q',
+                PRODIGAL, '-q',
                 '-i', fasta,
                 '-p', 'meta',
                 '-a', faa_file,
@@ -100,6 +109,7 @@ def run_prodigal(fasta, basename, outdir):
         logging.info("ORFs to be predicted for bin: %s", basename)
         try:
             os.system(cmd)
+            print("ok. ")
         except:
             logging.warning("Something wrong with prodigal annotation!")
 
@@ -276,7 +286,6 @@ def phenotrex_predict(config):
     #     os.system(cmd)
 
 
-
 def run_manta(config):
     import time
     # Build the manta command
@@ -312,7 +321,6 @@ def run_manta(config):
     except Exception as e:
         logging.warning(e)
         config.network_clustering = False
-
 
 
 def run_flashweave(config):
@@ -375,7 +383,6 @@ def run_faprotax(config):
         "-s", config.faprotax_sub_tables,
     ]
     faprotax_command = " ".join(faprotax_params)
-    print(faprotax_command)
     try:
         process = subprocess.Popen(faprotax_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = process.communicate()
