@@ -16,9 +16,7 @@ setup(
     include_package_data=True,
     package_data={
         'microbetag': [
-            'microbetagDB/mappings/*',
-            'microbetagDB/ref-dbs/*',
-            'microbetagDB/ref-dbs/phenDB/predictions/*'
+            "mtg_maps_models/*"
         ]
     },
     install_requires=requirements,

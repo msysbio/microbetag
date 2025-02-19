@@ -35,14 +35,19 @@ _site/
 # Licenses
 *.lic
 
+*.faa
+*.ffn
+*.out
+*.gto
+*.gto_2
+*.gbk
+
+
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
 # should NOT be excluded as they contain compiler settings and other important
 # information for Eclipse / Flash Builder.
 
-
-kegg_genomes/
-mgnify_catalogues/
-gtdb_kofam_scan_per_module/
+faprotax/
 seed_complements/
 gtdb_genomes/
 *.keg
