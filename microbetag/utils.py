@@ -5,9 +5,11 @@ import os, re
 import json, csv
 import time
 import copy
+import glob
+import shutil
 import random
 import logging
-import glob
+import subprocess
 import pandas as pd
 from typing import List
 
@@ -124,27 +126,6 @@ def split_list(input_list: List, chunk_size: int):
     Split a list to sublists of a size.
     """
     return [input_list[i:i + chunk_size] for i in range(0, len(input_list), chunk_size)]
-
-
-def find_id_differences(id1, id2):
-    """
-    Gets:
-        id1: bin name in the abundance table
-        id2: bin name in the network file
-    Returns:
-        diff_chars: (character_in_abundance_table, character_in_network_file)
-    """
-    # Find indices where the IDs differ
-    diff_indices = [i for i, (c1, c2) in enumerate(zip(id1, id2)) if c1 != c2]
-    logging.info(id1, id2)
-    logging.info(diff_indices)
-    # Split IDs based on the differing indices
-    id1_parts = [id1[:i] for i in diff_indices + [len(id1)]]
-    id2_parts = [id2[:i] for i in diff_indices + [len(id2)]]
-    # Check if the parts are the same
-    if id1_parts[:-1] == id2_parts[:-1]:
-        diff_chars = [(c1, c2) for c1, c2 in zip(id1_parts[-1], id2_parts[-1]) if c1 != c2]
-        return diff_chars
 
 
 def many_to_one_files(dir_with_files, merged_file):
@@ -314,16 +295,23 @@ def ensure_flashweave_format(conf):
     Build an OTU table that will be in a FlashWeave-based format.
     """
 
-    flashweave_table = pd.read_csv(conf.abundance_table, sep="\t").iloc[:, :-1]
+    flashweave_table = pd.read_csv(conf.abundance_table, sep=conf.delimiter).iloc[:, :-1]
     float_col = flashweave_table.select_dtypes(include=['float64'])
 
-    for col in float_col.columns.values:
-        flashweave_table[col] = flashweave_table[col].astype('int64')
+    try:
+        for col in float_col.columns.values:
+            flashweave_table[col] = flashweave_table[col].astype('int64')
+        flashweave_table.iloc[:, 0] = flashweave_table.iloc[:, 0].astype(str)
+        flashweave_table.to_csv(conf.flashweave_abd_table, sep='\t', index=False)
+        return 1
 
-    flashweave_table.iloc[:, 0] = flashweave_table.iloc[:, 0].astype(str)
-    flashweave_table.to_csv(conf.flashweave_abd_table, sep='\t', index=False)
-
-    return 1
+    except Exception as e:
+        logging.error(
+            """Error in ensuring FlashWeave format: %s.
+            Please check your FlashWeave parameters, especially `n_obs_min` and `k_max`.""",
+            e
+        )
+        return 0
 
 
 def ensure_same_namespace_after_fw(conf):
@@ -332,34 +320,45 @@ def ensure_same_namespace_after_fw(conf):
     Inconsistencies from D300244:bin_000023 in the abundance table to D300244.bin_000023 in FlashWeave.
     Keep the routine in general along with the find_id_differences().
     """
-    abd = pd.read_csv(conf.flashweave_abd_table, sep="\t")
-    bin_names = abd.iloc[:,0]
-    df1 = pd.DataFrame(bin_names.to_list(), columns=["bin_names"])
-    net = pd.read_csv(conf.network, sep="\t", skiprows=2, header = None)
-    bin_names_in_net = net.iloc[:,0]
-    logging.info("Bin names in net:"); logging.info(bin_names_in_net)
 
-    df2 = pd.DataFrame(bin_names_in_net.to_list(), columns=["bin_names_in_net"])
-    diff_chars = []
-    for index, row in df1.iterrows():
-        try:
-            id1 = row['bin_names']
-            id2 = df2.loc[index, 'bin_names_in_net']
-        except:
-            continue
-        if id1 != id2:
-            diff_chars.append(find_id_differences(id1, id2))
+    def match_delimiters_based_on_col2(row, df1_col_name, df2_col_name, df2_row):
+        """
+        Adjusts the delimiter in df1 based on the delimiter used in df2.
 
-    # We need to replace the bin names network file with the delimiter of the abundance table file
-    diff_chars = [item for item in diff_chars if item is not None]
-    unique_diff_chars = [list(x) for x in set(tuple(sublist) for sublist in diff_chars)]
-    if len(unique_diff_chars) > 0:
-        for case in unique_diff_chars:
-            try:
-                logging.info("case", case)
-                os.system('sed -i "s/{}/{} /g" {}'.format(case[1], case[0], conf.network))
-            except:
-                logging.warn(case, "was found not to be as in the abundance table but not fixed")
+        df1: DataFrame that needs delimiter adjustment
+        df2: DataFrame containing the reference column for delimiters -- abundance table
+        df1_col_name: The column name in df1 to adjust
+        df2_col_name: The column name in df2 to extract the delimiter from
+        df2_row: The specific row in df2 to access the delimiter
+
+        NOTE: In the ``[^\w]+`` pattern, ``\w`` matches any word character (alphanumeric & underscore)
+        and ``+`` allows for one or more occurrences, e.g. `::`.
+        """
+        # Extract delimiter from df2's col2
+        delimiters_col = re.findall(r'[^\w]+', df2_row[df2_col_name])
+        if delimiters_col:
+            # If there's a delimiter, apply it to df1's col1
+            delimiter_col = delimiters_col[0]
+            # Replace the delimiter in col1 with the one from col2
+            col_fixed = re.sub(r'[^\w]+', delimiter_col, row[df1_col_name])
+            return col_fixed
+        return row[df1_col_name]  # If no delimiter, return original col1
+
+
+    abd_df = pd.read_csv(conf.flashweave_abd_table, sep="\t")
+    net_df = pd.read_csv(conf.network, sep="\t", skiprows=2, header = None)
+
+    # Apply the function row-wise with corresponding rows from df2
+    # row.name is the index of the row in df
+    net_df[net_df.columns[0]] = net_df.apply(
+        lambda row: match_delimiters_based_on_col2(
+            row, net_df.columns[0], abd_df.columns[0], abd_df.iloc[row.name]
+        ),
+        axis=1
+    )
+
+    net_df.to_csv(conf.network, sep="\t", index=False, header=False)
+
     return 1
 
 
@@ -520,20 +519,23 @@ def detect_separator(file_path):
             file_size = file.tell()
 
             # Calculate 1% of the file size
-            one_percent_size = int(file_size * 0.01)
+            if file_size < 10e6:
+                percent_size = int(file_size * 0.2)
+            else:
+                percent_size = int(file_size * 0.01)
 
             # Move to the start of the file
             file.seek(0)
 
             # Read 1% of the file to detect the delimiter
-            sample = file.read(one_percent_size)
+            sample = file.read(percent_size)
 
             # Use csv.Sniffer to detect the dialect
             sniffer = csv.Sniffer()
             dialect = sniffer.sniff(sample)
             return dialect.delimiter
     except:
-        raise TypeError(f"Cannot get delimeter for file {file_path}")
+        raise TypeError(f"Cannot get delimiter for file {file_path}")
 
 
 def find_three_column_format(file_path, delimiter):
@@ -547,3 +549,33 @@ def find_three_column_format(file_path, delimiter):
                 else:
                     return line_num, 0
     raise ValueError(f"The network file {file_path} is not in the 3-columns format required.")
+
+
+def get_tool_location(software):
+    """
+    Check if a software is available in the system path or in the alternative location.
+    """
+    try:
+        # Try running prodigal and check if it exists
+        if shutil.which(software) is not None:
+            return software
+
+    except subprocess.CalledProcessError:
+        print("No Prodigal system-wide installation found.")
+        pass
+
+    try:
+
+        # If software is not found, check the alternative location
+        HOME = os.path.expanduser("~")
+        microbetag_installation = os.path.join(HOME, ".microbetag")
+        software_path = os.path.join(microbetag_installation, "prodigal")
+
+        # Try running prodigal from the alternative location
+        if shutil.which(software_path) is not None:
+            return software_path
+
+    except subprocess.CalledProcessError:
+        # If neither path works
+        logging.error(f"{software} is not available. Please install it first.")
+        return None  # Or raise an error if you prefer
