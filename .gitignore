@@ -32,3 +32,4 @@ gurobi.lic
 __pycache__/
 .vscode/
 
+_site/

@@ -37,7 +37,7 @@ Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequ
 
 If you edit the style of your *microbetag*-annotated network, you can always bring back its original style through the MGG main menu.
 
-![style](../../assets/images/app/visualStyle.png)
+![style]({{ site.baseurl }}/assets/images/app/visualStyle.png)
 
 
 Now, if already opened, you need to open the MGG results panel; just click 
@@ -60,17 +60,17 @@ That means for example, in case you would prefer a different style than the one 
 
 By clicking on the *Show Species* button, all nodes that were not mapped to a genome will be masked. 
 
-![show_species](../../assets/images/app/showSpecies.png)
+![show_species]({{ site.baseurl }}/assets/images/app/showSpecies.png)
 
 
 Or you can choose/click directly any node on the network and check the `Nodes` Panel 
 
-![selcted_node](../../assets/images/app/nodePanel.png)
+![selcted_node]({{ site.baseurl }}/assets/images/app/nodePanel.png)
 
 
 or several at the same time
 
-![selcted_nodes](../../assets/images/app/nodePanelMultiNodes.png)
+![selcted_nodes]({{ site.baseurl }}/assets/images/app/nodePanelMultiNodes.png)
 
 
 For more about how the PhenDB-like traits are assigned in each node you may have a look [here](../modules/modules.md#based-on-phendb) and for a thorough list of all the traits supported, you may check the corresponding [table](../modules/phen-traits.md).
@@ -82,7 +82,7 @@ In addition, for the FAPROTAX-based annotations, you may have a look [here](../m
 You may select among a list of annotations under the `PhenDb/FAPROTAX filters` with `AND` and `OR` relationships.
 For example, I was curious about the Nitrite-oxidizing bacteria (NOB) on my network
 
-![NOB](../../assets/images/app/NOB.png)
+![NOB]({{ site.baseurl }}/assets/images/app/NOB.png)
 
 
 Likewise, you may go through the annotations on the edges of the network.
@@ -108,12 +108,12 @@ For each pair of genomes, a list with the potential metabolic complementarities 
 In the first column the KEGG MODULE id of the corresponding complementarity is provided, and in the second and third column their description and metabolism category. 
 In the fourth column, called *"Complement"* the KO that need to be provided to the beneficiary species to support the module are given and in the next column, the complete alternative that would then facilitate the module is shown; i.e., assuming the complement is provided.
 
-![pathway_compl](../../assets/images/app/pathwayCompl.png)
+![pathway_compl]({{ site.baseurl }}/assets/images/app/pathwayCompl.png)
 
 In the final column a link to a related KEGG map is provided where KO available in the beneficiary species are colored with pink and those provided by the donor in the scenario of the potential metabolic interaction with green.
 The screenshot below illustrates the highlighted complementarity in the biosynthesis of methionine.
 
-![methionine_kegg_map](../../assets/images/app/keggMap.png)
+![methionine_kegg_map]({{ site.baseurl }}/assets/images/app/keggMap.png)
 
 
 ### Potential seed complementarities
@@ -121,7 +121,7 @@ The screenshot below illustrates the highlighted complementarity in the biosynth
 Like in the case of the pathway complementarities, a new panel is displayed when seed complements are available for an edge.
 Here is an example:
 
-![kegg_seed_map](../../assets/images/app/seedComplPanel.png)
+![kegg_seed_map]({{ site.baseurl }}/assets/images/app/seedComplPanel.png)
 
 
 [*Seed scores*](../modules/modules.md#seed-scores-and-complements-based-on-genome-scale-draft-reconstructions-gems) between the two genomes are also shown here. 
@@ -131,7 +131,7 @@ Seed complements are then recorded in the same way as pathway complementarities.
 However, there is no *Complement* column as this time it is not a specific KEGG MODULE that is supported, rather a potential range of functions that can be viewer through the colored url. 
 Also, a new column provides the ModelSEED compound id that was actually found as a complement and was then mapped to their KEGG corresponding one. 
 
-![kegg_seed_map](../../assets/images/app/seedKeggMap.png)
+![kegg_seed_map]({{ site.baseurl }}/assets/images/app/seedKeggMap.png)
 
 
 [1]:{{ site.url }}/microbetag/download/mgg/hessler_microbetag_network.cx
