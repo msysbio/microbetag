@@ -292,17 +292,19 @@ class BinsHandler:
     def _validate_and_load_bins(self, config):
         """Validates bin file paths and loads bin filenames."""
         if config.bins_path is None:
-            if self.precalc_only:
+
+            if config.precalc_only:
                 raise ValueError("Please provide a path to the bins FASTA files.")
+
             logging.warning(
                 "No bins FASTA files provided. microbetag will proceed with annotation using precalculated data."
             )
-            return  # Exit early, no need to process further
 
         # Try loading filenames from the given path
         try:
             self.bin_filenames = os.listdir(config.bins_path)
             self.bins_ids = [os.path.splitext(fname)[0] for fname in self.bin_filenames]
+
         except FileNotFoundError:
             raise ValueError("Invalid path provided for the bins FASTA files.")
 

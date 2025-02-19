@@ -21,13 +21,13 @@ def load_abundance(abd_file):
     :return sequence_id_column_name: The name (``str``) of the column with the sequence identifier (e.g. ``seqId``)
     :return taxonomy_column_name: The name (``str``) of the column with the taxonomy
     """
-    delimeter = detect_separator(abd_file)
-    abd_tab_df = pd.read_csv(abd_file, sep=delimeter)
+    delimiter = detect_separator(abd_file)
+    abd_tab_df = pd.read_csv(abd_file, sep=delimiter)
     sequence_id_column_name = abd_tab_df.columns[0]
     taxonomy_column_name = abd_tab_df.columns[-1]
     seq_id_to_taxonomy = abd_tab_df[[sequence_id_column_name, taxonomy_column_name]]
     seq_id_to_taxonomy.columns = ["sequence_id", "taxonomy"]
-    return seq_id_to_taxonomy, sequence_id_column_name, taxonomy_column_name
+    return seq_id_to_taxonomy, sequence_id_column_name, taxonomy_column_name, delimiter
 
 class Config:
     """
@@ -70,8 +70,8 @@ class Config:
         abd_tbl_filename = conf.get("abundance_table_file", {}).get("file_path")
         self.abundance_table = resolve_file_path(self.base_dir, abd_tbl_filename)
 
-        if self.abundance_table is not None:
-            self.delimiter = detect_separator(self.abundance_table)
+        # if self.abundance_table is not None:
+        #     self.delimiter = detect_separator(self.abundance_table)
 
         # Edgelist of provided network
         edge_list = conf.get("edge_list", {}).get("file_path")
@@ -92,11 +92,18 @@ class Config:
 
         # IMPORTANT: Sequence id to taxonomy map
         if self.network is None:
-            self.seq_to_taxon_df, self.sequence_id_column_name, self.taxonomy_column_name = load_abundance(self.abundance_table)
-            self.seq_ids = self.sequence_id_column_name["sequence_id"].unique().tolist()
+            (
+                self.seq_to_taxon_df,
+                self.sequence_id_column_name,
+                self.taxonomy_column_name,
+                self.delimiter
+            ) = load_abundance(self.abundance_table)
+
+            self.seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
+
         elif self.abundance_table is None:
-            delimeter = detect_separator(self.sequence_taxonomy_map)
-            seq_to_taxon_df = pd.read_csv(self.sequence_taxonomy_map, sep=delimeter)
+            # delimiter = detect_separator(self.sequence_taxonomy_map)
+            seq_to_taxon_df = pd.read_csv(self.sequence_taxonomy_map, sep=self.delimiter)
             seq_to_taxon_df.columns = ["sequence_id", "taxonomy"]
             self.seq_to_taxon_df = seq_to_taxon_df
             self.seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
@@ -105,16 +112,25 @@ class Config:
             # Yet, in case that the network has taxa not present in the abundance table, apparently it will lead to errors.
             network_df = get_edgelist(self)
             net_seq_ids = pd.concat([network_df.iloc[:, 0], network_df.iloc[:, 1]]).unique().tolist()
-            self.seq_to_taxon_df, self.sequence_id_column_name, self.taxonomy_column_name = load_abundance(self.abundance_table)
+
+            (
+                self.seq_to_taxon_df,
+                self.sequence_id_column_name,
+                self.taxonomy_column_name,
+                self.delimiter
+            ) = load_abundance(self.abundance_table)
+
             abd_seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
             self.seq_ids = net_seq_ids + abd_seq_ids
 
         precalc_only = conf.get("precalulations_only").get("value")
         self.precalc_only = precalc_only if precalc_only in [0,1] else False
 
-        # Set bins
-        bn = BinsHandler(config=self)
-        self.__dict__.update(vars(bn))
+        # Set bins --- NOTE: CHECK FOR CONFLICTS
+        self.bins_ids = None
+        if self.bins_path is not None:
+            bn = BinsHandler(config=self)
+            self.__dict__.update(vars(bn))
 
         # Get pathway complementarity related variables
         pcompl = conf.get("pathway_complementarity", {}).get("value")
@@ -187,6 +203,8 @@ class Config:
             )
             self.base_network_file = os.path.join(self.output_dir, "basenet.cyjs")
 
+
+
         # Intermediate annoteted network file name
         self.microbetag_annotated_network_file = os.path.join(self.output_dir, "pseudo_cx_annotated_net.cx")
         self.tinyurl = (
@@ -216,10 +234,12 @@ class Config:
         genres = GenresHandler(config=self)
         self.__dict__.update(vars(genres))
 
+        logging.info("Configuration file loaded successfully.")
+
 
     def export_to_log(self, log_file="parameters.log"):
         logging.basicConfig(filename=log_file, level=logging.INFO, format='%(message)s')
-        logging.info("Instance attribute values:")
+        print("Instance attribute values:")
         for key, value in self.__dict__.items():
-            logging.info(f"{key}: {value}")
+            print(f"{key}: {value}")
 

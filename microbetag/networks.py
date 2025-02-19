@@ -5,7 +5,7 @@ import networkx as nx
 
 from .utils import detect_separator, find_three_column_format
 
-# Base .cx
+# Base .cx  -- TODO : CHECK ID DEPRECATED
 def build_edge_list(edgelist, metadata_file=None):
     """
     Read an edge list and build a dataframe with the corresponding NCBI IDs for each pair,
@@ -21,7 +21,7 @@ def build_edge_list(edgelist, metadata_file=None):
     - pd.DataFrame (optional): Edges that were excluded based on metadata.
     """
     # Read the edge list into a DataFrame
-    pd_edgelist = pd.read_csv(edgelist, sep="\t", skiprows=2, header=None, names=["node_a", "node_b", "score"])
+    pd_edgelist = pd.read_csv(edgelist, sep="\t", header=None, names=["node_a", "node_b", "score"])  # skiprows=
 
     if metadata_file:
         # Read the metadata file and create a list of elements to exclude

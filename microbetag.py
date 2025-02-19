@@ -38,7 +38,6 @@ def print_help():
     """
     print(help_message)
 
-
 def print_version():
     print(__version__)
 
@@ -113,7 +112,7 @@ if config.bin_filenames is not None:
 
 
 # ----------------
-# Prodigal - using DiTing interface
+# Prodigal - ORF prediction
 # ----------------
 if (config.pathway_complementarity or config.seed_complementarity) and config.ko_merged is None:
     if len(os.listdir(config.prodigal)) != len(config.bins_ids):
@@ -124,11 +123,20 @@ if (config.pathway_complementarity or config.seed_complementarity) and config.ko
                 "Bins files have not been provided and they are required for the precalculation steps of microbetag."
                 "Provide the path to the directory with your bins/MAGs under the bins_fasta parameter of the config.yml file."
             )
+
         for bin_fa in config.bin_filenames:
+
             bin_filename = os.path.basename(bin_fa)
+
             bin_id, extension = os.path.splitext(bin_filename)
+            bin_id = bin_id.split("/")[-1]
+
             bin_fa = os.path.join(config.bins_path, bin_fa)
+
             logging.info(f"Running Prodigal for {bin_id}")
+
+            print(bin_fa, bin_id, config.prodigal)          # TODO: check if bin_id is actually only the basename of the whole path until extension
+
             run_prodigal(bin_fa, bin_id, config.prodigal)
 
 # ----------------
@@ -136,7 +144,7 @@ if (config.pathway_complementarity or config.seed_complementarity) and config.ko
 # ----------------
 if config.pathway_complementarity:
     # ----------------
-    # KEGG annotation - using DiTing interface // required in case of pathway complementarities
+    # KEGG annotation - based on the DiTing implementation // required in case of pathway complementarities
     # ----------------
 
     if config.ko_merged is None:
