@@ -149,7 +149,7 @@ if config.pathway_complementarity:
 
     if config.ko_merged is None:
 
-        logging.info("[STEP ] KEGG ANNOTATION OF THE PRODIGAL ORFs \n")
+        logging.info("[STEP ] KEGG ANNOTATION OF THE ORFs \n")
 
         ko_list = os.path.join(config.kegg_db_dir, 'ko_list')
         ko_dic = ko_list_parser(ko_list)
@@ -180,15 +180,16 @@ if config.pathway_complementarity:
     else:
         logging.info("A 3-col KEGG annotation file already available.")
 
-    pivot_df = load_merged_ko_file(config.ko_merged)  # Load ko_merged.txt
-
     # ----------------
     # Extract pathway complementarities
     # ----------------
+    pivot_df = load_merged_ko_file(config.ko_merged)  # Load ko_merged.txt
+
     if not os.path.exists(config.alts_file) or not os.path.exists(config.compl_file):
 
         logging.info("[STEP ] GET PATHWAY COMPLEMENTS ")
-        bin_kos_per_module, alt_to_gapfill, complements = export_pathway_complementarities(
+        # bin_kos_per_module, alt_to_gapfill, complements =
+        _, _ = export_pathway_complementarities(
             config,
             pivot_df
         )

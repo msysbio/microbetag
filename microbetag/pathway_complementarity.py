@@ -54,7 +54,8 @@ def all_alternatives(bin_kos_per_module, modules_definitions_json_map, alts_outp
     """
     logging.info("Step 2, build alts.json file.")
 
-    mo_map = json.load(open(modules_definitions_json_map))
+    with open(modules_definitions_json_map, 'r') as f:
+        mo_map = json.load(f)
 
     structurals = ["md:M00144","md:M00149","md:M00151",
                    "md:M00152","md:M00154","md:M00155",
@@ -174,10 +175,14 @@ def all_complements(bin_kos_per_module, bins_alternatives, module_to_map, compl_
         json.dump(complements, file, cls=SetEncoder)
     logging.info("Step 3, the potential complementarities among the bins were enumerated.")
 
+    return complements
+
 
 def a_modules_maps(kegg_modules_to_maps):
     """Get the KEGG maps in which a module takes part in"""
-    maps = open(kegg_modules_to_maps, "r")
+    # maps = open(kegg_modules_to_maps, "r")
+    with open(kegg_modules_to_maps, "r") as f:
+        maps = f.readlines()
     module_to_map = {}
     for line in maps:
         module, mmap = line.split("\t")
@@ -227,25 +232,30 @@ def export_pathway_complementarities(config, bins_kos_df):
     Returns:
     {beneficiary_bin: {donor_bin_A: {module_a: [], module_b: [],.. }}}
     """
-    module_to_map = a_modules_maps(config.kegg_modules_to_maps)
 
     # Keep track of the KOs related to a module present on each bin
     bin_kos_per_module = taxon_kos_per_module(bins_kos_df, config.ko_terms_per_module_definition)
 
-    print(bin_kos_per_module.keys())
-
     # If alts.json not available
     if not os.path.exists(config.alts_file):
+
         bins_alternatives = all_alternatives(bin_kos_per_module, config.modules_definitions_json_map, config.alts_file)
+
     else:
+
         with open(config.alts_file, "r") as h:
             bins_alternatives = json.load(h)
 
     # If compl.json not available
     if not os.path.exists(config.compl_file):
+
+        module_to_map = a_modules_maps(config.kegg_modules_to_maps)
         complements = all_complements(bin_kos_per_module, bins_alternatives, module_to_map, config.compl_file, config.tinyurl)
+
     else:
+
         with open(config.compl_file, "r") as h:
             complements = json.load(h)
-    return bin_kos_per_module, bins_alternatives, complements
+
+    return bins_alternatives, complements
 
