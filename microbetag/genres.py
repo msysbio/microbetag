@@ -129,19 +129,12 @@ class GEMSReconstruction():
 
         [NOTE] We have observed that when MSGenome is initiated in the same function with the MSBuilder, they behave much better!
         """
+
         from modelseedpy import MSBuilder, MSGenome
         if counter >= 20:
-            # Run the script again with the given arguments
-            logging.warning("""\n\n
-                  ******  \n
-                  microbetag kept calling the recursive function for building modelseedpy GEM.
-                  This function tries to establish a connection with the RAST server that at the moment does not allow it.
-                  microbetag will exit and restart its execution with the exact same settings.
-                  Since previous steps are alredy complete, they will be skipped.
-            """)
-            script_path = "/microbetag/microbetag.py"
-            config_path = "/data/config.yml"
-            subprocess.run([sys.executable, script_path, config_path])
+
+            # Run the script again with the given arguments   -- TODO:   THIS IS A BIT EXTREME...
+            fire_microbetag(yaml_file=self.config.yaml_file)
 
         counter += 1
         try:
@@ -167,7 +160,9 @@ class GEMSReconstruction():
         You can get such a file after running RAST annotation or after any gene prediction tool such as Prodigal, FragenScan etc.
         """
         if self.config.input_for_recon_type == "bins_fasta":
+
             gene_predictor_path = self.config.prodigal if self.config.gene_predictor == "prodigal" else self.config.reconstructions
+            print(gene_predictor_path)
             faa_files = [
                 os.path.join(gene_predictor_path, tfile)
                 for tfile in os.listdir(gene_predictor_path)
@@ -231,5 +226,22 @@ class GEMSReconstruction():
                 os.system(fgs_command)
         os.chdir(cwd)
 
+
+
+def fire_microbetag(yaml_file):
+    import sys
+    logging.warning(
+        """
+        \n\n******
+        microbetag kept calling the recursive function for building modelseedpy GEM.
+        This function tries to establish a connection with the RAST server that at the moment does not allow it.
+        microbetag will exit and restart its execution with the exact same settings.
+        Since previous steps are alredy complete, they will be skipped.
+        ******\n\n
+        """
+    )
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    script_path = os.path.join(root_dir, "microbetag.py")
+    subprocess.run([sys.executable, script_path, yaml_file])
 
 
