@@ -1,12 +1,13 @@
 import os
 import unittest
+import subprocess
 from microbetag.tools import phenotrex_genotype, phenotrex_predict
 
 cwd = os.getcwd()
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 phen_classes = os.path.join(root_dir, "microbetag/mtg_maps_models/phenDB/classes/")
 
-test_data  = os.path.join(root_dir, "ext_data", "run_phenotrex_test")
+test_data  = os.path.join(root_dir, "test_data", "test_phenotrex")
 output_dir = os.path.join(test_data, "output_files")
 bins       = os.path.join(test_data, "input_files")
 
@@ -37,9 +38,13 @@ class TestPhenotrex(unittest.TestCase):
     def testGenotype(self):
 
         phenotrex_genotype(config=self.config)
-        self.assertTrue(
-            len(os.listdir(self.config.output_dir)) == 1
-        )
+
+        genotype = os.path.join(self.config.output_dir, "train.genotype")
+        cmd = " ".join(["wc -l", genotype])
+        result = subprocess.check_output(cmd, shell=True, text=True)
+        nlines = int(result.split(" ")[0])
+
+        self.assertTrue( nlines == 2 )
 
     def  testPredict(self):
 

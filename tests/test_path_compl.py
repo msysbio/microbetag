@@ -22,7 +22,7 @@ from microbetag.helpers import MappingPaths
 
 # Get the directory of the current script
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-test_data = os.path.join(root_dir, "ext_data", "run_path_compl")
+test_data = os.path.join(root_dir, "test_data", "test_path_compl")
 
 input_dir = os.path.join(test_data, "input_files")
 ko_merged = os.path.join(input_dir, "ko_merged_7bins.txt")  # ko_merged.txt is the output of the merge_ko() function; run_kegg_annotation.py test

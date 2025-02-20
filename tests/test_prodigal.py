@@ -5,7 +5,7 @@ from microbetag.tools import run_prodigal
 cwd = os.getcwd()
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-test_data = os.path.join(root_dir, "ext_data", "run_prodigal_test")
+test_data = os.path.join(root_dir, "test_data", "test_prodigal")
 input_files = os.path.join(test_data, "input_files")
 output_dir = os.path.join(test_data, "output_files")
 

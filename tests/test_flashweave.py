@@ -8,7 +8,7 @@ from microbetag.tools import run_flashweave
 
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-test_data = os.path.join(root_dir, "ext_data", "run_flashweave_test/")
+test_data = os.path.join(root_dir, "test_data", "run_flashweave_test/")
 
 config_file = os.path.join(test_data, "config_v103_test_fw.yml")
 with open(config_file, 'r') as yaml_file:

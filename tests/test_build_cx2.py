@@ -1,3 +1,6 @@
+"""
+We will use the 7-bins dev data set and its data products for this test.
+"""
 import unittest
 import os
 import yaml
@@ -6,10 +9,11 @@ from microbetag.build_mtg_cx2 import build_pseudo_cx
 from microbetag.utils import convert_to_json_serializable
 from microbetag.build_mtg_cx2 import build_ndex2_net
 
-
-
 # Get the directory of the current script
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+root_dir    = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+test_data   = os.path.join(root_dir, "test_data", "test_build_cx2")
+config_file = os.path.join(test_data, "config_v103.yml")
+
 
 class TestBuildingCX2(unittest.TestCase):
 
@@ -18,17 +22,18 @@ class TestBuildingCX2(unittest.TestCase):
         # This is called once for the entire class before any test runs
         cls.pseudo_cx_serialized = None
 
+        # Check if config does have what's necessary for the build_pseudo_cx()
+        with open(config_file, 'r') as yaml_file:
+            cls.config = Config(yaml.safe_load(yaml_file), config_file)
+
+
     def test_build_pseudo_cx(self):
         """ Building the pseudo cx network with the microbetag annotations """
-        # Check if config does have what's necessary for the build_pseudo_cx()
-        config_file = os.path.join(root_dir, "ext_data/config_v103_qiita.yml")
 
-        with open(config_file, 'r') as yaml_file:
-            config = Config(yaml.safe_load(yaml_file), config_file)
 
         # Test build_pseudo_cx()
         try:
-            annotated_network = build_pseudo_cx(config)
+            annotated_network = build_pseudo_cx(self.config)
         except Exception as e:
             print(f"Exception occurred: {e}")
 
@@ -47,13 +52,14 @@ class TestBuildingCX2(unittest.TestCase):
 
         if TestBuildingCX2.pseudo_cx_serialized:
             # Use a pseudo cx object (list) as returned by the previous test
-            print("This is based on the previous test....")
-            build_ndex2_net(TestBuildingCX2.pseudo_cx_serialized)
+            build_ndex2_net(
+                TestBuildingCX2.pseudo_cx_serialized,
+                outfile=os.path.join(self.config.output_dir, "unittest_output_on_the_fly.cx2")
+            )
         else:
             # Use an pseudo cx file
-            print("Heck.. this is based on a previous cx.")
             pseudo_cx = os.path.join(root_dir, "ext_data", "input_files", "pseudo_cx_annotated_net.cx")
-            build_ndex2_net(pseudo_cx)
+            build_ndex2_net(pseudo_cx, outfile=os.path.join(self.config.output_dir, "unittest_output_on_prev_built_pseudo.cx2"))
 
 
 if __name__ == "__main__":

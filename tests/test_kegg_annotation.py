@@ -6,8 +6,8 @@ from microbetag.tools import kegg_annotation   # Import the function to be teste
 
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ext_data = os.path.join(root, "ext_data")
-test_data = os.path.join(ext_data, "run_kegg_annotation")
+test_data = os.path.join(root, "test_data")
+test_data = os.path.join(test_data, "run_kegg_annotation")
 
 # Input files
 input_dir = os.path.join(test_data, "input_files")
@@ -16,7 +16,7 @@ bin_ids = [os.path.splitext(faa)[0].split("/")[-1] for faa in faas ]
 threads = 2
 
 # Database files
-kegg_db_dir = os.path.join(ext_data, "kofam_database")
+kegg_db_dir = os.path.join(test_data, "kofam_database")
 ko_list = os.path.join(kegg_db_dir, 'ko_list_tests')  # Part of the ko_list file to be used for testing
 
 # Output files
