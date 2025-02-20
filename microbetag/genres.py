@@ -6,7 +6,7 @@ import logging
 import subprocess
 import multiprocessing
 
-from .utils import split_list, run_until_done, file_exists_and_nonzero, get_library_version
+from .utils import split_list, run_until_done, file_exists_and_nonzero, get_library_version, get_tool_location
 
 
 class GEMSReconstruction():
@@ -205,9 +205,10 @@ class GEMSReconstruction():
         """
         cwd = os.getcwd()
         if self.config.mount is not None:
-            os.chdir("/opt/FragGeneScan")
+            FGS = "/opt/FragGeneScan/FragGeneScan"
         else:
-            os.chdir("path_To_Frag")
+            FGS = get_tool_location("FragGeneScan")
+        COMPLETE = "complete"
         for bin_filename in self.config.bin_filenames:
             bin_file = os.path.join(self.config.bins_path, bin_filename)
             bin_id, _ = os.path.splitext(bin_filename)
@@ -215,17 +216,16 @@ class GEMSReconstruction():
             if not file_exists_and_nonzero(faa):
                 logging.info(f"Bin {bin_filename} is being annotated using FGS.")
                 fgs_params = [
-                    "./FragGeneScan",
+                    FGS,
                     "-s",  bin_file,
                     " -o", faa,
                     "-w  1",
                     "-p", str(self.config.threads),
-                    "-t complete"
+                    "-t", COMPLETE
                 ]
                 fgs_command = " ".join(fgs_params)
                 os.system(fgs_command)
         os.chdir(cwd)
-
 
 
 def fire_microbetag(yaml_file):

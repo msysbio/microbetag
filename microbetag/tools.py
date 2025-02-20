@@ -36,8 +36,12 @@ def run_phylomint(config):
             dest_path = os.path.join(config.genres, os.path.basename(file))
             shutil.move(file, dest_path)
 
+    PHYLOMINT = os.path.join(
+        os.path.dirname(__file__), "PhyloMint/PhyloMInt"
+    )
+
     phylomint_params = [
-        "./PhyloMint/PhyloMInt",
+        PHYLOMINT,  # "./PhyloMint/PhyloMInt",
         "-d", config.genres,
         "--outdir", config.seeds,
         "-o", "phylomint_scores.tsv",

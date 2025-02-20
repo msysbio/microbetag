@@ -1,0 +1,324 @@
+# version: v1.0.3
+# Author: Haris Zafeiropoulos
+# Date: Feb, 2025
+
+
+# ------
+# INPUT/OUTPUT
+# ------
+bins_fasta:
+  dir_path: input_files
+  description: Name of the folder with the bins .fasta files.
+  required: false
+  type: string
+
+
+output_directory: 
+  dir_path: output_files
+  description: Name of the output folder that will be built inside the io_path directory.
+  required: true
+  type: string
+
+
+# -----
+# Computing
+# -----
+threads:
+  value: 2
+  description: "Number of CPUs to be used."
+  type: integer
+
+
+# -----
+# Precalculations only
+# -----
+precalulations_only:
+  value: true
+  description: "If true, only the precalculations will be performed. 
+  This means that neither an abundance table is nor an already available network will be considered, only the list of bins/MAGs; provided in the bins_fasta parameter.
+  In case this is true, microbetag will make sure all the precalculations related to the annotations steps asked are available; if some are not, it will perform them. 
+  Once all precalculations required are available, it will then annotate the network."
+  required: true
+  type: bool
+
+
+# -----
+# Seed complementarity
+# -----
+seed_complementarity:
+  value: true
+  description: This is the most time-consuming and challengint step of the workflow. You may perform microbetag with or without it by setting \
+                this argument as true or false correspondinly.
+  required: true
+  type: bool
+
+
+# -----
+# Metabolic network reconstruction: there parameters should be considered only in case seed complementarity is about to be performed and metabolic networks are not already available
+# -----
+
+sequence_files_for_reconstructions:
+  dir_path: 
+  description: >
+    Directory with files to be used as input for the GENRE reconstruction step. 
+    These can be either .fa/.fasta, .faa files, .gto files or even .xml files files, in case genome scale reconstructions are already available.
+    By default, microbetag will used the .faa files returned from the Prodigal step if carveme is set as the genre_reconstruction_with parameter, and the original .fasta in case of modelseed.
+    In case you provide your own files to be used for the reconstruction, it is a good practice to have those organized in a separate folder.
+  required: false
+  type: string
+
+
+input_type_for_seed_complementarities:
+  value: bins_fasta
+  value_from: 
+    - bins_fasta
+    - coding_regions
+    - proteins_faa
+    - models
+  description: >
+    Clarifies what is the information the input files to be used for the GEMs reconstruction include. 
+    This parameter is strongly related to the `sequence_files_for_reconstructions` as it is the last that specifies the path to the files described here. 
+    
+    - If GEMs are already available, then you may set the `input_type_for_seed_complementarities` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. 
+    
+    - If you intend to use ModelSEEDpy to reconstruct GEMs but you have already RAST annotated your genomes, i.e. gto, gto_2 and their corresponding .faa files are available, then you may set this parameter as `proteins_faa` and 
+    give the directory path to the .faa files in the `sequence_files_for_reconstructions`.
+
+    - If none of the above is available, then set this parameter as bins_fasta and leave the sequence_files_for_reconstructions blank and microbetag will use the fasta files you provided in the `bins_fasta` parameter.
+  type: string
+  required: true
+
+
+
+gene_predictor:
+  value: fragGeneScan
+  value_from: 
+    - fragGeneScan
+    - prodigal
+    - RAST
+  required: 
+    value: false
+    when: orfs_per_bin is None
+  description: "RAST annotation is required/strongly suggested* if modelseedpy is going to be used as genre_reconstruction_with.
+  Otherwise, the user may choose among fragGeneScan or prodigal; in the latter, the .faa returned by DiTing will be used."
+  type: string
+
+genre_reconstruction_with:
+  value: modelseedpy
+  value_from: 
+    - modelseedpy
+    - carveme
+  required: 
+    value: true
+    when: seed_complementarity == true
+
+gapfill_model:
+  value: true
+  description: "If true, modelseedpy will gapfill the reconstruction."
+  type: bool
+
+gapfill_media: 
+  value: true
+  description: If true, modelseedpy will 
+  type: bool
+
+
+# -----
+# Phen traits prediction
+# -----
+min_proba:
+  value: 0.6
+  description: "Minimum confidence that a prediction needs to have for keeping the the presence/absence finding."
+  type: float
+
+# -----
+# manta 
+# -----
+network_clustering:
+  value: false
+  description:
+  type: bool
+  required: false
+
+
+# -----
+# Flashweave
+# -----
+metadata_file:
+  file_path: 
+  description: 
+  type:
+  required: false
+
+flashweave_args:
+    heterogeneous:
+      value: false
+      description: "Enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (FlashWeaveHE)."
+      required: true
+      type: bool
+    
+    sensitive:
+      value: true
+      description: "Enable fine-grained associations (FlashWeave-S, FlashWeaveHE-S), sensitive=false results in the fast modes FlashWeave-F or FlashWeaveHE-F."
+      required: true
+      type: bool
+
+    max_k:
+      value:
+      description: "Maximum size of conditioning sets, high values can strongly increase runtime. max_k=0 results in no conditioning (univariate mode)."
+      required: false
+      type: integer
+
+    alpha:
+      value:
+      description: "Threshold used to determine statistical significance."
+      required: false
+      type: 
+
+    conv:
+      value:
+      description: "Convergence threshold, i.e. if conv=0.01 assume convergence if the number of edges increased by only 1% after 100% more runtime (checked in intervals)."
+      required: false
+      type: 
+
+    feed_forward:
+      value:
+      description: "Enable feed-forward heuristic"
+      required:
+      type:
+
+    max_tests: 
+      value:
+      description: "Maximum number of conditional tests that should be performed on a variable pair before association is assumed."
+      required: false
+      type:
+
+    hps:
+      value:
+      description: "Reliability criterion for statistical tests when sensitive=false."
+      required: false
+      type:
+
+    FDR:
+      value:
+      description: "Perform false Discovery Rate correction (Benjamini-Hochberg method) on pairwise associations."
+      required: false
+      type:
+
+    n_obs_min:
+      value: 
+      desription: "Don't compute associations between variables having less reliable samples (i.e. non-zero if heterogeneous=true) than this number. -1  automatically choose a threshold."
+      required: false
+      type: integer
+
+    time_limit:
+      value: 
+      description: if feed-forward heuristic is active, determines the interval (seconds) at which neighborhood information is updated
+      required: false
+      type: 
+
+    normalize:
+      value: 
+      description: automatically choose and perform data normalization (based on sensitive and heterogeneous)
+      required: false
+      type: bool
+
+    track_rejections:
+      value: 
+      description: store for each discarded edge, which variable set lead to its exclusion (can be memory intense for large networks)
+      required: false
+      type:
+
+    verbose:
+      value:
+      description: print progress information
+      required: false
+      type: bool
+
+
+# -----
+# Sequence params
+# -----
+abundance_table_file: 
+  file_path: 
+  description: "file_path of the abundance table file.
+  The taxonomy scheme in this case is irrelevant.
+  However, you need to make sure that the sequence identifiers used in this table, are the same
+  with those in your network (if one provided) as well as with those in your bins/faa/xml files, again if such provdied."
+  required: true
+  examples: 
+    - thirty_Samples.tsv
+    - counts_genomes_taxonomies.tsv
+  type: string
+
+
+orfs:
+  dir_path: 
+  description: In case Operating Reading Frames (ORFs) have been already computed (e.g., using Prodigal), you may provide the path to the folder with the .fna files. 
+  required: false
+  type: Path
+
+edge_list:
+  file_path: 
+  description: "If co-occurrence network already available, please provide its edge list; a 2 column tab separated file."
+  required: false
+  examples: 
+    - edgelist.csv
+  type: string
+
+sequence_id_taxonomy_map:
+  file_path: bin2taxonomy.tsv
+  description: >
+    A file
+  required: 
+    value: false
+    when: 
+  examples:
+    - 
+  type: string
+
+
+
+
+# -----
+# Pathway complementarity: if the pathway_complementarity parameter is set as false, the rest of the parameters will not be considered. 
+# -----
+pathway_complementarity:
+  value: false
+  description: "Set whether pathway complementarities should be calcuated and then used to annotated the edges of the co-occurrence network."
+  required: true
+  type: bool
+
+max_length_for_complement_from_scratch:
+  value: 3
+  description: "There are cases where a species has no KO related with a module but may get a complete alternative from the donor species. However, there are cases where a KEGG module consists of just 1-2 terms and other where dozins of KOs are required. Set the max length of a module that can be exchanged when no module related KO is present in the beneficiary in the first place."
+  required: false
+  type: integer
+
+pathway_complement_percentage:
+  value: 0.35
+  description: "Per centage of the module (i.e., number of KO terms) up to which a potential donor may provide a beneficiary with. For example, if a module consists of 5 KOs and the beneficiary can share 4 missing from the donor, this is rather unlikely to happen. If no value is given all complementes will be returned."
+  required: false
+  type: float
+
+ko_merged_file:
+  path: KEGG_annotations/ko_merged.txt
+  description: "A merged 3-column file with bins, contigs and the annotated KO term for all your genomes/bins. Needs to have a header and keep this order. You may have this from a previous microbetag run, or from annotations outside the microbetag software. 
+  Here is a example: 
+  bin_id	            contig_id	                                                KO
+  D300418:bin_000001	D300418:bin_000001_D300418:bin_000001@contig_00001691_10	K07258
+  D300418:bin_000001	D300418:bin_000001_D300418:bin_000001@contig_00001691_13	K06024
+  "
+  required: false
+  type: Path
+
+kofam_database:
+  path: 
+  description: "After downloading KOfam database from ftp://ftp.genome.jp/pub/db/kofam/ and decompress it. 
+  You will get profile HMMs in profiles/ directory and a ko_list file.
+
+  u0156635@gbw-l-l0074:kofam_database$ ls 
+  ko_list  profiles
+
+  Provide the path to the kofam directory_database directory."
+  type: Path

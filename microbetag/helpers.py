@@ -47,9 +47,9 @@ class PathwayComplementarity:
         container_kofam_db = "/microbetag/microbetag/mtg_maps_models/kofam_database/"
         if not os.path.exists(container_kofam_db):
             logging.error(
-                "Please provide the path to the KOfam database."
-                "If not available, download it from ftp://ftp.genome.jp/pub/db/kofam/."
-                "If running microbetag through a container, mount kofam_db under"
+                "Please provide the path to the KOfam database. \n"
+                "If not available, download it from ftp://ftp.genome.jp/pub/db/kofam/. \n"
+                "If running microbetag through a container, mount kofam_db under "
                 "/microbetag/microbetag/mtg_maps_models/kofam_database/."
             )
             sys.exit(0)
@@ -69,10 +69,11 @@ class PathwayComplementarity:
                 max_scratch_alt if max_scratch_alt is not None
                 else 1
             )
-            # S
+            # Set up KEGG annotations 3-column file
             ko_merged = self.conf.yaml.get("ko_merged_file", {}).get("file_path")
-            self.ko_merged = resolve_file_path(self.base_dir, ko_merged)
-            # self.setup_ko_merged()
+            ko_merged = resolve_file_path(self.base_dir, ko_merged)
+            self.ko_merged = ko_merged
+
             if self.ko_merged is None:
                 self.setup_kegg_annotations()
                 self.kegg_db_dir = self.get_kofam_db_path()
@@ -101,14 +102,16 @@ class MappingPaths:
     Sets paths to mapping files
     """
     def __init__(self, config):
-        kegg_mappings = os.path.join(config.cwd, "microbetag/mtg_maps_models/kegg_mappings/")
+        mtg = os.path.dirname(__file__)
+        kegg_mappings = os.path.join(mtg, "mtg_maps_models/kegg_mappings/")
         self.kegg_mappings = kegg_mappings
+        self.metanetx_compounds = os.path.join(mtg, "mtg_maps_models/MetaNetX/chem_xref.tar.gz")
+
         self.ko_terms_per_module_definition = os.path.join(kegg_mappings, "kegg_terms_per_module.tsv")
         self.modules_definitions_json_map = os.path.join(kegg_mappings, "module_definition_map.json")
         self.kegg_modules_to_maps = os.path.join(kegg_mappings, "module_map_pairs.tsv")
         self.seed_ko_mo = os.path.join(self.kegg_mappings, "seedId_keggId_module.tsv")
         self.module_descriptions = os.path.join(kegg_mappings, "module_descriptions")
-        self.metanetx_compounds = os.path.join(config.cwd, "mtg_maps_models/MetaNetX/chem_xref.tar.gz")
 
 
 class Faprotax:
@@ -386,14 +389,6 @@ class GenresHandler():
         self.phylomint_scores = os.path.join(self.seeds, "phylomint_scores.tsv")
 
 
-class Emojis:
-    def __init__(self) -> None:
-        self.WARNING_EMOJI = "\u2757"
-        self.TADA_EMOJI = "\"\U0001F389\""
-        self.RED_CROSS_EMOJI = "\u274C"
-        self.GREEN_CHECK_EMOJI = "\u2705"
-        self.ANNOUNCEMET = "\u1F4E3"
-
 def manta_input_net(config):
     """ Build intermediate network file as input for manta """
 
@@ -402,6 +397,15 @@ def manta_input_net(config):
     with open(config.base_network_file, "w") as f:
         json.dump(manta_input_serial, f, indent=4)
     return True
+
+
+class Emojis:
+    def __init__(self) -> None:
+        self.WARNING_EMOJI = "\u2757"
+        self.TADA_EMOJI = "\"\U0001F389\""
+        self.RED_CROSS_EMOJI = "\u274C"
+        self.GREEN_CHECK_EMOJI = "\u2705"
+        self.ANNOUNCEMET = "\u1F4E3"
 
 
 # [NOTE] OUT OF SCOPE BUT CURRENTLY USEFUL
