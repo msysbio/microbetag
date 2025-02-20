@@ -195,7 +195,9 @@ Remember, `unittest`:
   - will run your tests in alphabetical order
   - `setUpClass` is called with the class as the only argument and must be decorated as a `classmethod()`
 
-
+:warning: Remember also that `microbetag` will use the directory where the configuration files you provide 
+as the base working directory. 
+Therefore, you should place your input/output files within the confi file directory as in the `ext_data/tests_*`.
 
 
 
