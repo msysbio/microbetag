@@ -496,7 +496,7 @@ class UpdateCX2Netork():
     """
     Convert the initial microbetag-annotated network to a .cx2 format file.
     """
-    def __init__(self, microbetag_cx):
+    def __init__(self, microbetag_cx, outfile=None):
         """
         Initializes a cx2 microbetag-network converter.
 
@@ -504,23 +504,31 @@ class UpdateCX2Netork():
         -----------
         microbetag_cx (list): microbetag-annotated network in initial format
         """
+
         self.graphml_file = None
-        if not isinstance( microbetag_cx, list):
+        self.outfile = outfile
+
+        if not isinstance(microbetag_cx, list):
+
+            print("microbetag_cx:", microbetag_cx)
+
             try:
                 with open(microbetag_cx, "r") as f:
                     self.initial_cx = json.load(f)
 
-                edir = os.path.dirname(microbetag_cx)
                 # base, _ = os.path.splitext(os.path.basename(microbetag_cx))
+                edir = os.path.dirname(microbetag_cx)
                 self.graphml_file = edir
+
             except:
                 raise ValueError("Please provide either a path to a initial cx file or the list returned when this is loaded")
         else:
             self.initial_cx = microbetag_cx
+
         try:
-            # nodes
+            # Build nodes
             self.cx2_nodes = self.get_nodes()
-            # 5 edges
+            # Build edges
             self.cx2_edges = self.get_edges()
         except:
             raise TypeError("File provided is not a valid json.")
@@ -619,35 +627,40 @@ class UpdateCX2Netork():
             # create an edge connecting the nodes, id of edge is returned
             _ = net_cx.add_edge(source=source, target=target, attributes=filtered_attributes)
 
-        # Basename
-        timepoint = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-        netfile = "_".join(["mbtag_net", timepoint])
-        netfile = ".".join([netfile, "cx2"])
-
-        if self.graphml_file is not None:
-            graphml_file = os.path.join(self.graphml_file, netfile)
+        if self.outfile is None:
+            # Basename
+            timepoint = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+            netfile = "_".join(["mbtag_net", timepoint])
+            netfile = ".".join([netfile, "cx2"])
+            if self.graphml_file is not None:
+                graphml_file = os.path.join(self.graphml_file, netfile)
+            else:
+                graphml_file = netfile
         else:
-            graphml_file = netfile
+            graphml_file = self.outfile
         net_cx.set_network_attributes({'name': 'microbetag annotated network'})
         net_cx.write_as_raw_cx2(graphml_file)
 
 
-def build_ndex2_net(microbetag_net_file):
+def build_ndex2_net(microbetag_pseudo_cx, outfile=None):
     """
     Wrapper to fire an instance of UpdateCX2Netork class aiming to export a microbetag-annotated network file to .cx2 format
 
     Arguments
     ---------
-    microbetag_net_file (str): path to initial microbetag-annotated network file
+    microbetag_net_file (str | list): path to initial microbetag-annotated network file
 
     Returns
     --------
     (boolean): A .cx2 format file was successfully saved or not
     """
+
     try:
-        build_cx2= UpdateCX2Netork(microbetag_net_file)
+        build_cx2 = UpdateCX2Netork(microbetag_pseudo_cx, outfile)
         build_cx2.build_cx()
         return True
+
     except Exception as e:
         logging.error('Error occurred when building cx2. %s' % str(e))
         return False
+

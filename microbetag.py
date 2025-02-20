@@ -198,6 +198,7 @@ if config.pathway_complementarity:
 # Build GENREs
 # ----------------
 if config.seed_complementarity:
+
     if not config.users_models:
 
         logging.info("[STEP] GENOME-SCALE METABOLIC NETWORK RECONSTRUCTIONS")

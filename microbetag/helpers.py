@@ -247,7 +247,13 @@ class SeedComplementarityHandler:
 
         # Get seed complementarity value, defaulting to True if invalid
         scompl = config.yaml.get("seed_complementarity", {}).get("value")
-        self.seed_complementarity = scompl if scompl in [0, 1] else True
+        if not isinstance(scompl, bool):
+            scompl = False
+            logging.warning(
+                "Value for 'seed_complementarity' was not provided properly (true|false)."
+                f"microbetag will proceed without seed complementarity. {WARNING_EMOJI}"
+            )
+        self.seed_complementarity = scompl
 
         if self.seed_complementarity:
             self._validate_input_type(config)
@@ -379,6 +385,14 @@ class GenresHandler():
         self.module_related_non_seeds = os.path.join(self.seeds, "module_related_non_seeds.pckl")
         self.phylomint_scores = os.path.join(self.seeds, "phylomint_scores.tsv")
 
+
+class Emojis:
+    def __init__(self) -> None:
+        self.WARNING_EMOJI = "\u2757"
+        self.TADA_EMOJI = "\"\U0001F389\""
+        self.RED_CROSS_EMOJI = "\u274C"
+        self.GREEN_CHECK_EMOJI = "\u2705"
+        self.ANNOUNCEMET = "\u1F4E3"
 
 def manta_input_net(config):
     """ Build intermediate network file as input for manta """

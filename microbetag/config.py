@@ -5,6 +5,8 @@ from .helpers import *
 from .networks import get_edgelist
 from .utils import resolve_file_path, detect_separator
 
+
+
 # Set up custom logging format
 logging.basicConfig(
     format='%(levelname)s: %(message)s',  # Define the format without "root:"
@@ -38,10 +40,13 @@ class Config:
         # Pass loaded yaml object
         self.yaml = conf
 
+        # Load emojis
+        emojis = Emojis()
+
         # User's group and user id
-        file_info = os.stat(config_file)
-        self.user_id = file_info.st_uid
-        self.group_id = file_info.st_gid
+        self.yaml_file = os.stat(config_file)
+        self.user_id = self.yaml_file.st_uid
+        self.group_id = self.yaml_file.st_gid
         config_wd = os.path.dirname(os.path.realpath(__file__))
         self.cwd = os.path.dirname(config_wd)
 
@@ -77,21 +82,27 @@ class Config:
         edge_list = conf.get("edge_list", {}).get("file_path")
         self.network = resolve_file_path(self.base_dir, edge_list)  #os.path.join(self.base_dir, edge_list) if edge_list else None
 
-        if self.abundance_table is None and self.network is None:
+        # NOTE: Setting precalculations only as true, also allows to get a Config instance
+        # without providing an abundance table or network, meaning you can use the Config instance
+        # for partial/specific tasks of microbetag.
+        precalc_only = conf.get("precalulations_only").get("value")
+        self.precalc_only = precalc_only if precalc_only in [0,1] else False
+
+        if self.abundance_table is None and self.network is None and precalc_only is False:
             raise ValueError(f"You need to provide at least one between an abundance table and a network's edgelist in 3-column format.")
 
         # IMPORTANT: Sequence to taxonomy map -- required if no abundance table is needed
         sequence_taxonomy_map = conf.get("sequence_id_taxonomy_map", {}).get("file_path")
         self.sequence_taxonomy_map = resolve_file_path(self.base_dir, sequence_taxonomy_map)
 
-        if self.abundance_table is None and self.sequence_taxonomy_map is None:
+        if self.abundance_table is None and self.sequence_taxonomy_map is None and precalc_only is False:
             raise ValueError(
                 f"Since an abundance table is not provided, you need to provide a 2-column file with the sequence id (e.g bin ids)"
                 "and their corresponding taxonomy or taxon name."
             )
 
         # IMPORTANT: Sequence id to taxonomy map
-        if self.network is None:
+        if self.network is None and self.abundance_table:
             (
                 self.seq_to_taxon_df,
                 self.sequence_id_column_name,
@@ -101,13 +112,13 @@ class Config:
 
             self.seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
 
-        elif self.abundance_table is None:
+        elif self.abundance_table is None and self.network:
             # delimiter = detect_separator(self.sequence_taxonomy_map)
             seq_to_taxon_df = pd.read_csv(self.sequence_taxonomy_map, sep=self.delimiter)
             seq_to_taxon_df.columns = ["sequence_id", "taxonomy"]
             self.seq_to_taxon_df = seq_to_taxon_df
             self.seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
-        else:
+        elif self.abundance_table and self.network:
             # NOTE: Not all sequence ids in the seq_ids need to have a taxonomy in this case -- only those coming from the abundance table
             # Yet, in case that the network has taxa not present in the abundance table, apparently it will lead to errors.
             network_df = get_edgelist(self)
@@ -123,8 +134,12 @@ class Config:
             abd_seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
             self.seq_ids = net_seq_ids + abd_seq_ids
 
-        precalc_only = conf.get("precalulations_only").get("value")
-        self.precalc_only = precalc_only if precalc_only in [0,1] else False
+        else:
+            logging.warning(
+                "Neither an abundance table nor a network was procided."
+                "microbetag will only run some pre-calculations not requiring them."
+                f"This is only good to use if you are are quite familiar with microbetag and you know what you are doing. {emojis.WARNING_EMOJI}"
+            )
 
         # Set bins --- NOTE: CHECK FOR CONFLICTS
         self.bins_ids = None
@@ -195,7 +210,7 @@ class Config:
             else False
         )
         if self.network_clustering:
-            manta_net = conf.get("manta_network").get("file_path")
+            manta_net = conf.get("prev_clustered_network").get("file_path")
             self.manta_net = (
                 os.path.join(self.base_dir, manta_net)
                 if not None
