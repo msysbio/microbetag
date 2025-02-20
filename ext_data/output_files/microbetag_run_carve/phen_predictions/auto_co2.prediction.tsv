@@ -1,9 +1,0 @@
-# Trait: auto_co2
-Identifier	Trait present	Confidence
-bin_101.fa	YES	0.7714
-bin_151.fa	YES	0.6312
-bin_19.fa	N/A	0.5147
-bin_38.fa	NO	0.6128
-bin_41.fa	N/A	0.5024
-bin_45.fa	N/A	0.5289
-bin_48.fa	NO	0.6207
