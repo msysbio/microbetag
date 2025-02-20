@@ -26,8 +26,45 @@ def get_library_version(library_name):
     except Exception as e:
         return str(e)
 
+def resolve_relative_path(base_dir, file_path):
+    # Count the number of "../" at the beginning
+    steps_back = 0
+    while file_path.startswith('../'):
+        steps_back += 1
+        file_path = file_path[3:]  # Remove the leading "../"
+
+    # Move back "steps_back" levels from base_dir
+    for _ in range(steps_back):
+        base_dir = os.path.dirname(base_dir)
+
+    # Combine the modified base_dir with the remaining file_path
+    return os.path.join(base_dir, file_path)
+
+
 def resolve_file_path(base_dir, file_path):
-    return os.path.join(base_dir, file_path) if file_path else None
+
+    # If the file_path is None, return None
+    if file_path is None:
+        return None
+
+    # Otherwise, resolve the file path based on the base directory and the user's input
+    if file_path.startswith('/'):
+        path = file_path
+
+    if file_path.startswith('~'):
+        path = os.path.expanduser(file_path)
+
+    if file_path.startswith('../'):
+        path = resolve_relative_path(base_dir, file_path)
+
+    else:
+        path = os.path.join(base_dir, file_path)
+
+    # Check if the file exists
+    if os.path.exists(path):
+        return path
+    else:
+        raise FileNotFoundError(f"File not found: {path}")
 
 
 class SetEncoder(json.JSONEncoder):
@@ -257,15 +294,20 @@ def load_merged_ko_file(merged_ko):
         pivot_df (pd.DataFrame): a presence-absence (1/0) df where KOs are the rows and bin_ids the columns
 
     """
+    if merged_ko.endswith('.gz'):
+        os.system(f"gunzip {merged_ko}")
+        merged_ko = merged_ko.rsplit('.gz', 1)[0]
+
     df = pd.read_csv(merged_ko, sep="\t")
     column_names = df.columns.tolist()
     bin_id, _, ko = column_names[:3]
-    # bins_kos = df.groupby('bin_id')['ko_term'].apply(set).to_dict()
 
     # Pivot the DataFrame to have 'kegg_id' as rows and 'bin_id' as columns
     unique_combinations = df.drop_duplicates().copy()
     unique_combinations.loc[:, 'presence'] = 1
     pivot_df = unique_combinations.pivot_table(index=ko, columns=bin_id, values='presence', fill_value=0)
+
+    os.system(f"gzip {merged_ko}")
 
     return pivot_df  # keep one | used to alse return the bins_kos
 
@@ -319,43 +361,40 @@ def ensure_same_namespace_after_fw(conf):
     [TODO] can be removed but let's wait
     Inconsistencies from D300244:bin_000023 in the abundance table to D300244.bin_000023 in FlashWeave.
     Keep the routine in general along with the find_id_differences().
+
+    Apparently, the conf.network is a FlashWeave network file - thus the skip 2 rows
     """
+    import difflib
 
-    def match_delimiters_based_on_col2(row, df1_col_name, df2_col_name, df2_row):
-        """
-        Adjusts the delimiter in df1 based on the delimiter used in df2.
-
-        df1: DataFrame that needs delimiter adjustment
-        df2: DataFrame containing the reference column for delimiters -- abundance table
-        df1_col_name: The column name in df1 to adjust
-        df2_col_name: The column name in df2 to extract the delimiter from
-        df2_row: The specific row in df2 to access the delimiter
-
-        NOTE: In the ``[^\w]+`` pattern, ``\w`` matches any word character (alphanumeric & underscore)
-        and ``+`` allows for one or more occurrences, e.g. `::`.
-        """
-        # Extract delimiter from df2's col2
-        delimiters_col = re.findall(r'[^\w]+', df2_row[df2_col_name])
-        if delimiters_col:
-            # If there's a delimiter, apply it to df1's col1
-            delimiter_col = delimiters_col[0]
-            # Replace the delimiter in col1 with the one from col2
-            col_fixed = re.sub(r'[^\w]+', delimiter_col, row[df1_col_name])
-            return col_fixed
-        return row[df1_col_name]  # If no delimiter, return original col1
+    # Function to find the closest match and its index
+    def find_closest_match_with_index(element, list2, cutoff=0.6):
+        matches = difflib.get_close_matches(element, list2, n=1, cutoff=cutoff)
+        if matches:
+            closest_match = matches[0]
+            index = list2.index(closest_match)
+            return closest_match, index
+        return None, None
 
 
     abd_df = pd.read_csv(conf.flashweave_abd_table, sep="\t")
-    net_df = pd.read_csv(conf.network, sep="\t", skiprows=2, header = None)
+    abd_df_seqids = abd_df[abd_df.columns[0]].tolist()
 
-    # Apply the function row-wise with corresponding rows from df2
-    # row.name is the index of the row in df
-    net_df[net_df.columns[0]] = net_df.apply(
-        lambda row: match_delimiters_based_on_col2(
-            row, net_df.columns[0], abd_df.columns[0], abd_df.iloc[row.name]
-        ),
-        axis=1
-    )
+    net_df = pd.read_csv(conf.network, sep="\t", skiprows=2, header = None)
+    net_df.columns = ["bin_a", "bind_b", "weight"]
+
+    col1 = net_df["bin_a"].tolist()
+    col2 = net_df["bind_b"].tolist()
+    weight = net_df["weight"].tolist()
+
+    # Replace closest match in both col1 and col2 with the element from abd_df_seqids
+    for element in abd_df_seqids:
+        for col in [col1, col2]:  # Iterate over both columns
+            closest_match, index = find_closest_match_with_index(element, col)
+            if closest_match:
+                # Replace the closest match in the current column
+                col[index] = element
+
+    net_df = pd.DataFrame(list(zip(col1, col2, weight)), columns=["bin_a", "bind_b", "microbetag::weight"])
 
     net_df.to_csv(conf.network, sep="\t", index=False, header=False)
 
@@ -510,7 +549,9 @@ def flatten_list(lista, flat_list=[]):
 
 
 def detect_separator(file_path):
-
+    """
+    Detect the separator used in a text file, i.e `\t`,  `,` , `;` etc.
+    """
     try:
         with open(file_path, 'r') as file:
 
@@ -518,22 +559,27 @@ def detect_separator(file_path):
             file.seek(0, 2)  # Move to the end of the file
             file_size = file.tell()
 
-            # Calculate 1% of the file size
-            if file_size < 10e6:
-                percent_size = int(file_size * 0.2)
-            else:
-                percent_size = int(file_size * 0.01)
+            # Calculate 1% of the file size: 1e6 is 1MB
+            percent_size = (
+                file_size if file_size < 1e5 else
+                int(file_size * 0.2) if file_size < 1e6 else
+                int(file_size * 0.1) if 1e7 < file_size < 1e8 else
+                int(file_size * 0.01)
+            )
+            percent_size = max(percent_size, int(1e5))
 
-            # Move to the start of the file
+            # Log sizes
+            logging.info(f"file_size of {file_path}: {file_size}") ; logging.info(f"percent_size:  {percent_size}")
+
+            # # Move to the start of the file
             file.seek(0)
-
-            # Read 1% of the file to detect the delimiter
             sample = file.read(percent_size)
 
             # Use csv.Sniffer to detect the dialect
             sniffer = csv.Sniffer()
             dialect = sniffer.sniff(sample)
             return dialect.delimiter
+
     except:
         raise TypeError(f"Cannot get delimiter for file {file_path}")
 
@@ -554,28 +600,39 @@ def find_three_column_format(file_path, delimiter):
 def get_tool_location(software):
     """
     Check if a software is available in the system path or in the alternative location.
+    Will return either the sofware name itself which will then be ok to run as is
+    or the full path to the software if it's found in the alternative location.
+    In both cases, the return value will allow running the software.
     """
-    try:
-        # Try running prodigal and check if it exists
-        if shutil.which(software) is not None:
-            return software
 
-    except subprocess.CalledProcessError:
-        print("No Prodigal system-wide installation found.")
-        pass
+    # Try running prodigal and check if it exists
+    # NOTE: This does not meat that the software is not installed under ~/.microbetag
+    # If ~/.microbetag was added in PATH, it's gonna still be in this case
+    if shutil.which(software) is not None:
+        print("Case 1")
+        return software
+    else:
+        print(f"No {software} system-wide installation found.")
 
-    try:
+    # If software is not found, check the alternative location
+    HOME = os.path.expanduser("~")
+    microbetag_installation = os.path.join(HOME, ".microbetag")
+    software_path = os.path.join(microbetag_installation, software)
 
-        # If software is not found, check the alternative location
-        HOME = os.path.expanduser("~")
-        microbetag_installation = os.path.join(HOME, ".microbetag")
-        software_path = os.path.join(microbetag_installation, "prodigal")
+    # Try running prodigal from the alternative location
+    if shutil.which(software_path) is not None:
+        print("Case 2")  # e.g. ~/.microbetag/prodigal
+        return software_path
 
-        # Try running prodigal from the alternative location
-        if shutil.which(software_path) is not None:
-            return software_path
+    elif shutil.which(os.path.join(software_path, software)) is not None:
+        print("Case 3")  # e.g. ~/.microbetag/prodigal/prodigal
+        return os.path.join(software_path, software)
 
-    except subprocess.CalledProcessError:
+    elif shutil.which(os.path.join(software_path, "bin", software)) is not None:
+        print("Case 4")  # e.g. ~/.microbetag/prodigal/bin/prodigal
+        return os.path.join(software_path, "bin", software)
+
+    else:
         # If neither path works
         logging.error(f"{software} is not available. Please install it first.")
-        return None  # Or raise an error if you prefer
+        raise SystemExit(f"{software} is not available. Please install it first.")
