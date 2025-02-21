@@ -1,5 +1,5 @@
 /* Change the base font */
-html,
+/* html,
 body {
   font-family: "Merriweather", sans-serif;
 }
@@ -8,6 +8,12 @@ body {
 code,
 pre {
   font-family: "Fira Code", monospace;
+} */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap");
+
+:root {
+  --font-stack: "Inter", sans-serif;
 }
 
 .btn-green {
