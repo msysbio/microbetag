@@ -8,18 +8,9 @@ usemath: true
 ---
 
 # Modules
-{: .no_toc }
 
-## Table of contents
-{: .no_toc .text-delta }
-
-1. TOC
-{:toc}
-
----
 
 ## Overview
-
 
 `microbetag` gets as input either a co-occurrence network or an abundance table where either [Silva](https://www.arb-silva.de) or [GTDB](https://gtdb.ecogenomic.org) taxonomies have been used. 
 When an abundance table is provided, microbetag firsts builds a co-occurrence network using [FlashWeave](https://github.com/meringlab/FlashWeave.jl) [1].
@@ -110,15 +101,15 @@ All the GTDB representative genomes were KEGG annottated.
 Considering all pair-wised combinatons of those genomes, microbetag checks whether the KEGG Orthology (KO) terms of a genome (donor) could complete a KEGG module of another (beneficary), if shared.
 
 Here is an example where *Acidiferrobacter* sp. SPIII3 
-(GCA_003184265.1) potentially shares K01626 to complete the Shikimate pathway ([M00022](https://www.genome.jp/dbget-bin/www_bget?M00022)) of
-Prochlorococcus marinus AS9601 (GCA_000015645.1).
+([GCA_003184265.1](https://gtdb.ecogenomic.org/genome?gid=GCA_003184265.1)) potentially shares K01626 to complete the Shikimate pathway ([M00022](https://www.genome.jp/dbget-bin/www_bget?M00022)) of
+*Prochlorococcus marinus* AS9601 ([GCA_000015645.1](https://gtdb.ecogenomic.org/genome?gid=GCF_000015645.1)).
 
-![complementarity_kegg_example](../_static/img/kegg_example.png){: width=80% }
+![complementarity_kegg_example](../_static/img/kegg_example.png)
 
 As several genomes can be mapped to the same NCBI Taxonomy id, microbetag returns all possible complementarities
 between all the donor's and the beneficary's genomes. 
 
-microbetag annotates all **edges** where both nodes represent species/strain level taxonomies with such complementarities.
+*microbetag* annotates all **edges** where both nodes represent species/strain level taxonomies with such complementarities.
 
 
 
@@ -139,7 +130,8 @@ A confidence level of 0 would correspond to a non-seed node, while a 1 would cor
 <!-- Nodes F, G, and H would then each have a confidence level of 1/3. -->
 
 Based on the seed concept, several scores between metabolic models of pair of species have been described. 
-As described in the PhyloMInt paper: the **Metabolic Complementarity Index** ($$ MI_{Complementarity} $$) is calculated as the *"fraction of the seed set of the genome-scale reconstruction of species A, that is found within B’s metabolic network but not part of B’s seed set, normalized by the number of A’s seed set in B’s entire metabolic network"*. 
+As described in the PhyloMInt paper: the **Metabolic Complementarity Index** ($ MI_{Complementarity} $) is calculated as the 
+*"fraction of the seed set of the genome-scale reconstruction of species A, that is found within B’s metabolic network but not part of B’s seed set, normalized by the number of A’s seed set in B’s entire metabolic network"*. 
 This complementarity score represents the **potential for A’s to utilize the potential metabolic output of B**.
 
 
@@ -149,7 +141,7 @@ $$
 
 
 
-Similarly, as described in the PhyloMInt paper, the **Metabolic Competition Index** ($$MI_{Competition}$$)
+Similarly, as described in the PhyloMInt paper, the **Metabolic Competition Index** ($MI_{Competition}$)
 *"is calculated as the fraction of A’s seed set that is also in B’s seed set, normalized by the weighted sum of the confidence score"*.
 MIC estimates the baseline **metabolic overlap** between two given metabolic networks.
 
@@ -176,7 +168,7 @@ $ MI_{Competition} $
 between metabolic network *A* and *B* is 
 $ (1/3) / 2 = 1/6 $. 
 
-```{tip}
+```{hint}
 The $ 1/3 $ term represents the confidence level of the seed group node. 
 ```
 Among $ SeedSetA $, 

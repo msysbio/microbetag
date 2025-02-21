@@ -7,7 +7,9 @@ description: "how to run microbetag from Python"
 ---
 
 
-## Run `microbetag` from Python 
+# Run `microbetag` from Python 
+
+<!-- TODO: HERE WE NOW HAVE A LOT TO SAY FOR INDIVIDUAL FEATURES -->
 
 One may use the API routes described through Python. 
 For example, to get the microbetagDB genomes related species with NCBI Taxonomy id 853:
@@ -27,7 +29,14 @@ Furthermore, one may run microbetag directly and not through the CytoscapeApp by
 They would also need to provide the following arguments as part of the JSON obect:
 
 ```python
-arguments_list = ["input_category", "taxonomy", "phenDB", "faprotax", "pathway_complement", "seed_scores"]
+arguments_list = [
+  "input_category", 
+  "taxonomy", 
+  "phenDB", 
+  "faprotax", 
+  "pathway_complement", 
+  "seed_scores"
+]
 ```
 
 Here is an example using an ASV abundance table as input, asking
@@ -100,18 +109,20 @@ Yet, they need to be converted in a way so eventually what you send to the `micr
 
 
 
-{: .important-title}
-> POSSIBLE ARGUMENT'S VALUES
->
-> `input_category`: [`abundance_table` \| `network`]
->
-> `taxonomy`: [`GTDB` \| `Silva` \| `microbetag_prep` \| `other`]
->
-> `phenDB`, `faprotax`, `pathway_complement`, `seed_scores`: [`True` \| `False`], `get_children`
+```{important}
+**POSSIBLE ARGUMENT'S VALUES**
 
-{: .warning}
->You `arguments` dictionary needs to include all the arguments mentioned above. If any is not provided , microbetag will eventually fail and won't return an annotated network. 
->
-> Syntax common error: make sure you do not have a `/` in the end of the url. If so, microbetag will never start. 
+`input_category`: [`abundance_table` \| `network`]
 
+`taxonomy`: [`GTDB` \| `Silva` \| `microbetag_prep` \| `other`]
+
+`phenDB`, `faprotax`, `pathway_complement`, `seed_scores`: [`True` \| `False`], `get_children`
+
+```
+
+```{warning}
+You `arguments` dictionary needs to include all the arguments mentioned above. If any is not provided , microbetag will eventually fail and won't return an annotated network. 
+
+Syntax common error: make sure you do not have a `/` in the end of the url. If so, microbetag will never start. 
+```
 

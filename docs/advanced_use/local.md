@@ -34,7 +34,7 @@ v1.0.2
 <!-- > You may find the input files we are using for this tutorial in the `user-bins` branch of `microbetag`s GitHub repo, under the [`tests/dev_io_microbetag` folder](https://github.com/hariszaf/microbetag/tree/user-bins/tests/dev_io_microbetag).
 >  -->
 
-In the [Cytoscape App tutorial](../mgg_tutorials/abd_only.md), our sequences were already taxonomically assigned before running `microbetag` and their taxonomies were mapped to representative GTDB genomes.
+In the [Cytoscape App tutorial](../basic_usage//abd_only.md), our sequences were already taxonomically assigned before running `microbetag` and their taxonomies were mapped to representative GTDB genomes.
 `microbetag` then used these genomes for the annotation steps.
 
 However, in case of shotgun metagenomics one may end up with their own bins while further refinement of the latter can lead to Metagenome-Assembled Genomes (MAGs).
@@ -47,7 +47,7 @@ The last is common in HPC systems and if you are about to use such a system, you
 
 On top of the abundance table and your genomes/bins/MAGs, to go for this case you need:
 * Docker / Singularity (containerization technology)
-* the `microbetag` image based on the containerization technology you are using (see below for how to get `microbetag` as a [Docker](./local.md#using-docker) or a [Singularity](./local.md#using-singularityapptainer) image)
+* the `microbetag` image based on the containerization technology you are using (see below for how to get `microbetag` as a [Docker](#using-docker) or a [Singularity](#using-singularityapptainer) image)
 * the `config.yml` file where you set the parameters for how to run `microbetag`
  <!-- that you may get from our [GitHub repo](https://github.com/hariszaf/microbetag/blob/user-bins/tests/dev_io_microbetag/config.yml) or download it directly from [here][1] -->
 

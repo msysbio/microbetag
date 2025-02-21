@@ -6,11 +6,6 @@
 microbetag
 ========================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
-
 .. .. toctree::
 ..    :maxdepth: 2
 ..    :caption: Contents:
@@ -25,35 +20,32 @@ documentation for details.
 
 .. toctree::
    :numbered: 2
-   :maxdepth: 1
-   :caption: Input files
+   :maxdepth: 2
+   :caption: Modules
 
-   input
+   modules/modules
+   modules/index
+
 
 
 .. toctree::
    :numbered: 3
    :maxdepth: 2
-   :caption: Modules
+   :caption: Tutorials 
 
-   modules/modules
-   modules/phen-traits
-   modules/faprotax-functions
+   .. Input files description
+
+   basic_usage/input
+
+   basic_usage/mgg_totorials
+
+   basic_usage/roaming
+   basic_usage/enrichment
+
+
 
 .. toctree::
    :numbered: 4
-   :maxdepth: 2
-   :caption: Tutorials 
-
-   basic_usage/mgg_totorials
-   basic_usage/abd_only
-   basic_usage/abd_and_metadata
-   basic_usage/from_net
-   basic_usage/roaming
-   basic_usage/save_annotated_net
-
-.. toctree::
-   :numbered: 5
    :maxdepth: 2
    :caption: Tutorials - advanced use
 
@@ -62,8 +54,15 @@ documentation for details.
    advanced_use/local
    advanced_use/prep
    advanced_use/python
+   advanced_use/large_data
 
 
+.. toctree::
+   :numbered: 5
+   :maxdepth: 2
+   :caption: FAQ
+
+   faq
 
 .. toctree::
    :maxdepth: 3

@@ -21,21 +21,14 @@ v1.0.1
 [GitHub release](https://github.com/hariszaf/microbetag/releases/tag/v1.0.1){: .btn .btn-blue .fs-5 .mb-4 .mb-md-0 }
 
 
-## Table of contents
-{: .no_toc .text-delta }
+```{important}
+**INPUT FILES USED IN THIS TUTORIAL**
 
-1. TOC
-{:toc}
+For the `microbetag` preparation tutorial, i.e., the steps you may run to come up with a co-occurrence network and taxonomically assign your sequences using the GTDB resource, we will use the following 2 files: 
 
-{: .important-title}
-> INPUT FILES USED IN THIS TUTORIAL
->
-> For the `microbetag` preparation tutorial, i.e., the steps you may run to come up with a co-occurrence network and taxonomically assign your sequences using the GTDB resource, 
-> we will use the following 2 files: 
-> 
-> - the [`seq_ab_tab.tsv`][1] as our abundance table, which in its last column instead of a taxonomy includes the **ASV sequence**
-> - the [`config.yml`][2] where you may set your arguments for how to run the `microbetag_prep` image
-
+ - the [`seq_ab_tab.tsv`][1] as our abundance table, which in its last column instead of a taxonomy includes the **ASV sequence**
+ - the [`config.yml`][2] where you may set your arguments for how to run the `microbetag_prep` image
+```
 
 ## The *preparation* step
 
@@ -162,17 +155,17 @@ We show how to get a *microbetag*-annotated co-occurrence network with this matr
 More complex scenarios can be the case, however they are all based on the principles described here.
 
 
-{: .important-title}
-> BEST PRACTICE
->
-> Having an already optimal co-occurrence network to annotate is essential from a biological point-of-view.
-> Thus, we strongly suggest you first build your co-occurrence network using FlashWeave or any inference tool 
-> on your own, in order to address the idiosyncrasy of your data the best you can. 
->
-> In the framework of microbetag, you can do that by running the pre-processing Docker image we provide. 
-> You may check the [FAQs](../faq.md#when-to-enable-the-sensitive-and-heterogeneous-arguments) for FlashWeave's most essential parameters you can set through the `config.yml` file of the preprocessing image.
-> In addition, you can edit the `flashweave.jl` script to adjust it to your needs; you may check for more information the [FlashWeave documentation](https://github.com/meringlab/flashweave.jl) direclty.
+```{tip}
+Having an already optimal co-occurrence network to annotate is essential from a biological point-of-view.
+Thus, we strongly suggest you first build your co-occurrence network using FlashWeave or any inference tool 
+on your own, in order to address the idiosyncrasy of your data the best you can. 
 
+In the framework of microbetag, you can do that by running the pre-processing Docker image we provide. 
+You may check the [FAQs](../faq.md#when-to-enable-the-sensitive-and-heterogeneous-arguments) 
+for FlashWeave's most essential parameters you can set through the `config.yml` file of the preprocessing image.
+In addition, you can edit the `flashweave.jl` script to adjust it to your needs; you may check for more information the 
+[FlashWeave documentation](https://github.com/meringlab/flashweave.jl) direclty.
+```
 
 
 [Download][1] the data set if you have not done so already.
@@ -196,7 +189,7 @@ hariszaf/microbetag_prep   latest    1500f6f7a0aa   7 weeks ago     3.92GB
 
 Open a terminal and create a new folder (e.g. `my_microbetag_prep`)
 
-```
+```bash
 mkdir my_microbetag_prep
 ```
 
@@ -229,19 +222,20 @@ If you feel confident with the terminal, you can do so by `nano`, `vim` or any o
 Otherwise, you can always go to the `my_microbetag_prep` folder and double-click on the `config.yml` file.
 In this case, you will see something like:
 
-![gedit]({{ site.baseurl }}/assets/images/config.png)
+![gedit](../_static/img/config.png)
 
 
 No matter how you edit the file, you need to make sure the following: 
 
 - provide the filename of your abundance table in the `abundance_table_file` parameter; in our case that would be `seq_ab_tab.tsv`
 
-{: .important-title}
-> SEQUENCE OR TAXONOMY?
->
-> Please, make sure you have not comment lines on top of your file
-> Your abundance table needs to start with a header, in the first column having the sequence identifier and in the **last one** either the **taxonomy** if only the network inference is to be performed or the **sequence** itself in case you need to perform the GTDB assignment as well.
-> Also, avoid numbers as sequence identifiers (e.g., 5434), instead use alpharithmetics (e.g., ASV_5434).
+```{important}
+**SEQUENCE OR TAXONOMY?**
+
+Please, make sure you have not comment lines on top of your file
+Your abundance table needs to start with a header, in the first column having the sequence identifier and in the **last one** either the **taxonomy** if only the network inference is to be performed or the **sequence** itself in case you need to perform the GTDB assignment as well.
+Also, avoid numbers as sequence identifiers (e.g., 5434), instead use alpharithmetics (e.g., ASV_5434).
+```
 
 - the tasks you want to perform by setting them to `True` or `False`; in our case, we will both use the 16S-oriented GTDB taxonomy and build a network. Thus we set both `16s_gtdb_taxonomy_assign` and `build_network` as `True`.
 
@@ -279,16 +273,16 @@ you will find two output files,
 - `network_output.edgelist`: This is the network built from FlashWeave. You may skip its first two lines and check the 3-column format after that, where the first two columns give a pairwise association of two ASVs/OTUs and the third one its value that can be either positive or negative, denoting co-occurrence or depletion correspondingly.
 
 
-{: .important-title}
-> REMOVE TAXA NOT PRESENT IN THE NETWORK
-> 
-> Once you have come up with your network, you can remove the non-present taxa from your abundance table. This will save you quite some time! 
+```{important}
+**REMOVE TAXA NOT PRESENT IN THE NETWORK**
+ 
+Once you have come up with your network, you can remove the non-present taxa from your abundance table. This will save you quite some time! 
+```
 
 
 
 
 
-
-[1]:{{ site.url }}/microbetag/download/prep/seq_ab_tab.tsv
-[2]:{{ site.url }}/microbetag/download/prep/config.yml
+[1]:../_static/download/prep/seq_ab_tab.tsv
+[2]:../_static/download/prep/config.yml
 

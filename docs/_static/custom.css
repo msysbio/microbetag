@@ -1,16 +1,3 @@
-.btn-green {
-  display: inline-block;
-  padding: 10px 15px;
-  font-size: 1.2em;
-  background-color: #28a745;
-  color: white;
-  border-radius: 5px;
-  text-decoration: none;
-}
-.btn-green:hover {
-  background-color: #218838;
-}
-
 /* Change the base font */
 html,
 body {
@@ -21,4 +8,77 @@ body {
 code,
 pre {
   font-family: "Fira Code", monospace;
+}
+
+.btn-green {
+  background-color: #28a745; /* Purple color */
+  color: white !important;
+  text-decoration: none;
+  border: 1px solid #28a745;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.btn-green:hover {
+  background-color: #218838; /* Darker purple on hover */
+}
+
+/* Add to your custom.css */
+.btn-purple {
+  background-color: #6a0dad; /* Purple color */
+  color: white !important;
+  text-decoration: none;
+  border: 1px solid #6a0dad;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.btn-purple:hover {
+  background-color: #4b0082; /* Darker purple on hover */
+}
+
+/* Custom blue button */
+.btn-blue {
+  background-color: #007bff; /* Blue color */
+  color: white !important;
+  text-decoration: none;
+  border: 1px solid #007bff;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+
+.btn-blue:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.label-green {
+  display: inline-block;
+  background-color: #28a745; /* Green */
+  color: white;
+  font-size: 0.8em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.label-orange {
+  display: inline-block;
+  background-color: #cd762b; /* Orange */
+  color: white;
+  font-size: 0.8em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+/* Change the color of all headers */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Merriweather", sans-serif;
 }

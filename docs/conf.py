@@ -52,7 +52,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
 # myst_enable_extensions = ["colon_fence"]
-myst_enable_extensions = ["amsmath", "dollarmath", "frontmatter"]  # for latex and to enable download files
+myst_enable_extensions = ["amsmath", "dollarmath"]  # for latex and to enable download files    "frontmatter"
 
 # --------------
 # Skip class attributes

@@ -62,7 +62,7 @@ That is why you need to make sure you denote `microbetag_prep` as the taxonomy d
 
 If you have a taxonomy scheme that "skips" a level, or another one that has more levels, microbetag will either return **fewer annotations** or **fail**.
 You need to make sure you always have a 7-level scheme for all the entries on your table and that the species/strain level if available is in the 7th field.
-Again, it is always a good practice to use the [`microbetag` preparation step](./advanced_use/prep.md) to get the most suited taxonomies for `microbetag`
+Again, it is always a good practice to use the [`microbetag` preparation step](../advanced_use/prep.md) to get the most suited taxonomies for `microbetag`
 ```
 
 
@@ -100,7 +100,7 @@ To get the optimal annotations in the more robust way, we **strongly suggest** y
 That will be almost always the case when you have large datasets with more than a few thousands of sequences and no network for them. 
 Yet, even if you have a network, we still **strongly suggest** running the *taxonomy assignment* step, so `microbetag` can map more efficiently the taxa present to their corresponding GTDB genomes. 
 
-Have a look at the ["preparation"](./advanced_use/prep.md) section for how to do so! 
+Have a look at the ["preparation"](../advanced_use/prep.md) section for how to do so! 
 ```
 
 
@@ -167,7 +167,7 @@ When you are using `microbetag` through Cytoscape then, to the best of our knowl
 That is because you first import then network on Cytoscape and only then you load it on the `MGG` app that will allow its transferring to the `microbetag` server. 
 
 ```{note}
-Make sure to rename the column `microbetag` should treat as the weight of your edges to `microbetag::weight` (see relative [tutorial](./advanced_use/load.md#load-already-microbetag-annotated-networks)).
+Make sure to rename the column `microbetag` should treat as the weight of your edges to `microbetag::weight` (see relative [tutorial](../advanced_use/load.md#load-already-microbetag-annotated-networks)).
 ```
 
 However, in case you are using `microbetag` locally, and you already have a network to annotate, then you will have to provide it as a 3-column file (see [example file][2]):
@@ -188,8 +188,8 @@ In our example, `node_a` could be `source` and then, `node_b` would be the `targ
 
 
 
-[1]:_static/download/mgg/testAbund.tsv
-[2]:_static/download/mgg/metadata.tsv
-[3]:_static/download/mgg/edgelist.tsv
-[4]:_static/download/prep/seq_ab_tab.tsv
+[1]:../_static/download/mgg/testAbund.tsv
+[2]:../_static/download/mgg/metadata.tsv
+[3]:../_static/download/mgg/edgelist.tsv
+[4]:../_static/download/prep/seq_ab_tab.tsv
 

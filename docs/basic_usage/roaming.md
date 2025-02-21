@@ -7,24 +7,27 @@ description: "tutorial on how to parse the annotated network using the MGG app"
 ---
 
 
+# Exploring annotated networks
+
+<!-- TODO
+It is rather common for Cytoscape users to save the whole session they are working with as a `.cys` file by simply clicking on `File > Save Session As...` and giving a name to their session. 
+
+ -->
+
+
+
 ## *"Roaming"* across annotated nodes and edges
-{: .no_toc }
-
-## Table of contents
-{: .no_toc .text-delta }
-
-1. TOC
-{:toc}
-
----
 
 
-{: .important-title}
-> INPUT FILES USED IN THIS TUTORIAL
->
-> We will use the `microbetag`-annogated network of the [network-based example-case](./from_net.md); you can get directly its corresponding `microbetag` - annotated network from [here][1].
+```{important}
+**INPUT FILES USED IN THIS TUTORIAL**
 
-Once an annotated network is returned (or [loaded](../tutorials/load.md)) on your Cytoscape main panel, you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returned.
+We will use the `microbetag`-annogated network of the [network-based example-case](from_net); you can get directly its corresponding `microbetag` - annotated network from [here][1].
+```
+Once an annotated network is returned (or 
+<!-- [loaded](../basic_usage/load) -->
+loaded
+) on your Cytoscape main panel, you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returned.
 
 
 Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequence was able to be mapped on *microbetag*.
@@ -37,12 +40,12 @@ Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequ
 
 If you edit the style of your *microbetag*-annotated network, you can always bring back its original style through the MGG main menu.
 
-![style]({{ site.baseurl }}/assets/images/app/visualStyle.png)
+![style](../_static/img/app/visualStyle.png)
 
 
 Now, if already opened, you need to open the MGG results panel; just click 
 `Apps > MGG > Show Results panel > Show results panel`
-(see also [Loading models](../tutorials/load.md#load-already-microbetag-annotated-networks) tutorial).
+<!-- (see also [Loading models](../basic_usage/load#load-already-microbetag-annotated-networks) tutorial). -->
 
 Once your *microbetag*-annotated model is imported and the MGG results panel opened, you can now browse the network along with its annotations using both Cytoscape core features and those of MGG. 
 
@@ -60,21 +63,24 @@ That means for example, in case you would prefer a different style than the one 
 
 By clicking on the *Show Species* button, all nodes that were not mapped to a genome will be masked. 
 
-![show_species]({{ site.baseurl }}/assets/images/app/showSpecies.png)
+![show_species](../_static/img/app/showSpecies.png)
 
 
 Or you can choose/click directly any node on the network and check the `Nodes` Panel 
 
-![selcted_node]({{ site.baseurl }}/assets/images/app/nodePanel.png)
+![selcted_node](../_static/img/app/nodePanel.png)
 
 
 or several at the same time
 
-![selcted_nodes]({{ site.baseurl }}/assets/images/app/nodePanelMultiNodes.png)
+![selcted_nodes](../_static/img/app/nodePanelMultiNodes.png)
 
 
-For more about how the PhenDB-like traits are assigned in each node you may have a look [here](../modules/modules.md#based-on-phendb) and for a thorough list of all the traits supported, you may check the corresponding [table](../modules/phen-traits.md).
-In addition, for the FAPROTAX-based annotations, you may have a look [here](../modules/modules.md#based-on-faprotax) for how it works, and you can go through the whole list of potential traits supported in this [table](../modules/faprotax-functions.md).
+For more about how the PhenDB-like traits are assigned in each node you may have a look [here](../modules/modules.md#based-on-phendb) and for a thorough list of all the traits supported, 
+
+you may check the corresponding [table](../modules/phen-traits).
+
+In addition, for the FAPROTAX-based annotations, you may have a look [here](../modules/modules.md#based-on-faprotax) for how it works, and you can go through the whole list of potential traits supported in this [table](../modules/faprotax-functions).
 
 
 ### Filter for traits
@@ -82,7 +88,7 @@ In addition, for the FAPROTAX-based annotations, you may have a look [here](../m
 You may select among a list of annotations under the `PhenDb/FAPROTAX filters` with `AND` and `OR` relationships.
 For example, I was curious about the Nitrite-oxidizing bacteria (NOB) on my network
 
-![NOB]({{ site.baseurl }}/assets/images/app/NOB.png)
+![NOB](../_static/img/app/NOB.png)
 
 
 Likewise, you may go through the annotations on the edges of the network.
@@ -108,12 +114,12 @@ For each pair of genomes, a list with the potential metabolic complementarities 
 In the first column the KEGG MODULE id of the corresponding complementarity is provided, and in the second and third column their description and metabolism category. 
 In the fourth column, called *"Complement"* the KO that need to be provided to the beneficiary species to support the module are given and in the next column, the complete alternative that would then facilitate the module is shown; i.e., assuming the complement is provided.
 
-![pathway_compl]({{ site.baseurl }}/assets/images/app/pathwayCompl.png)
+![pathway_compl](../_static/img/app/pathwayCompl.png)
 
 In the final column a link to a related KEGG map is provided where KO available in the beneficiary species are colored with pink and those provided by the donor in the scenario of the potential metabolic interaction with green.
 The screenshot below illustrates the highlighted complementarity in the biosynthesis of methionine.
 
-![methionine_kegg_map]({{ site.baseurl }}/assets/images/app/keggMap.png)
+![methionine_kegg_map](../_static/img/app/keggMap.png)
 
 
 ### Potential seed complementarities
@@ -121,17 +127,17 @@ The screenshot below illustrates the highlighted complementarity in the biosynth
 Like in the case of the pathway complementarities, a new panel is displayed when seed complements are available for an edge.
 Here is an example:
 
-![kegg_seed_map]({{ site.baseurl }}/assets/images/app/seedComplPanel.png)
+![kegg_seed_map](../_static/img/app/seedComplPanel.png)
 
 
-[*Seed scores*](../modules/modules.md#seed-scores-and-complements-based-on-genome-scale-draft-reconstructions-gems) between the two genomes are also shown here. 
+[*Seed scores*](../modules/modules_background.md#seed-scores-and-complements-based-on-genome-scale-draft-reconstructions-gems) between the two genomes are also shown here. 
 Remember that like the edge under study, seed scores have also *directionality*; seed score for competition between $genome_A$ and $genome_B$ is not necessarily the same with the one between $genome_B$ and $genome_A$.
 Those scores are only indicative, and they should not be considered as fact of observed cooperation/competition. 
 Seed complements are then recorded in the same way as pathway complementarities.
 However, there is no *Complement* column as this time it is not a specific KEGG MODULE that is supported, rather a potential range of functions that can be viewer through the colored url. 
 Also, a new column provides the ModelSEED compound id that was actually found as a complement and was then mapped to their KEGG corresponding one. 
 
-![kegg_seed_map]({{ site.baseurl }}/assets/images/app/seedKeggMap.png)
+![kegg_seed_map](../_static/img/app/seedKeggMap.png)
 
 
 [1]:{{ site.url }}/microbetag/download/mgg/hessler_microbetag_network.cx

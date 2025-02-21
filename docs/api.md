@@ -1,37 +1,24 @@
 ---
 layout: default
-title: API documentation
-nav_order: 5
+title: Access *microbetagDB* through its API
 ---
 
-# API documentation
-{: .no_toc }
+# Access *microbetagDB* through its API
 
-## Table of contents
-{: .no_toc .text-delta }
+*microbetagDB* API provides programmatic access to the data.
+Using the Application Programming Interface (API) you can access the *microbetagDB* directly to get information about PhenDB-like traits of a specific taxon, potential pathway complementarities of a taxa pair etc. 
 
-1. TOC
-{:toc}
-
-
----
-
-
-
-microbetagDB API provides programmatic access to the data.
-Using the Application Programming Interface (API) you can access the microbetagDB directly to get information about PhenDB-like traits of a specific taxon, potential pathway complementarities of a taxa pair etc. 
-
-The base address to the API is https://msysbio.gbiomed.kuleuven.be/.
+The base address to the API is [https://msysbio.gbiomed.kuleuven.be/](https://msysbio.gbiomed.kuleuven.be/).
 
 Below you may find the syntax to retrieve the various data and/or annotations included.
 
-Remember that microbetag is a NCBI Taxonomy oriented resource. That means that a "species" of interest is a NCBI Taxonomy Id.
+Remember that *microbetag* is a NCBI Taxonomy oriented resource. That means that a "species" of interest is a NCBI Taxonomy Id.
 For example, if you are interested in *Bifidobacterium animalis*, you first need to go to the [NCBI Taxonomy portal](https://www.ncbi.nlm.nih.gov/taxonomy/) and get its corresponding id.
 However, once you do so you get a list of subspecies and strains available. 
 You can either use the species id or one of a specific strain in your queries. 
 
-microbetag has a special feature called `get_children` as in some cases there is no genomic information for the species level, but there is at lower levels. 
-For example, in case of *Bifidobacterium animalis*, microbetagDB has no genomes for its corresponding NCBI Taxonomy Id (28025) but it does have for the *Bifidobacterium animalis* subsp. animalis ATCC 25527 (703613). 
+*microbetag* has a special feature called `get_children` as in some cases there is no genomic information for the species level, but there is at lower levels. 
+For example, in case of *Bifidobacterium animalis*, *microbetagDB* has no genomes for its corresponding NCBI Taxonomy Id (28025) but it does have for the *Bifidobacterium animalis* subsp. animalis ATCC 25527 (703613). 
 <!-- This example highlights the issues derived from the current taxonomy schemes as 
 Even more interestingly, according to GTDB 
 *Bifidobacterium canis* -->
@@ -40,17 +27,17 @@ Even more interestingly, according to GTDB
 
 ## Get genome ids for a NCBI Taxonoy Id
 
-To check whether a species is present on microbetag, one may find its corresponding **NCBI Taxonomy Id** and search for related genomes present on the microbetag DB. 
+To check whether a species is present on *microbetag*, one may find its corresponding **NCBI Taxonomy Id** and search for related genomes present on the *microbetagDB*. 
 
 For example, assuming we are interested in the *Blautia hansenii* DSM 20583 strain, we find from NCBI Taxonomy that its corresponding id is [537007](https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=537007).
 
-Using the `ncbiTaxId-to-genomeId` route we may get the related genomes on microbetag DB:
+Using the `ncbiTaxId-to-genomeId` route we may get the related genomes on *microbetagDB*:
 
 ```bash
 curl -X GET https://msysbio.gbiomed.kuleuven.be/ncbiTaxId-to-genomeId/537007
 ```
 
-that returns a list of genomes used in microbetag annotations:
+that returns a list of genomes used in *microbetag* annotations:
 
 ```bash
 {
@@ -64,7 +51,7 @@ In this case there is a genome available for this NCBI Taxonomy id (GCF_00222259
 
 If no genome is available, then you get an empty value. 
 
-For example, for the *Bifidobacterium animalis* subsp. animalis IM386 (NCBI Tax id: 1402194) there is no genome in microbetagDB:
+For example, for the *Bifidobacterium animalis* subsp. animalis IM386 (NCBI Tax id: 1402194) there is no genome in *microbetagDB*:
 
 ```bash
 curl -X GET https://msysbio.gbiomed.kuleuven.be/ncbiTaxId-to-genomeId/1402194
@@ -81,7 +68,7 @@ curl -X GET https://msysbio.gbiomed.kuleuven.be/ncbiTaxId-to-genomeId/1402194
 
 Once you have identified the genomes related to your NCBI Taxonomy id under study using the `ncbiTaxId-to-genomeId` route, you may get the corresponding phenotypic traits of that genome(s) using the `/phen-traits/` route and the corresponding **genome id**.
 
-For example, in case of *Blautia hansenii* DSM 20583 (NCBI Taxonomy id: 537007) we saw there is a genome on microbetagDB; to get its phenotypic traits we can simply run:
+For example, in case of *Blautia hansenii* DSM 20583 (NCBI Taxonomy id: 537007) we saw there is a genome on *microbetagDB*; to get its phenotypic traits we can simply run:
 
 ```bash
 curl -X GET https://msysbio.gbiomed.kuleuven.be/phen-traits/GCF_002222595.2
@@ -103,16 +90,16 @@ this would return (we show only a part of the outcome)
 }
 ```
 
-{: .note}
-For a thorough description of the abbreviations used, have a look in the microbetag's [modules tab](./modules/modules.md#based-on-phendb).
+```{note}
+For a thorough description of the abbreviations used, have a look in the *microbetag*'s [modules tab](modules/modules.md#based-on-phendb).
+```
 
+```{warning}
+1. Currently, microbetag has annotations only for the GTDB representative genomes. Thus, genomes returned by the `ncbiTaxId-to-genomeId` route that come from other resources (e.g., MGnify, KEGG) do not have phenotypic tratis.
+2. All genomes have a 3-letter prefix that is either GCA or GCG. In case a GTDB genome you are querying returns an "Internal Server Error", try again replacing that prefix; e.g. if you initially had "GCA_002222595.2", try again with "GCF_002222595.2". 
+```
 
-{: .warning }
-> 1. Currently, microbetag has annotations only for the GTDB representative genomes. Thus, genomes returned by the `ncbiTaxId-to-genomeId` route that come from other resources (e.g., MGnify, KEGG) do not have phenotypic tratis.
-> 2. All genomes have a 3-letter prefix that is either GCA or GCG. In case a GTDB genome you are querying returns an "Internal Server Error", try again replacing that prefix; e.g. if you initially had "GCA_002222595.2", try again with "GCF_002222595.2". 
-
-
-In case a genome id is provided for which there are no phenotypic traits on microbetagDB, you will get a message explaining this:
+In case a genome id is provided for which there are no phenotypic traits on *microbetagDB*, you will get a message explaining this:
 
 ```bash
 No Phen traits for the genome id asked.         
@@ -184,12 +171,12 @@ You can get the complements between two taxa using their corresponding NCBI Taxo
 https://msysbio.gbiomed.kuleuven.be/complements/<BENEFICIARY_NCBI_TAX_ID>/<DONOR_NCBI_TAX_ID>
 ```
 
-In this case, microbetag will use the corresponding GTDB genomes for the NCBI Taxonomy Ids you provide.
+In this case, *microbetag* will use the corresponding GTDB genomes for the NCBI Taxonomy Ids you provide.
 There are cases, where an NCBI Taxonomy Id may map to more than one GTDB genomes.
 
 In the following example we use *Alcaligenes faecalis* (NCBI TaxId: 511) as the potential beneficiary and 
 *Prochlorococcus marinus* str. AS9601 (NCBI TaxId: 146891) as the potential donor. 
-In microbetagDB there are four genomes for *A. faecalis* but only one for the case of *P. marinus* str. AS9601. 
+In *microbetagDB* there are four genomes for *A. faecalis* but only one for the case of *P. marinus* str. AS9601. 
 By running:
 
 ```bash 
@@ -229,19 +216,20 @@ we get:
 ```
 
 As you may already noticed, `GCF_000015645` genome appears more than once.
-That is since microbetag returns the complements between all the combinations of the genomes mapped to the NCBI Taxonomy Ids of the beneficiary (outer genome) and the potential donor (inner genome).
+That is since *microbetag* returns the complements between all the combinations of the genomes mapped to the NCBI Taxonomy Ids of the beneficiary (outer genome) and the potential donor (inner genome).
 Therefore, in this case, since we have four genomes for the potential beneficiary, the outer genome changes but the inner (donor) stays the same in all four combinations returned. 
 
-{: note}
-microbetagDB has also a number of non-GTDB genomes (e.g. `afa`) in this example, which you may ignore. 
-
+```{note}
+*microbetagDB* has also a number of non-GTDB genomes (e.g. `afa`) in this example, which you may ignore. 
+```
 
 
 ## Get seed scores and seed complements
 
 ### Get competition and complementarity score between a pair of NCBI Ids
 
-When we calculate the seed scores, we consider both taxa as $$species_A$$ and $$species_B$$ (see on the [Modules tab](./modules/modules.md#seed-scores-and-complements-based-on-genome-scale-draft-reconstructions-gems) for more).
+When we calculate the seed scores, we consider both taxa as $species_A$ and $species_B$ 
+(see on the [Modules tab](./modules/modules.md#seed-scores-and-complements-based-on-genome-scale-draft-reconstructions-gems) for more).
 
 
 Like in the complements case, seed scores using all the corresponding genomes between 2 species/strains can be retrieved using their NCBI Taxonomy Ids and the `seed-scores` route:
@@ -333,9 +321,9 @@ which returns
 
 The function returns pairs of seed scores, the first genome provided is considered as $$ speciesA $$ for the seed metrics and the second one as $$ speciesB $$.
 
-{: .warning}
+```{warning}
 In its current version, our API is not clear enough, and you need to remember that the first entry considers the first genome as $$ speciesA $$ and the second genome as $$ speciesB $$, while in the second entry it is the other way around. This will be fixed in a future release. 
-
+```
 
 ### Get seed complements between a pair of NCBI Taxonomy Ids, NCBI Genome or PATRIC ids
 
@@ -356,9 +344,9 @@ curl -X GET https://msysbio.gbiomed.kuleuven.be/seed-complements/1379686/883079/
 ```
 
 
-{: note}
+```{note}
 > This route has no default for your id type! If not provided by the user, the API will fail.
-
+```
 
 
 
@@ -375,6 +363,6 @@ Check again your query and make sure you are u sing the right syntax.
 
 In this case, the server cannot find the requested resource. 
 
-You can have such errors also in cases you are asking for a genome/species/pair of such that is not part of the microbetagDB. 
+You can have such errors also in cases you are asking for a genome/species/pair of such that is not part of the *microbetagDB*. 
 
 Keep in mind that you can always contact us through our [Matrix community](https://matrix.to/#/#microbetagcommunity:matrix.org) for more.
