@@ -18,9 +18,6 @@ permalink: /
 
 
 
----
-
-
 Microbial interactions play a fundamental role in deciphering the underlying mechanisms that govern ecosystem functioning.
 Co-occurrence networks have been widely used for inferring microbial associations or/and interactions from metagenomic data.
 However, spurious associations and tool - dependence confine the network inference.

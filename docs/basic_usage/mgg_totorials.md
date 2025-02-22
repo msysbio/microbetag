@@ -11,16 +11,18 @@ usemath: true
 # `microbetag` on Cytoscape
 
 
-![microbetag CyApp](../_static/img/cyApp.png)
 
 
 <div style="display: flex; gap: 10px;">
     <span class="label-green">microbetag web-app v1.0.1</span>
     <span class="label-orange">MGG v1.0.0</span>
-    <br><br>  
 </div>
 
+![microbetag CyApp](../_static/img/cyApp.png)
+
+
 <div style="display: flex; gap: 10px;">
+    <br><br>  
    <a href="https://apps.cytoscape.org/apps/mgg" class="btn-green"> CytoscapeApp </a>
    <a href="https://github.com/hariszaf/microbetag/tree/gh-pages/download/mgg" class="btn-purple"> Tutorial files </a>
 </div>
@@ -36,29 +38,16 @@ You may check the [FAQs](../faq.md) section for rules of thumb on how to set you
 ```
 
 
+
 We show how to install and use the microbetag Cytoscape app (called `MGG`) and use it with your data to get `microbetag`-annotated networks 
 using the `micrbetagDB` and the online version of `microbetag`.
 We also highlight the `MGG` features that allow you to go through the nodes and the edges annotations returned. 
 
 
-To start using *microbetag* you need first, to make sure you have **Cytoscape** on your system; if not, go ahead and [download Cytoscape](https://cytoscape.org/download.html). 
-Then, you need to install the *microbetag* app (`MGG`) from [Cytoscape App store](https://apps.cytoscape.org/apps/mgg).
-Make sure **you first lunch Cytoscape** and then visit Cytoscape Appstore.
-If you have already visited the MGG page on Cytoscape Appstore, **lunch Cytoscape and refresh the Cytoscape Appstore page**.
-You should now see an **Install** button.
 
-![mgg install](../_static/img/install_button_mgg.png)
 
-By clicking it, it will be automatically integrated on your Cytoscape. 
-If you visit Cytoscape Appstore and you have not lunched Cytoscape, you will see a *Download* button instead of the *Install*.
-As already mentioned, we suggest you lunch Cytoscape and refresh the page. 
-Otherwise, you can click the **Download** button and move manually the `.jar` file to the apps folder of your Cytoscape.
 
-You can also get `MGG` from within Cytoscape by clicking on the `Apps` tab of the main bar and then `App  Store > Show App Store` and typing `microbetag` on the box that pops up.
 
-Once the app is installed, you may click on the `Apps` tab, and you will find *MGG* there.
-
-![mgg_overall](../_static/img/app/mainMenu.png)
 
 
 
@@ -107,3 +96,4 @@ However, in the *Using a network* case, we do use the network of [Hessler et *al
 abd_only
 abd_and_metadata
 from_net
+load

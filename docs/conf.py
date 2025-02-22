@@ -14,6 +14,23 @@ release = '1.0.3'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
+# --------------
+# Skip class attributes
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-inheritance",
+]
+
+def autoapi_skip_member(app, what, name, obj, skip, options):
+    # Skip all attributes globally
+    if what == "attribute":
+        return True
+    return None
+
+def setup(app):
+    app.connect("autoapi-skip-member", autoapi_skip_member)
+
 extensions = [
 
     # To link to pyqt5 docs
@@ -26,6 +43,7 @@ extensions = [
     "sphinx_qt_documentation",
 
     "nbsphinx",
+    # "sphinx_autoapi.extension",
     "autoapi.extension",
     "sphinx_search.extension",
 
@@ -53,23 +71,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # myst_enable_extensions = ["colon_fence"]
 myst_enable_extensions = ["amsmath", "dollarmath"]  # for latex and to enable download files    "frontmatter"
-
-# --------------
-# Skip class attributes
-autoapi_options = [
-    "members",
-    "undoc-members",
-    "show-inheritance",
-]
-
-def autoapi_skip_member(app, what, name, obj, skip, options):
-    # Skip all attributes globally
-    if what == "attribute":
-        return True
-    return None
-
-def setup(app):
-    app.connect("autoapi-skip-member", autoapi_skip_member)
 
 # ------------------
 

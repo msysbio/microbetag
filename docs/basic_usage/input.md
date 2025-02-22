@@ -167,7 +167,7 @@ When you are using `microbetag` through Cytoscape then, to the best of our knowl
 That is because you first import then network on Cytoscape and only then you load it on the `MGG` app that will allow its transferring to the `microbetag` server. 
 
 ```{note}
-Make sure to rename the column `microbetag` should treat as the weight of your edges to `microbetag::weight` (see relative [tutorial](../advanced_use/load.md#load-already-microbetag-annotated-networks)).
+Make sure to rename the column `microbetag` should treat as the weight of your edges to `microbetag::weight` (see relative [tutorial](load.md#load-already-microbetag-annotated-networks)).
 ```
 
 However, in case you are using `microbetag` locally, and you already have a network to annotate, then you will have to provide it as a 3-column file (see [example file][2]):

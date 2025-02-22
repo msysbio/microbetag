@@ -89,14 +89,14 @@ After a few minutes (based on your data and the steps you have asked for) a *mic
 To explore the annotated network continue with [*Investigating the annotations* tutorial](./roaming.md).
 
 
-{: .important-title}
-> HELP
->
-> There are several reasons you may either get a network with only a few nodes/edges annotated or get an error message from the server. 
-> Both scenarios are related to either the format of your input data or the parameters you have selected. 
-> Please, follow the guidelines you can find in the [*Input files*](input.md) tab and check our [*FAQ*](../faq.md) for common errors. 
-> If you still need some help, please go ahead and ask the `microbetag` community on our [Matrix community](https://matrix.to/#/#microbetagcommunity:matrix.org).
+```{hint}
+**NEED HELP?**
 
+There are several reasons you may either get a network with only a few nodes/edges annotated or get an error message from the server. 
+Both scenarios are related to either the format of your input data or the parameters you have selected. 
+Please, follow the guidelines you can find in the [*Input files*](input.md) tab and check our [*FAQ*](../faq.md) for common errors. 
+If you still need some help, please go ahead and ask the `microbetag` community on our [Matrix community](https://matrix.to/#/#microbetagcommunity:matrix.org).
+```
 
 
 [3]:../_static/download/mgg/testAbund.tsv

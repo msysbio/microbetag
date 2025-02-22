@@ -9,16 +9,18 @@ description: "an example case of how to run the microbetag prep step"
 ---
 
 # `microbetag` preparation steps
-{: .no_toc }
 
 
-v1.0.1
-{: .label .label-green }
+
+<span class="label-green">microbetag web-app v1.0.1</span>
+
+<div style="display: flex; gap: 10px;">
+   <a href="https://hub.docker.com/layers/hariszaf/microbetag_prep/v1.0.1/images/sha256-084c547fe88f5bd09bb44cbb960dcacdcb0ded78d55214c80da123bcfb9b864f?context=repo" class="btn-green"> Docker image </a>
+   <a href="https://github.com/hariszaf/microbetag/tree/preprocess/test" class="btn-purple"> Tutorial files </a>
+</div>
 
 
-[Docker image](https://hub.docker.com/layers/hariszaf/microbetag_prep/v1.0.1/images/sha256-084c547fe88f5bd09bb44cbb960dcacdcb0ded78d55214c80da123bcfb9b864f?context=repo){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
-[Tutorial files](https://github.com/hariszaf/microbetag/tree/preprocess/test){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
-[GitHub release](https://github.com/hariszaf/microbetag/releases/tag/v1.0.1){: .btn .btn-blue .fs-5 .mb-4 .mb-md-0 }
+
 
 
 ```{important}
