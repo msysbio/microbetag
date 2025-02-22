@@ -18,6 +18,8 @@ if not os.path.isdir(input_dir):
     if os.path.exists(input_tar):
         os.system(f"tar -zxvf {input_tar} -C {test_data}")
 
+output_dir = os.path.join(test_data, "mtg_complete_output")
+
 
 class testMicrobetag(unittest.TestCase):
 
@@ -28,6 +30,12 @@ class testMicrobetag(unittest.TestCase):
         os.system(
             cmd
         )
+
+        output_files = os.listdir(output_dir)
+        self.assertTrue(
+            any(x for x in output_files if x.endswith(".cx2"))
+        )
+
 
 
 if __name__ == "__main__":

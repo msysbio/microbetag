@@ -19,6 +19,7 @@ bin-release/
 
 # Ignore docs
 _site/
+_build/
 
 # Executables
 *.swf
