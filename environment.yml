@@ -47,7 +47,6 @@ dependencies:
       - jinja2==3.1.5
       - joblib==1.4.2
       - llvmlite==0.44.0
-      - manta==0.0.1.dev297
       - markupsafe==3.0.2
       - microbetag==1.0.3
       - natsort==8.4.0
