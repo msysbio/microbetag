@@ -33,6 +33,10 @@ For example, assuming you wish to use the `manta` clusters as returned from runn
 ![rename-cols](../_static/img/app/enrichment/rename_col.png)
 
 
+
+```{image} ../_static/img/app/enrichment/rename_col.png
+```
+
 This means that 
 
 
