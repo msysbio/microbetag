@@ -5,7 +5,7 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-
+import os
 project = 'microbetag'
 copyright = '2025, Lab of Microbial Systems Biology'
 author = 'Lab of Microbial Systems Biology'
@@ -15,6 +15,36 @@ release = '1.0.3'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 # --------------
+
+
+extensions = [
+
+    "myst_parser",
+    "sphinx_design",
+    "sphinxcontrib.lightbox2",
+    "sphinxcontrib.plantuml",
+    "sphinxcontrib.mermaid",
+
+
+    # # To link to pyqt5 docs
+    "sphinx.ext.autodoc",
+    # "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.autosummary",
+    # "sphinx_qt_documentation",
+
+    # "nbsphinx",
+    #                                         # "sphinx_autoapi.extension",
+    "autoapi.extension",
+    # "sphinx_search.extension",
+
+    # For using CONTRIBUTING.md.
+
+]
+
+
 # Skip class attributes
 autoapi_options = [
     "members",
@@ -31,47 +61,14 @@ def autoapi_skip_member(app, what, name, obj, skip, options):
 def setup(app):
     app.connect("autoapi-skip-member", autoapi_skip_member)
 
-extensions = [
 
-    # To link to pyqt5 docs
-    "sphinx.ext.autodoc",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.viewcode",
-    "sphinx.ext.napoleon",
-    "sphinx.ext.autosummary",
-    "sphinx_qt_documentation",
-
-    "nbsphinx",
-    # "sphinx_autoapi.extension",
-    "autoapi.extension",
-    "sphinx_search.extension",
-    "sphinxcontrib.lightbox2",
-
-    # For using CONTRIBUTING.md.
-    "myst_parser",
-
-    # # Local packages.
-    # "youtube",
-    # "trello",
-    # "variables",
-    # "tags",
-    # "links",
-    # "hacks",
-    # "notfound.extension",    ## not in the bac_Growt
-
-]
 
 autoapi_dirs = ["../microbetag"]
-
 autoapi_ignore = [ "*PhyloMint*", "*FAPROTAX*", "*get_kegg*", "*kegg_ids_to_ncbi*"]  # "*mtg_maps_models*",
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
-
-# myst_enable_extensions = ["colon_fence"]
-myst_enable_extensions = ["amsmath", "dollarmath"]  # for latex and to enable download files    "frontmatter"
 
 # ------------------
 
@@ -80,17 +77,15 @@ myst_enable_extensions = ["amsmath", "dollarmath"]  # for latex and to enable do
 
 html_theme = 'furo'
 html_static_path = ['_static']
+
 # html_css_files = ["custom.css"]
 
-
-html_css_files = [
-    "custom.css",
-    # "lightbox2/dist/css/lightbox.min.css",
-    # 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css',  # Lightbox CSS from CDN
-]
+# html_css_files = [
+#     "custom.css",
+#     "lightbox2/dist/css/lightbox.min.css",
+# ]
 
 # html_js_files = [
-#     'popup.js',  # Include your custom JS file here
 #     'lightbox2/dist/js/lightbox.min.js'
 # ]
 
@@ -102,9 +97,7 @@ html_theme_options = {
 
 html_title = "annotating microbial networks"
 html_short_title = "microbetag"
-# html_logo = '_static/img/microbetag_logo.png'
 html_favicon = '_static/img/microbetag_logo.ico'
-
 
 
 intersphinx_mapping = {
@@ -120,3 +113,25 @@ source_suffix = {
     '.md': 'markdown',  # This is registered automatically by myst_parser
 }
 
+# -- Options for myst-parser -------------------------------------------------
+# https://myst-parser.readthedocs.io/en/latest/configuration.html
+
+
+# myst_enable_extensions = ["colon_fence"]
+myst_enable_extensions = ["amsmath", "dollarmath", "colon_fence"]  # for latex and to enable download files    "frontmatter"
+
+
+# -- Options for sphinxcontrib.lightbox2 -------------------------------------
+
+# The time it takes for the Lightbox container and overlay to fade in and out, in milliseconds
+lightbox2_fade_duration = 100
+lightbox2_image_fade_duration = 100
+
+# -- Options for sphinxcontrib-mermaid ---------------------------------------
+mermaid_output_format = "png"
+
+mermaid_params = []
+
+if "READTHEDOCS" in os.environ:
+    # Required to build with sphinxcontrib-mermaid on readthedocs
+    mermaid_params.extend(["-p" "puppeteer-config.json"])
