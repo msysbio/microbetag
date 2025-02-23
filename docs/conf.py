@@ -46,6 +46,7 @@ extensions = [
     # "sphinx_autoapi.extension",
     "autoapi.extension",
     "sphinx_search.extension",
+    "sphinxcontrib.lightbox2",
 
     # For using CONTRIBUTING.md.
     "myst_parser",
@@ -79,7 +80,20 @@ myst_enable_extensions = ["amsmath", "dollarmath"]  # for latex and to enable do
 
 html_theme = 'furo'
 html_static_path = ['_static']
-html_css_files = ["custom.css"]
+# html_css_files = ["custom.css"]
+
+
+html_css_files = [
+    "custom.css",
+    # "lightbox2/dist/css/lightbox.min.css",
+    # 'https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css',  # Lightbox CSS from CDN
+]
+
+# html_js_files = [
+#     'popup.js',  # Include your custom JS file here
+#     'lightbox2/dist/js/lightbox.min.js'
+# ]
+
 
 html_theme_options = {
     "light_logo": "img/microbetag_logo.png",

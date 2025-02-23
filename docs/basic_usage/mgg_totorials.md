@@ -10,9 +10,6 @@ usemath: true
 
 # `microbetag` on Cytoscape
 
-
-
-
 <div style="display: flex; gap: 10px;">
     <span class="label-green">microbetag web-app v1.0.1</span>
     <span class="label-orange">MGG v1.0.0</span>
@@ -38,17 +35,9 @@ You may check the [FAQs](../faq.md) section for rules of thumb on how to set you
 ```
 
 
-
 We show how to install and use the microbetag Cytoscape app (called `MGG`) and use it with your data to get `microbetag`-annotated networks 
 using the `micrbetagDB` and the online version of `microbetag`.
 We also highlight the `MGG` features that allow you to go through the nodes and the edges annotations returned. 
-
-
-
-
-
-
-
 
 
 From the main menu box, you will have access to all features of the app. 
@@ -85,10 +74,7 @@ However, in the *Using a network* case, we do use the network of [Hessler et *al
 
 
 
-
-
-
-
+<!-- TUTORIALS -->
 ```{toctree}
 :maxdepth: 2
 :caption: Tutorials
