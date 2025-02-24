@@ -19,7 +19,7 @@ release = '1.0.3'
 
 extensions = [
 
-    "myst_parser",
+
     "sphinx_design",
     "sphinxcontrib.lightbox2",
     "sphinxcontrib.plantuml",
@@ -28,20 +28,23 @@ extensions = [
 
     # # To link to pyqt5 docs
     "sphinx.ext.autodoc",
-    # "sphinx.ext.intersphinx",
+
+    "sphinx.ext.intersphinx",     # i had it muted; this is related to the .inv files (intersphinx_mapping) to have the links to types
+                                    # when i enable it though, it breaks the lightbox popup
+
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinx.ext.autosummary",
-    # "sphinx_qt_documentation",
+    # "sphinx_qt_documentation",        # i had it muted
 
-    # "nbsphinx",
-    #                                         # "sphinx_autoapi.extension",
+    # "nbsphinx",                        # i had it muted;  when i enable this lighbox fails and no latex good
+    # "sphinx_autoapi.extension",              # i had it muted
     "autoapi.extension",
-    # "sphinx_search.extension",
+    # "sphinx_search.extension",             # i had it muted
 
     # For using CONTRIBUTING.md.
-
+    "myst_parser",
 ]
 
 
@@ -78,7 +81,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_theme = 'furo'
 html_static_path = ['_static']
 
-# html_css_files = ["custom.css"]
+html_css_files = ["custom.css"]
 
 # html_css_files = [
 #     "custom.css",
@@ -100,12 +103,12 @@ html_short_title = "microbetag"
 html_favicon = '_static/img/microbetag_logo.ico'
 
 
-intersphinx_mapping = {
-    "python": ("https://docs.python.org/3", None),
-    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
-    'sklearn': ('http://scikit-learn.org/stable', None)
-}
+# intersphinx_mapping = {
+#     "python": ("https://docs.python.org/3", None),
+#     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
+#     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
+#     'sklearn': ('http://scikit-learn.org/stable', None)
+# }
 
 # No need to manually register .md, as myst_parser handles it
 source_suffix = {

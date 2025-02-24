@@ -11,11 +11,6 @@ download: "../_static/download/load/network_output.edgelist"
 # Load networks to Cytoscape and `microbetag`
 
 
-[Tutorial files](https://github.com/hariszaf/microbetag/tree/gh-pages/download/load){: .btn .btn-purple .fs-5 .mb-4 .mb-md-0 }
-
-
-
-<a href="{{ download }}" download>Download network_output.edgelist</a>
 
 ```{note}
 **INPUT FILES USED IN THIS TUTORIAL**
@@ -96,7 +91,7 @@ on `File > Import > Network from file`.
 
 Make sure you enable the MGG style and cyPanels:
 
-![style](/{{ site.baseurl }}assets/images/app/visualStyle.png)
+![style](../_static/img/app/visualStyle.png)
 ![panels](../_static/img/app/show_panels.png)
 
 

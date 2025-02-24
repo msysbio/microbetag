@@ -8,6 +8,30 @@ description: "Frequently Asked Questions on how to use and interprete microbetag
 # Frequently Asked Questions
 
 
+<!-- :::::{dropdown} Syntax
+::::{tab-set-code}
+```` markdown
+```{figure} _static/img/3d.excalidraw.svg
+Diagram with multiple components
+```
+````
+
+
+``` rst
+.. figure:: _static/img/3d.excalidraw.svg
+   Diagram with multiple components
+
+```
+
+::::
+:::::
+
+:::{image} _static/img/3d.excalidraw.svg
+::: -->
+
+
+
+
 ## Setting the parameters right
 
 

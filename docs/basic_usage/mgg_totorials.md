@@ -36,7 +36,7 @@ You may check the [FAQs](../faq.md) section for rules of thumb on how to set you
 
 
 We show how to install and use the microbetag Cytoscape app (called `MGG`) and use it with your data to get `microbetag`-annotated networks 
-using the `micrbetagDB` and the online version of `microbetag`.
+using the `microbetagDB` and the online version of `microbetag`.
 We also highlight the `MGG` features that allow you to go through the nodes and the edges annotations returned. 
 
 

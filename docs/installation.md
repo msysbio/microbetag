@@ -50,8 +50,8 @@ Its basic features are the following:
 
 To start using *microbetag* and/or to visualize *microbetag*-annotated networks, you need first, to make sure you have **Cytoscape** on your system; if not, go ahead and [download Cytoscape](https://cytoscape.org/download.html). 
 Then, you need to install the *microbetag* app (`MGG`) from [Cytoscape App store](https://apps.cytoscape.org/apps/mgg).
-Make sure **you first lunch Cytoscape** and then visit Cytoscape Appstore.
-If you have already visited the MGG page on Cytoscape Appstore, **lunch Cytoscape and refresh the Cytoscape Appstore page**.
+Make sure **you first launch Cytoscape** and then visit Cytoscape Appstore.
+If you have already visited the MGG page on Cytoscape Appstore, **launch Cytoscape and refresh the Cytoscape Appstore page**.
 You should now see an **Install** button.
 
 ![mgg install](_static/img/install_button_mgg.png)
@@ -124,6 +124,14 @@ The software installed, e.g. Prodigal, HMMER etc, will be installed under your `
     ls .microbetag
     /home/my_user/.microbetag
 
+```
+
+
+```{danger}
+We have noticed a weird behavior on MacOS when installing `phenotrex` locally. 
+In case the `setup_environment.sh` script fails, you may try to install dependecies required on MacOS for phenotrex based on the error message you get,
+and then try to continue the `microbetag` installation. 
+**Remember** to install phenotrex in the `phendb` conda environment.
 ```
 
 

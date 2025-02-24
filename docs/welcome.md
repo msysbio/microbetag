@@ -53,7 +53,7 @@ The most common use is through its graphical interface, a Cytoscape app called `
 To use `MGG` you need to first make sure you have Cytoscape installed on your machine; if not you can do this from the [Cytoscape Install page](https://cytoscape.org/download.html)
 Then, there are two ways to install MGG in Cytoscape: 
 Either from through the Cytoscape app store on a browser or from within Cytoscape.
-In the first case, you need to **first lunching Cytoscape**, and then visit the [MGG Cytoscape Appstore page](https://apps.cytoscape.org/apps/mgg). By clicking the `Install` button `MGG` will be automatically added on your Cytoscape.
+In the first case, you need to **first launching Cytoscape**, and then visit the [MGG Cytoscape Appstore page](https://apps.cytoscape.org/apps/mgg). By clicking the `Install` button `MGG` will be automatically added on your Cytoscape.
 Alternatively, to install `MGG` from within Cytoscape, you may click `Apps > App Store > Show App Store`, then search for "microbetag" in the pop-up box and follow this will guide you to the MGG page.
 
 Once MGG is installed, you are ready to use `microbetag` either on the fly, by providing an OTUs/ASVs (amplicon data) and optionally a network, if you already have one, or locally, if you want to apply the annotations on your own bins/MAGs. In the last case, you will also have to install [Docker](https://www.docker.com) or [Singularity](https://sylabs.io) and pull the `microbetag` image that allows you to do so (see [Additional tutorials](advanced_use/tutorials.md) for more).

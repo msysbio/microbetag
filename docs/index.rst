@@ -1,11 +1,12 @@
 microbetag
 ========================
 
+
 .. toctree::
    :maxdepth: 1
-   :caption: Wellcome
+   :caption: Welcome
 
-   wellcome
+   welcome
 
 .. toctree::
    :maxdepth: 2

@@ -20,7 +20,7 @@ In this case a co-occurrence network is **not** available so, *microbetag* will 
 In case you already have a network, and you would like `microbetag` to use it, please check on the [Using a network](./from_net.md) tutorial.
 
 ```{danger}
-**UP LIMIT FOR ABUNDANCE TABLE RECORDS**
+**UPPER LIMIT FOR ABUNDANCE TABLE RECORDS**
  
 When using the online *microbetag* version, it will build a co-occurrence network only for abundance tables with less than 1000 of records.
 In case your abundance table is larger, you will have to run the [`microbetag` preprocess](../advanced_use/prep.md) step locally.

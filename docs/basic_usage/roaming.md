@@ -9,14 +9,8 @@ description: "tutorial on how to parse the annotated network using the MGG app"
 
 # Exploring annotated networks
 
-<!-- TODO
-It is rather common for Cytoscape users to save the whole session they are working with as a `.cys` file by simply clicking on `File > Save Session As...` and giving a name to their session. 
 
- -->
-
-
-
-## *"Roaming"* across annotated nodes and edges
+## Exploring annotated nodes and edges
 
 
 ```{important}
@@ -140,4 +134,13 @@ Also, a new column provides the ModelSEED compound id that was actually found as
 ![kegg_seed_map](../_static/img/app/seedKeggMap.png)
 
 
-[1]:{{ site.url }}/microbetag/download/mgg/hessler_microbetag_network.cx
+
+## Save your work 
+
+
+The best approach is to save your entire session, as you will likely apply various filters, annotations, and other modifications to your `microbetag`-annotated network. Simply click on `File > Save Session As...`, assign a name to your session, and Cytoscape will generate a `.cys` file. This allows you to reload the session later and resume exactly where you left off.
+
+You can also export your network by using the rest of Cytoscape options.
+
+
+[1]:../_static/download/mgg/hessler_microbetag_network.cx
