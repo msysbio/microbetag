@@ -9,7 +9,18 @@ description: "how to run microbetag from Python"
 
 # Run `microbetag` from Python 
 
-<!-- TODO: HERE WE NOW HAVE A LOT TO SAY FOR INDIVIDUAL FEATURES -->
+## Use `microbetag`'s features as a library
+
+Assuming you have [installed `microbetag` locally](../installation.md#from-source-code), you can now use `microbetag`'s features independently. 
+
+To go through them, you may have a look at the [API Reference](../autoapi) but also on the [`unittests` of ours](https://github.com/hariszaf/microbetag/tree/user-bins-nfl/tests).
+You may run individual genome annotation steps, build your own GENREs, as well as the routines allowing you to export pathway and/or seed complementarities. 
+
+Feel free to contact on our [Matrix community](https://matrix.to/#/#microbetagcommunity:matrix.org) in case you face any trouble.
+
+
+
+## Use `microbetag` API programmatically
 
 One may use the API routes described through Python. 
 For example, to get the microbetagDB genomes related species with NCBI Taxonomy id 853:

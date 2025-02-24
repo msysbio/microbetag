@@ -1,0 +1,39 @@
+# Configuration file for microbetag preprocessing
+
+# I/O 
+abundance_table_file: 
+  path: GTDB_tax_assigned_abundance_table.tsv       # Subgingival_plaque_Silva_seq.csv
+  description: Path to abundance table file. Attention! The path needs to be within the folder that you mount to the Docker container.
+  type: Path
+
+metadata_file: 
+  path: null
+  description: Path to metadata file. Metadata describe the abundance table and is going to be used for building the cooccurrence network. For an example file see https://github.com/meringlab/FlashWeave.jl/tree/master/test/data/HMP_SRA_gut and also check http://tinyurl.com/35xxcnrm for further insight. Remember that each column stands for a trait and each row its corresponding value to each sample. 
+  type: Path
+
+output_directory:
+  path: prep_output
+  description: Folder name to be built within the mounted directory where the files to be used with microbetag will be exported.
+
+# Tasks
+16s_gtdb_taxonomy_assign:
+  value: false
+  description: Taxonomy assignment of the sequences using IDTAXA and the 16S sequences of the GTDB genomes.
+  type: bool
+
+build_network:
+  value: True
+  description: A co-occurrence network will be built using your abundance table, your metadata file (if provided) and FlashWeave. If selected, make sure you also set the FlashWeave arguments.
+  type: bool
+
+# FlashWeave arguments
+flashweave_sensitive:
+  value: false
+  type: bool
+  description: (From FlashWeave documentation) Enable fine-grained associations (FlashWeave-S, FlashWeaveHE-S), sensitive=false results in the fast modes FlashWeave-F or FlashWeaveHE-F 
+
+flashweave_heterogeneous:
+  value: False
+  type: bool
+  description: (From FlashWeave documentation) Enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (FlashWeaveHE)
+
