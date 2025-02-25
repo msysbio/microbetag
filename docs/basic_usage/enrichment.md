@@ -72,12 +72,8 @@ After setting which static to use, you can fire the enrichment/depletion test by
 ![table](../_static/img/app/enrichment/enrichment_matrix.png)
 
 
-
-
-
-
-
-
+Notably, `microbetag` was able to find statistically significant changes between the two clusters, with cluster 1 being enriched with several terms, 
+among them *acetic acid* and *D-lactic acid*, meaning cluster 1 was enriched in taxa producing those compounds.  
 
 
 
