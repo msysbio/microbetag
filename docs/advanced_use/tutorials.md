@@ -3,7 +3,6 @@ layout: default
 title: Additional tutorials
 nav_order: 4
 has_children: true
-# permalink: /docs/tutorials
 usemath: true
 ---
 
@@ -22,13 +21,19 @@ If you have a more complex data set, then you need to:
 * perform `microbetag` locally, in case you have your own genomes to use instead of the GTDB representative ones
 
 
-Here, we provide three tutorials:
+> In the *Advanced use*, we provide tutorials addressing common cases where more sophisticated implementations of the `microbetag` features are required to get an annotated network. 
 
-* [run the `microbetag-prep` workflow](./prep.md), and 
-* [run `microbetag` locally](./local.md)
-* [load previously `microbetag`-annotated network on Cytoscape](./load.md)
-
-For any issues, bugs, questions, feel free to 
-contact us on [Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) or 
+For any issues, bugs, questions, feel free to contact us on [Matrix](https://matrix.to/#/#microbetagcommunity:matrix.org) or 
 just open an issue on our [GitHub repo](https://github.com/msysbio/microbetagApp-public/issues/new).
+
+
+
+```{toctree}
+:maxdepth: 2
+:caption: Tutorials - advanced use
+
+prep
+local
+large_data
+python
 
