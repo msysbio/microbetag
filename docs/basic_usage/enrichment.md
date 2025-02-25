@@ -76,6 +76,23 @@ Notably, `microbetag` was able to find statistically significant changes between
 among them *acetic acid* and *D-lactic acid*, meaning cluster 1 was enriched in taxa producing those compounds.  
 
 
+So, let's have a look now on how the taxa producing *lactic acid* distribute between the two clusters:
+
+![lactic_producers](../_static/img/large_data/lactic_producers.png)
+
+
+It seems that only taxa from cluster 1 are lactic acid producers (not shown in the figure, but one could tell from its corresponding node table after selecting the nodes shown),
+and most of them belong to the *Bacteroides* genus. 
+The multiple presence of some species, e.g. *Bacteroides ovatus*, and their occasional positive co-occurrence, denotes that more than 1 OTUs per sample where assigned to those taxonomies,
+meaning there could be several strains of that species. 
+Of course, there are other reasons for this too, e.g. sequencing, clustering artifacts (see also [here](https://forum.qiime2.org/t/what-is-the-reason-why-there-are-multiple-otu-identifiers-in-the-same-species-taxonomy-assignments-in-qiime/3309)). 
+
+
+```{hint}
+In the [`large_data_session.cys`](_static/download/large_dataset/large_data_session.cys) you may find the total networks we used for this tutorial, step-by-step. 
+All you have to do is to download it and then from Cytoscape, click `File > Open Sessiion...` and select the `large_data_session.cys` file.
+```
+
 
 <!-- <script src="_static/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script> -->
 
