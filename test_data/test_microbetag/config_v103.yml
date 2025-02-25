@@ -18,7 +18,7 @@ abundance_table_file:
   The taxonomy scheme in this case is irrelevant.
   However, you need to make sure that the sequence identifiers used in this table, are the same
   with those in your network (if one provided) as well as with those in your bins/faa/xml files, again if such provdied."
-  required: True
+  required: true
   examples: 
     - thirty_Samples.tsv
     - counts_genomes_taxonomies.tsv
@@ -27,27 +27,27 @@ abundance_table_file:
 bins_fasta:
   dir_path: input_files/my_bins
   description: Name of the folder with the bins .fasta files.
-  required: False
+  required: false
   type: string
 
 
 output_directory: 
   dir_path: mtg_complete_output
   description: Name of the output folder that will be built inside the io_path directory.
-  required: True
+  required: true
   type: string
 
 
 orfs:
   dir_path: 
   description: In case Operating Reading Frames (ORFs) have been already computed (e.g., using Prodigal), you may provide the path to the folder with the .fna files. 
-  required: False
+  required: false
   type: Path
 
 edge_list:
   file_path: 
   description: "If co-occurrence network already available, please provide its edge list; a 2 column tab separated file."
-  required: False
+  required: false
   examples: 
     - edgelist.csv
   type: string
@@ -68,32 +68,32 @@ threads:
 # -----
 precalulations_only:
   value: false
-  description: "If True, only the precalculations will be performed. 
+  description: "If true, only the precalculations will be performed. 
   This means that neither an abundance table is nor an already available network will be considered, only the list of bins/MAGs; provided in the bins_fasta parameter.
-  In case this is True, microbetag will make sure all the precalculations related to the annotations steps asked are available; if some are not, it will perform them. 
+  In case this is true, microbetag will make sure all the precalculations related to the annotations steps asked are available; if some are not, it will perform them. 
   Once all precalculations required are available, it will then annotate the network."
   required: true
   type: bool
 
 # -----
-# Pathway complementarity: if the pathway_complementarity parameter is set as False, the rest of the parameters will not be considered. 
+# Pathway complementarity: if the pathway_complementarity parameter is set as false, the rest of the parameters will not be considered. 
 # -----
 pathway_complementarity:
-  value: True
+  value: true
   description: "Set whether pathway complementarities should be calcuated and then used to annotated the edges of the co-occurrence network."
-  required: True
+  required: true
   type: bool
 
 max_length_for_complement_from_scratch:
   value: 3
   description: "There are cases where a species has no KO related with a module but may get a complete alternative from the donor species. However, there are cases where a KEGG module consists of just 1-2 terms and other where dozins of KOs are required. Set the max length of a module that can be exchanged when no module related KO is present in the beneficiary in the first place."
-  required: False
+  required: false
   type: integer
 
 pathway_complement_percentage:
   value: 0.35
   description: "Per centage of the module (i.e., number of KO terms) up to which a potential donor may provide a beneficiary with. For example, if a module consists of 5 KOs and the beneficiary can share 4 missing from the donor, this is rather unlikely to happen. If no value is given all complementes will be returned."
-  required: False
+  required: false
   type: float
 
 # IMPORTANT NOTE: To save essential time for this test, we use a previously calculated 3-column KO file. You may run the test_kegg_annotation to make sure this step runs fine
@@ -124,10 +124,10 @@ kofam_database:
 # Seed complementarity
 # -----
 seed_complementarity:
-  value: True
+  value: true
   description: This is the most time-consuming and challengint step of the workflow. You may perform microbetag with or without it by setting \
-                this argument as True or False correspondinly.
-  required: True
+                this argument as true or false correspondinly.
+  required: true
   type: bool
 
 input_type_for_seed_complementarities:
@@ -144,7 +144,7 @@ input_type_for_seed_complementarities:
     give the directory path to the .faa files in the `sequence_files_for_reconstructions`. \
     If none of the above is available, then set this parameter as bins_fasta and leave the sequence_files_for_reconstructions blank."
   type: string
-  required: True
+  required: true
 
 
 # -----
@@ -153,7 +153,7 @@ input_type_for_seed_complementarities:
 sequence_files_for_reconstructions:
   dir_path: 
   required: 
-    value: True
+    value: true
     when: if input_type_for_seed_complementarities != "bins_fasta". Could be either .fna or .faa files.
   description: 
   type: string
@@ -165,7 +165,7 @@ gene_predictor:
     - prodigal
     - RAST
   required: 
-    value: False
+    value: false
     when: orfs_per_bin is None
   description: "RAST annotation is required/strongly suggested* if modelseedpy is going to be used as genre_reconstruction_with.
   Otherwise, the user may choose among fragGeneScan or prodigal; in the latter, the .faa returned by DiTing will be used."
@@ -177,17 +177,17 @@ genre_reconstruction_with:
     - modelseedpy
     - carveme
   required: 
-    value: True
-    when: seed_complementarity == True
+    value: true
+    when: seed_complementarity == true
 
 gapfill_model:
-  value: True
-  description: "If True, modelseedpy will gapfill the reconstruction."
+  value: true
+  description: "If true, modelseedpy will gapfill the reconstruction."
   type: bool
 
 gapfill_media: 
-  value: True
-  description: If True, modelseedpy will 
+  value: true
+  description: If true, modelseedpy will 
   type: bool
 
 
@@ -203,10 +203,24 @@ min_proba:
 # manta 
 # -----
 network_clustering:
-  value: False
+  value: true
   description:
   type: bool
-  required: False
+  required: false
+
+
+prev_clustered_network:
+  file_path: 
+  description: >
+    In case you have performed manta already in a previous run of microbetag or as a stand-alone tool, 
+    you may provide directly its findings in CYJS format.
+    Attention! When microbetag is about to actually run the manta step, it will first build a basenet.cyjs 
+    that will then use for manta as its input. Please, make sure you provide the manta.cyjs and and not this basenet cyjs. 
+  type: string
+  required: false
+  example: 
+    - microbetag/ext_data/input_data/manta.cyjs
+    - microbetag_run_carve/plaque_manta_net.cyjs
 
 
 # -----
@@ -216,37 +230,37 @@ metadata_file:
   file_path: 
   description: 
   type:
-  required: False
+  required: false
 
 flashweave_args:
     heterogeneous:
-      value: False
+      value: false
       description: "Enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (FlashWeaveHE)."
-      required: True
+      required: true
       type: bool
     
     sensitive:
-      value: True
+      value: true
       description: "Enable fine-grained associations (FlashWeave-S, FlashWeaveHE-S), sensitive=false results in the fast modes FlashWeave-F or FlashWeaveHE-F."
-      required: True
+      required: true
       type: bool
 
     max_k:
       value:
       description: "Maximum size of conditioning sets, high values can strongly increase runtime. max_k=0 results in no conditioning (univariate mode)."
-      required: False
+      required: false
       type: integer
 
     alpha:
       value:
       description: "Threshold used to determine statistical significance."
-      required: False
+      required: false
       type: 
 
     conv:
       value:
       description: "Convergence threshold, i.e. if conv=0.01 assume convergence if the number of edges increased by only 1% after 100% more runtime (checked in intervals)."
-      required: False
+      required: false
       type: 
 
     feed_forward:
@@ -258,47 +272,47 @@ flashweave_args:
     max_tests: 
       value:
       description: "Maximum number of conditional tests that should be performed on a variable pair before association is assumed."
-      required: False
+      required: false
       type:
 
     hps:
       value:
       description: "Reliability criterion for statistical tests when sensitive=false."
-      required: False
+      required: false
       type:
 
     FDR:
       value:
-      description: "Perform False Discovery Rate correction (Benjamini-Hochberg method) on pairwise associations."
-      required: False
+      description: "Perform false Discovery Rate correction (Benjamini-Hochberg method) on pairwise associations."
+      required: false
       type:
 
     n_obs_min:
       value: 
-      desription: "Don't compute associations between variables having less reliable samples (i.e. non-zero if heterogeneous=True) than this number. -1  automatically choose a threshold."
-      required: False
+      desription: "Don't compute associations between variables having less reliable samples (i.e. non-zero if heterogeneous=true) than this number. -1  automatically choose a threshold."
+      required: false
       type: integer
 
     time_limit:
       value: 
       description: if feed-forward heuristic is active, determines the interval (seconds) at which neighborhood information is updated
-      required: False
+      required: false
       type: 
 
     normalize:
       value: 
       description: automatically choose and perform data normalization (based on sensitive and heterogeneous)
-      required: False
+      required: false
       type: bool
 
     track_rejections:
       value: 
       description: store for each discarded edge, which variable set lead to its exclusion (can be memory intense for large networks)
-      required: False
+      required: false
       type:
 
     verbose:
       value:
       description: print progress information
-      required: False
+      required: false
       type: bool

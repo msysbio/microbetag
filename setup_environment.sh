@@ -13,7 +13,6 @@ WHITE_CIRCLE="\26AA"
 
 SCRIPT_DIR=$(dirname "$(realpath "$0")")
 
-
 # ====================================
 # Step 1: Set up Conda environment
 # NOTE: PYTHON 3.8 easier to have phenotrex 0.6.0
@@ -22,8 +21,8 @@ SCRIPT_DIR=$(dirname "$(realpath "$0")")
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-# Print each command before executing it (for debugging purposes)
-set -x
+# # Print each command before executing it (for debugging purposes)
+# set -x
 
 # Check if conda is installed
 if ! command -v conda &> /dev/null; then
@@ -50,11 +49,14 @@ fi
 
 # Install phenotrex
 conda activate phendb
+
+echo -e "$HOURGLASS Install numpy phenotrex required version...."
+pip install --upgrade pip setuptools wheel
+pip install --force numpy==1.21.6
+
 echo -e "$HOURGLASS Install phenotrex..."
 pip install phenotrex[fasta]  > /dev/null 2>&1
 
-echo -e "$HOURGLASS Install numpy phenotrex required version...."
-pip install --force numpy==1.21.6
 
 echo -e "$TADA phenotrex was installed successfully."
 conda deactivate
@@ -235,8 +237,11 @@ fi
 
 # Install microbetag lib
 cd $SCRIPT_DIR
+
+# Install Python-specific tools
 pip install .
 
+# Good bye! :)
 echo "microbetag is now good to go! $TADA $ROCKET"
 
 

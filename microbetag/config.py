@@ -210,10 +210,10 @@ class Config:
             else False
         )
         if self.network_clustering:
-            manta_net = conf.get("prev_clustered_network").get("file_path")
+            self.prev_manta_net = conf.get("prev_clustered_network").get("file_path")
             self.manta_net = (
-                os.path.join(self.base_dir, manta_net)
-                if not None
+                os.path.join(self.base_dir, self.prev_manta_net)
+                if self.prev_manta_net is not None
                 else os.path.join(self.output_dir, 'manta_annotated.cyjs')
             )
             self.base_network_file = os.path.join(self.output_dir, "basenet.cyjs")

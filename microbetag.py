@@ -284,7 +284,7 @@ if config.seed_complementarity:
 # ----------------
 # Network clustering
 # ----------------
-if config.network_clustering and config.manta_net is None:
+if config.network_clustering and config.prev_manta_net is None:
 
     logging.info("""[STEP]: network clustering using manta and the abundance table""")
     # Build original input file in cyjs format
