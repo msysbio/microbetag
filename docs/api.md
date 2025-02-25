@@ -3,7 +3,7 @@ layout: default
 title: Access *microbetagDB* through its API
 ---
 
-# Access *microbetagDB* through its API
+# *microbetagDB* API
 
 *microbetagDB* API provides programmatic access to the data.
 Using the Application Programming Interface (API) you can access the *microbetagDB* directly to get information about PhenDB-like traits of a specific taxon, potential pathway complementarities of a taxa pair etc. 

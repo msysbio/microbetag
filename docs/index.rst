@@ -13,7 +13,7 @@ microbetag
    :caption: Modules
 
    modules/modules
-   modules/index
+   .. modules/index
 
 
 .. toctree::
@@ -38,10 +38,6 @@ microbetag
    :caption: Tutorials - advanced use
 
    advanced_use/tutorials
-   advanced_use/local
-   advanced_use/prep
-   advanced_use/python
-   advanced_use/large_data
 
 
 .. toctree::

@@ -223,3 +223,10 @@ In this example, we have a pair of simple networks. The top network has two seed
 
 [5] Borenstein, E., Kupiec, M., Feldman, M.W. and Ruppin, E., 2008. Large-scale reconstruction and phylogenetic analysis of metabolic environments. Proceedings of the National Academy of Sciences, 105(38), pp.14482-14487.
 
+
+```{toctree}
+:maxdepth: 2
+:caption: Modules
+
+phen-traits
+faprotax-functions
