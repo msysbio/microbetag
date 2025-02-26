@@ -63,6 +63,12 @@ class ExportSeedComplementarities():
         Update seed sets returned by PhyloMint by:
         - removing compounds from seed sets that are related to environmental metabolites that can be produced in several ways within the cell.
         - removing from non seed sets compounds that cannot be produced in any other way than from entering the cell from the environment.
+
+        If both _c0 and _e0 exist in the seed list, _e0 is kept.
+        If _c0 is missing from the model, _e0 is kept as a seed.
+        If _c0 can be produced without _e0, _e0 is not a seed.
+        Otherwise, _e0 is kept as a seed and _c0 is removed from non-seeds.
+
         """
 
         f = open(self.logfile , "w")
@@ -92,40 +98,43 @@ class ExportSeedComplementarities():
             models_tmp_seeds = current_seeds[model_id]
             models_seeds = []; models_nonSeeds = models_tmp_non_seeds.copy()
 
+            # Check if we keep intra- or extracellular compound
             for pot_seed in models_tmp_seeds:
-                check = True
-                if pot_seed.endswith(self.ex_suffix):
 
+                if pot_seed.endswith(self.ex_suffix):  # Check if the metabolite is extracellular (_e0)
                     counter += 1
-                    main_seed_id = pot_seed.rsplit(self.ex_suffix, 1)
-                    cor_in_met = main_seed_id[0] + self.int_suffix
+                    main_seed_id = pot_seed.rsplit(self.ex_suffix, 1)[0]
+                    cor_in_met = main_seed_id + self.int_suffix  # Corresponding intracellular metabolite (_c0)
 
                     if cor_in_met in models_tmp_seeds:
-                        # Both _c0 and _e0 among the potential seed set.
+                        # Both _c0 and _e0 are in the potential seed set
                         models_seeds.append(pot_seed)
+                        continue
 
-                    else:
+                    cor_in_met = cor_in_met.lstrip(self.compound_prefix)  # Remove prefix if present
 
-                        if cor_in_met.startswith == self.compound_prefix:
-                            cor_in_met = cor_in_met[2:]
+                    if cor_in_met not in model_mets:
+                        # If the intracellular metabolite is not part of the model
+                        models_seeds.append(pot_seed)
+                        continue
 
-                        if cor_in_met not in model_mets:
-                            # The _c0 case is not among the model's metabolites.
-                            models_seeds.append(pot_seed)
+                    # Check if _c0 can be produced without requiring _e0 as a reactant
+                    check = any(
+                        cor_in_met in [met.id for met in rxn.products] and
+                        pot_seed[2:] not in [met.id for met in rxn.reactants]
+                        for rxn in model.metabolites.get_by_id(cor_in_met).reactions
+                    )
 
-                        else:
-                            for rxn in model.metabolites.get_by_id(cor_in_met).reactions:
-                                if cor_in_met in [met.id for met in rxn.products]:
-                                    if pot_seed[2:] not in [met.id for met in rxn.reactants]:
-                                        # There is at least a reaction that does not include the _e0 case that produces the _c0 metabolite.
-                                        check = False
-                                        break
-                            if check:
-                                models_seeds.append(pot_seed)
-                                models_nonSeeds.remove(self.compound_prefix + cor_in_met)  # [ATTENTION]!
+                    if not check:
+                        continue  # Skip adding _e0 as a seed if _c0 can be produced independently
+
+                    models_seeds.append(pot_seed)
+                    models_nonSeeds.discard(self.compound_prefix + cor_in_met)  # Remove _c0 from non-seeds
+
                 else:
                     counter2 += 1
-                    models_seeds.append(pot_seed)
+                    models_seeds.append(pot_seed)  # Directly add non-extracellular metabolites
+
 
             with open(self.logfile, "a") as f:
                 f.write(model_id + "\t" + str(counter) + "\t" + str(counter2) + "\t" +
