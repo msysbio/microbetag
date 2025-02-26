@@ -5,16 +5,11 @@ The user may provide their own GEMs -- this is strongly suggested as the user's 
 can be curated to fix the experiment's specific conditions (e.g. medium composition)
 as well as the metabolites and the reactions present in the network themselves.
 
-Especially when using ModelSEEDpy for the reconstruction, medium can be of utmost importance,
-since it's being used by the gapfilling algorithm to fill the gaps in the network.
-
 In case the user does not provide their own GEMs, microbetag provides two approaches to build a GEM:
 - using ModelSEEpy
 - using CarveMe
-
-The GEMSReconstruction class is used to build
-
 """
+
 import unittest
 import os, yaml
 
@@ -60,10 +55,5 @@ class testBuildGemWithCarve(unittest.TestCase):
 
 
 
-
-
-
 if __name__ == '__main__':
     unittest.main()
-
-
