@@ -10,10 +10,11 @@ FROM ubuntu:20.04
 
 LABEL maintainer = "Haris Zafeiropoulos" 
 LABEL contact    = "haris.zafeiropoulos@kuleuven.be"
-LABEL build_date = "2022-12-01"
-LABEL version    = "v.0.0.1-dev"
+LABEL build_date = "2025-02"
+LABEL version    = "v.0.0.2"
 
-# This mode allows zero interaction while installing or upgrading the system via apt; it accepts the default answer for all questions.
+# This mode allows zero interaction while installing or upgrading the system via apt; 
+# it accepts the default answer for all questions.
 ENV DEBIAN_FRONTEND noninteractive
 WORKDIR /home
 
@@ -53,6 +54,11 @@ RUN apt-get install -y liblzma-dev \
 # PhenDB
 RUN pip install phenotrex[fasta]
 
+RUN sed -i 's/np\.integer/int/g' /usr/local/lib/python3.8/dist-packages/phenotrex/io/flat.py  &&\
+    sed -i 's/np\.floating/float/g' /usr/local/lib/python3.8/dist-packages/phenotrex/io/flat.py  &&\
+    sed -i 's/np\.int/int/g' /usr/local/lib/python3.8/dist-packages/deepnog/data/dataset.py &&\
+    sed -i 's/np\.int/int/g' /usr/local/lib/python3.8/dist-packages/deepnog/learning/training.py
+
 # RUN wget https://zenodo.org/records/10562677/files/phen_classes.zip &&\
 #     unzip phen_classes.zip &&\
 #     rm phen_classes.zip
@@ -71,14 +77,6 @@ RUN pip install pandas
 # -----------------------------------
 #  ADD WHATEVER BEFORE THE COPIES 
 # -----------------------------------
-
-WORKDIR /microbetag/microbetagDB/ref-dbs/phenDB/classes/
-ADD microbetagDB/ref-dbs/phenDB/classes/*  ./
-
-RUN sed -i 's/np\.integer/int/g' /usr/local/lib/python3.8/dist-packages/phenotrex/io/flat.py  &&\
-    sed -i 's/np\.floating/float/g' /usr/local/lib/python3.8/dist-packages/phenotrex/io/flat.py  &&\
-    sed -i 's/np\.int/int/g' /usr/local/lib/python3.8/dist-packages/deepnog/data/dataset.py &&\
-    sed -i 's/np\.int/int/g' /usr/local/lib/python3.8/dist-packages/deepnog/learning/training.py
 
 RUN pip install networkx[default]
 
@@ -130,10 +128,6 @@ RUN pip install modelseedpy cobra
 WORKDIR /usr/local/lib/python3.8/dist-packages/sklearn
 RUN find . -type f -name "*.py" -exec sed -i 's/np\.float)/float)/g; s/np\.float,/float,/g' {} +
 
-
-WORKDIR /microbetag
-RUN git clone https://github.com/hariszaf/PhyloMint.git 
-
 # FlashWeave
 # As it is written in Julia we need to get that too
 WORKDIR /opt
@@ -143,27 +137,8 @@ RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.7/julia-1.7.1-linux-
 
 ENV PATH="/opt/julia-1.7.1/bin:${PATH}"
 
-
-# Get FlashWeave
 RUN /opt/julia-1.7.1/bin/julia -e 'using Pkg;Pkg.add("FlashWeave")'
 
-# FAPRTOTAX
-WORKDIR /microbetag/microbetagDB/ref-dbs
-RUN wget https://pages.uoregon.edu/slouca/LoucaLab/archive/FAPROTAX/SECTION_Download/MODULE_Downloads/CLASS_Old%20versions/UNIT_FAPROTAX_1.2.7/FAPROTAX_1.2.7.zip &&\
-    unzip FAPROTAX_1.2.7.zip &&\
-    rm FAPROTAX_1.2.7.zip
-# Install Python dependencies for FAPROTAX script
-RUN pip install pytest-shutil &&\
-    pip install biom-format
-
-RUN pip install scikit-learn==1.3.2
-
-RUN pip install git+https://github.com/hariszaf/manta.git@scipy-version 
-
-
-# Enable running FlashWeave from Python
-RUN pip install julia && \
-    /opt/julia-1.7.1/bin/julia -e 'using Pkg;Pkg.add("PyCall")'
 
 # Enable Gurobi - necessary for carveme; you need a Web License Service documentation as
 # the standard academic licenses for Gurobi do not work in docker containers
@@ -180,7 +155,6 @@ RUN wget http://github.com/bbuchfink/diamond/releases/download/v2.1.9/diamond-li
     echo 'export PATH=/opt/:$PATH' >> /root/.bashrc
 ENV PATH="/opt/:${PATH}"
 
-
 # Gene preditors
 RUN git clone https://github.com/gaberoo/FragGeneScan.git &&\
     cd FragGeneScan/ &&\
@@ -191,42 +165,80 @@ RUN git clone https://github.com/hyattpd/Prodigal.git &&\
     cd Prodigal &&\
     make install
 
+# Enable running FlashWeave from Python
+WORKDIR /microbetag/microbetag/mtg_maps_models/phenDB/classes/
+RUN pip install julia && \
+    /opt/julia-1.7.1/bin/julia -e 'using Pkg;Pkg.add("PyCall")'
+# Add trained classes
+ADD microbetag/mtg_maps_models/phenDB/classes/*  ./
 
-# Set R to enable gapseq
-# Install dependencies and R
-RUN apt-get update && apt-get install -y \
-    software-properties-common \
-    && apt-get install -y gnupg2 \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 \
-    && add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/" \
-    && apt-get update \
-    && apt-get install -y \
-    r-base \
-    r-base-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# PhyloMint
+WORKDIR /microbetag
+RUN git clone https://github.com/hariszaf/PhyloMint.git 
 
-# Install R packages required for gapseq
-RUN R -e 'install.packages(c("data.table", "stringr", "getopt", "doParallel", "foreach", "R.utils", "stringi", "glpkAPI", "CHNOSZ", "jsonlite", "httr"))' 
+# FAPRTOTAX
+WORKDIR /microbetag/microbetag/mtg_maps_models
+RUN wget https://pages.uoregon.edu/slouca/LoucaLab/archive/FAPROTAX/SECTION_Download/MODULE_Downloads/CLASS_Latest%20release/UNIT_FAPROTAX_1.2.10/FAPROTAX_1.2.10.zip &&\
+    unzip FAPROTAX_1.2.10.zip &&\
+    rm FAPROTAX_1.2.10.zip
+
+# Install Python dependencies for FAPROTAX script
+RUN pip install pytest-shutil &&\
+    pip install biom-format
+
+RUN pip install scikit-learn==1.3.2
+
+RUN pip install git+https://github.com/hariszaf/manta.git@scipy-version 
 
 
-# Install further gapseq requirements
-RUN wget https://cran.r-project.org/src/contrib/Archive/sybil/sybil_2.2.0.tar.gz && \
-    wget https://cran.r-project.org/src/contrib/Archive/sybilSBML/sybilSBML_3.1.2.tar.gz
 
-RUN apt update
-RUN apt install -y ncbi-blast+ git libglpk-dev r-base-core exonerate bedtools barrnap bc parallel curl libcurl4-openssl-dev libssl-dev  libsbml5-dev bc
 
-RUN R CMD INSTALL sybil_2.2.0.tar.gz
-RUN R CMD INSTALL sybilSBML_3.1.2.tar.gz
-# && rm sybil_2.2.0.tar.gz \
-# && rm sybilSBML_3.1.2.tar.gz
 
-# Download latest gapseq version from github and latest reference sequence database
-RUN git clone https://github.com/jotech/gapseq && cd gapseq && \
-    bash ./src/update_sequences.sh  
 
-RUN R -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager"); BiocManager::install("Biostrings")'
+
+
+
+# -------------------------------------GAPSEQ START -----------------------------------------
+
+# # Set R to enable gapseq
+# # Install dependencies and R
+# RUN apt-get update && apt-get install -y \
+#     software-properties-common \
+#     && apt-get install -y gnupg2 \
+#     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 \
+#     && add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/" \
+#     && apt-get update \
+#     && apt-get install -y \
+#     r-base \
+#     r-base-dev \
+#     && apt-get clean \
+#     && rm -rf /var/lib/apt/lists/*
+
+# # Install R packages required for gapseq
+# RUN R -e 'install.packages(c("data.table", "stringr", "getopt", "doParallel", "foreach", "R.utils", "stringi", "glpkAPI", "CHNOSZ", "jsonlite", "httr"))' 
+
+# # Install further gapseq requirements
+# RUN wget https://cran.r-project.org/src/contrib/Archive/sybil/sybil_2.2.0.tar.gz && \
+#     wget https://cran.r-project.org/src/contrib/Archive/sybilSBML/sybilSBML_3.1.2.tar.gz
+
+# RUN apt update
+# RUN apt install -y ncbi-blast+ git libglpk-dev r-base-core exonerate bedtools barrnap bc parallel curl libcurl4-openssl-dev libssl-dev  libsbml5-dev bc
+
+# RUN R CMD INSTALL sybil_2.2.0.tar.gz
+# RUN R CMD INSTALL sybilSBML_3.1.2.tar.gz
+
+# # Download latest gapseq version from github and latest reference sequence database
+# RUN git clone https://github.com/jotech/gapseq && cd gapseq && \
+#     bash ./src/update_sequences.sh  
+
+# RUN R -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager"); BiocManager::install("Biostrings")'
+
+# -------------------------------------GAPSEQ END -----------------------------------------
+
+
+
+
+
 
 
 
