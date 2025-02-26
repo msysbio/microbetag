@@ -97,8 +97,8 @@ microbetag annotates all network nodes (corresponding to OTUs/ASVs/bins that hav
 
 As defined by the [KEGG resource](https://www.genome.jp/kegg/module.html), *"the KEGG MODULE database is a manually curated collection of modular functional units, categorized into pathway modules, signature modules and reaction modules"*.
 
-All the GTDB representative genomes were KEGG annottated. 
-Considering all pair-wised combinatons of those genomes, microbetag checks whether the KEGG Orthology (KO) terms of a genome (donor) could complete a KEGG module of another (beneficary), if shared.
+All the GTDB representative genomes were KEGG annotated. 
+Considering all pair-wised combinations of those genomes, microbetag checks whether the KEGG Orthology (KO) terms of a genome (donor) could complete a KEGG module of another (beneficiary), if shared.
 
 Here is an example where *Acidiferrobacter* sp. SPIII3 
 ([GCA_003184265.1](https://gtdb.ecogenomic.org/genome?gid=GCA_003184265.1)) potentially shares K01626 to complete the Shikimate pathway ([M00022](https://www.genome.jp/dbget-bin/www_bget?M00022)) of
@@ -107,7 +107,7 @@ Here is an example where *Acidiferrobacter* sp. SPIII3
 ![complementarity_kegg_example](../_static/img/kegg_example.png)
 
 As several genomes can be mapped to the same NCBI Taxonomy id, microbetag returns all possible complementarities
-between all the donor's and the beneficary's genomes. 
+between all the donor's and the beneficiary's genomes. 
 
 *microbetag* annotates all **edges** where both nodes represent species/strain level taxonomies with such complementarities.
 
@@ -122,14 +122,14 @@ Here is an example (based on the [Borenstein lab webpage](https://borensteinlab.
 
 
 Node A is a seed, as it cannot be activated by any other node in the network.
-Nodes F, G, and H are also seeds but they are interdependent, i.e. activating one of these nodes 
+Nodes F, G, and H are also seeds, but they are interdependent, i.e. activating one of these nodes 
 would activate the rest, but at least one must be active to activate the rest. 
 These nodes form a "seed group".
 To quantify the relevance of each identified seed, we assign each seed a **confidence level (C)**, ranging from 0 to 1. 
 A confidence level of 0 would correspond to a non-seed node, while a 1 would correspond to a seed that cannot be activated by another node. Seeds which belong to a seed group with more than 1 seed are given a fractional confidence level, the inverse of the number of seeds in the group. 
 <!-- Nodes F, G, and H would then each have a confidence level of 1/3. -->
 
-Based on the seed concept, several scores between metabolic models of pair of species have been described. 
+Based on the seed concept, several scores between metabolic models of pairs of species have been described. 
 As described in the PhyloMInt paper: the **Metabolic Complementarity Index** ($ MI_{Complementarity} $) is calculated as the 
 *"fraction of the seed set of the genome-scale reconstruction of species A, that is found within B’s metabolic network but not part of B’s seed set, normalized by the number of A’s seed set in B’s entire metabolic network"*. 
 This complementarity score represents the **potential for A’s to utilize the potential metabolic output of B**.
