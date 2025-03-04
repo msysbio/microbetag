@@ -1,3 +1,6 @@
+# Branch specific
+examined_cases
+
 # Ignore python cache 
 __pycache__/
 
