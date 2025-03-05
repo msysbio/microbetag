@@ -90,9 +90,6 @@ Of course, there are other reasons for this too, e.g. sequencing, clustering art
 
 ```{hint}
 In the [`large_data_session.cys`](_static/download/large_dataset/large_data_session.cys) you may find the total networks we used for this tutorial, step-by-step. 
-All you have to do is to download it and then from Cytoscape, click `File > Open Sessiion...` and select the `large_data_session.cys` file.
+All you have to do is to download it and then from Cytoscape, click `File > Open Sessiion...` and select the [`large_data_session.cys`](../_static/download/large_dataset/large_data_session.cys) file.
 ```
-
-
-<!-- <script src="_static/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script> -->
 
