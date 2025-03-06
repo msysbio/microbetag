@@ -20,12 +20,15 @@ def run_phylomint(config):
     """
     if config.users_models:
         genre_files = [
-        os.path.join(config.for_reconstructions, file)
+            os.path.join(config.for_reconstructions, file)
                 for file in os.listdir(config.for_reconstructions)
         ]
         for file in genre_files:
             dest_path = os.path.join(config.genres, os.path.basename(file))
-            shutil.copy(file, dest_path)
+            try:
+                shutil.copy(file, dest_path)
+            except:
+                pass
     else:
         all_files = [
             os.path.join(config.reconstructions, file)
@@ -50,6 +53,7 @@ def run_phylomint(config):
     ]
 
     phylomint_cmd = " ".join(phylomint_params)
+    print(phylomint_cmd)
     try:
         os.system(phylomint_cmd)
     except:

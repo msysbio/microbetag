@@ -53,7 +53,8 @@ class Config:
         # Check if microbetag runs as a container
         self.mount = None
         if self.cwd == "/microbetag":
-            self.mount = self.based_dir = "/data"
+            self.mount = "/data"
+            self.base_dir = self.mount
         else:
             self.base_dir = os.path.dirname(config_file)
 
@@ -118,6 +119,7 @@ class Config:
             seq_to_taxon_df.columns = ["sequence_id", "taxonomy"]
             self.seq_to_taxon_df = seq_to_taxon_df
             self.seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
+
         elif self.abundance_table and self.network:
             # NOTE: Not all sequence ids in the seq_ids need to have a taxonomy in this case -- only those coming from the abundance table
             # Yet, in case that the network has taxa not present in the abundance table, apparently it will lead to errors.
@@ -136,8 +138,8 @@ class Config:
 
         else:
             logging.warning(
-                "Neither an abundance table nor a network was procided."
-                "microbetag will only run some pre-calculations not requiring them."
+                "Neither an abundance table nor a network was procided.\n"
+                "microbetag will only run some pre-calculations not requiring them.\n"
                 f"This is only good to use if you are are quite familiar with microbetag and you know what you are doing. {emojis.WARNING_EMOJI}"
             )
 
@@ -152,10 +154,6 @@ class Config:
         self.pathway_complementarity = pcompl if pcompl in [0,1] else True
         pc = PathwayComplementarity(config=self)
         self.__dict__.update(vars(pc))
-
-        # Seed complementarity
-        sc = SeedComplementarityHandler(config=self)
-        self.__dict__.update(vars(sc))
 
         # Load abundance table with taxonomy
         nsc = AbdTableHandler(config=self)
@@ -188,8 +186,8 @@ class Config:
         self.metadata = "false" if self.metadata_file == "false" else "true"
         self.flashweave_args = conf["flashweave_args"]
 
-        # Phenotrex - TODO: check relative path to classes
-        self.phen_classes = "microbetag/mtg_maps_models//phenDB/classes/"
+        # Phenotrex
+        self.phen_classes = os.path.join(config_wd, "mtg_maps_models/phenDB/classes/")
         self.genotypes_file = os.path.join(self.output_dir, "train.genotype")
         min_proba = conf.get("min_proba", {}).get("value") ; self.min_proba = min_proba if not None else 0.6
 
@@ -219,6 +217,13 @@ class Config:
             self.base_network_file = os.path.join(self.output_dir, "basenet.cyjs")
 
 
+        # # Set variables regarding GENREs provided
+        # genres = GenresHandler(config=self)
+        # self.__dict__.update(vars(genres))
+
+        # Seed complementarity
+        sc = SeedComplementarityHandler(config=self)
+        self.__dict__.update(vars(sc))
 
         # Intermediate annoteted network file name
         self.microbetag_annotated_network_file = os.path.join(self.output_dir, "pseudo_cx_annotated_net.cx")
@@ -245,9 +250,6 @@ class Config:
             logging.warn("Could not load the deepnog weights. Please check the deepnog installation and setup.")
             pass
 
-        # Set variables regarding GENREs provided
-        genres = GenresHandler(config=self)
-        self.__dict__.update(vars(genres))
 
         logging.info("Configuration file loaded successfully.")
 

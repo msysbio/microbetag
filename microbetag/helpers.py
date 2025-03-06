@@ -235,60 +235,6 @@ class AbdTableHandler():
         self.flashweave_abd_table = os.path.join(config.base_dir, abd_flashweave)
 
 
-class SeedComplementarityHandler:
-    def __init__(self, config):
-        """
-        Handles seed complementarity settings.
-
-        :param config: Configuration dictionary.
-        """
-        self.base_dir = config.base_dir
-        self.bins_path = config.bins_path
-
-        # Default to False unless explicitly set
-        self.users_models = False
-
-        # Get seed complementarity value, defaulting to True if invalid
-        scompl = config.yaml.get("seed_complementarity", {}).get("value")
-        if not isinstance(scompl, bool):
-            scompl = False
-            logging.warning(
-                "Value for 'seed_complementarity' was not provided properly (true|false)."
-                f"microbetag will proceed without seed complementarity. {WARNING_EMOJI}"
-            )
-        self.seed_complementarity = scompl
-
-        if self.seed_complementarity:
-            self._validate_input_type(config)
-            self._set_reconstruction_files(config)
-
-    def _validate_input_type(self, config):
-        """Validates and sets the input type for seed complementarity reconstructions."""
-        input_value = config.yaml.get("input_type_for_seed_complementarities", {}).get("value")
-
-        if not input_value:
-            logging.error("Please select an input type for 'input_type_for_seed_complementarities'.")
-            sys.exit(1)
-
-        allowed_values = config.yaml.get("input_type_for_seed_complementarities", {}).get("value_from", [])
-        if input_value not in allowed_values:
-            logging.error(f"Error: Input value '{input_value}' is not among the allowed values: {allowed_values}")
-            sys.exit(1)
-
-        self.input_for_recon_type = input_value
-        self.users_models = input_value == "models"
-
-    def _set_reconstruction_files(self, config):
-        """Determines the correct path for sequence files needed for reconstructions."""
-        if self.input_for_recon_type == "bins_fasta":
-            self.for_reconstructions = self.bins_path
-        else:
-            reconstr_files = config.yaml.get("sequence_files_for_reconstructions", {}).get("dir_path")
-            if reconstr_files is None:
-                raise ValueError("Please provide a valid path for sequence files for reconstructions.")
-            self.for_reconstructions = os.path.join(self.base_dir, reconstr_files)
-
-
 class BinsHandler:
     def __init__(self, config):
         """
@@ -318,7 +264,7 @@ class BinsHandler:
             raise ValueError("Invalid path provided for the bins FASTA files.")
 
 
-class GenresHandler():
+class SeedComplementarityHandler():
 
     def __init__(self, config):
         """
@@ -326,26 +272,74 @@ class GenresHandler():
 
         :param config: Configuration object containing user preferences and paths.
         """
+
+        self.base_dir = config.base_dir
+        self.bins_path = config.bins_path
+
+        # Get seed complementarity value, defaulting to True if invalid
+        scompl = config.yaml.get("seed_complementarity", {}).get("value")
+        if not isinstance(scompl, bool):
+            scompl = False
+            logging.warning(
+                "Value for 'seed_complementarity' was not provided properly (true|false)."
+                f"microbetag will proceed without seed complementarity. {WARNING_EMOJI}"
+            )
+        self.seed_complementarity = scompl
+
+        self._validate_input_type(config)
+
+        self._set_reconstruction_files(config)
+
         self.seeds_paths(config)
         self._validate_model_namespace(config)
+
+
+    def _validate_input_type(self, config):
+        """Validates and sets the input type for seed complementarity reconstructions."""
+        input_value = config.yaml.get("input_type_for_seed_complementarities", {}).get("value")
+
+        if not input_value:
+            logging.error("Please select an input type for 'input_type_for_seed_complementarities'.")
+            sys.exit(1)
+
+        allowed_values = config.yaml.get("input_type_for_seed_complementarities", {}).get("value_from", [])
+        if input_value not in allowed_values:
+            logging.error(f"Error: Input value '{input_value}' is not among the allowed values: {allowed_values}")
+            sys.exit(1)
+
+        self.input_for_recon_type = input_value
+        self.users_models = input_value == "models"
+
+
+    def _set_reconstruction_files(self, config):
+        """Determines the correct path for sequence files needed for reconstructions."""
+        if self.input_for_recon_type == "bins_fasta":
+            self.for_reconstructions = self.bins_path
+        else:
+            reconstr_files = config.yaml.get("sequence_files_for_reconstructions", {}).get("dir_path")
+            if reconstr_files is None:
+                raise ValueError("Please provide a valid path for sequence files for reconstructions.")
+            self.for_reconstructions = os.path.join(self.base_dir, reconstr_files)
+
 
     def _validate_model_namespace(self, config):
         """Validates whether the model namespace matches the selected reconstruction tool."""
         import cobra
-        if not config.users_models:
+        if not self.users_models:
             return  # No user models provided, no need to check
 
         # Select a random model file from the directory
         try:
-            model_files = os.listdir(config.for_reconstructions)
+            model_files = os.listdir(self.for_reconstructions)
             if not model_files:
                 raise ValueError("No models found in the provided reconstruction directory.")
 
-            random_model = os.path.join(config.for_reconstructions, model_files[0])
+            random_model = os.path.join(self.for_reconstructions, model_files[0])
             model = cobra.io.read_sbml_model(random_model)
 
         except FileNotFoundError:
-            raise ValueError(f"Invalid path: {config.for_reconstructions}")
+            raise ValueError(f"Invalid path: {self.for_reconstructions}")
+
         except Exception as e:
             raise ValueError(f"Error loading model: {str(e)}")
 
@@ -374,15 +368,26 @@ class GenresHandler():
 
     def seeds_paths(self, config):
         """Set pathways for seeds related files and folders"""
-        self.reconstructions = os.path.join(config.output_dir, "reconstructions")
-        self.genres = os.path.join(self.reconstructions, "GENREs")
-        os.makedirs(self.reconstructions, exist_ok=True)
-        os.makedirs(self.genres, exist_ok=True)
 
         self.gene_predictor = config.yaml.get("gene_predictor", {}).get("value")
         self.genre_reconstruction_with = config.yaml.get("genre_reconstruction_with", {}).get("value")
 
-        self.seeds = os.path.join(config.output_dir, "seeds_complementarity")
+        if self.users_models is False:
+            # Directory for tmp reconstruction files
+            self.reconstructions = os.path.join(config.output_dir, "reconstructions")
+            # Directory for final reconstructions
+            self.genres = os.path.join(self.reconstructions, "GENREs")
+            os.makedirs(self.reconstructions, exist_ok=True)
+            os.makedirs(self.genres, exist_ok=True)
+        else:
+            self.reconstructions = self.for_reconstructions
+            self.genres = self.for_reconstructions
+
+        # Directory for seeds complementarity
+        seedset_dir = config.yaml.get("prev_calc_seed_sets", {}).get("dir_path")
+        print(seedset_dir)
+        self.seeds = seedset_dir or os.path.join(config.output_dir, "seeds_complementarity")
+        print(self.seeds)
         os.makedirs(self.seeds, exist_ok=True)
         self.seed_complements = os.path.join(self.seeds, "seed_complements.pckl")
         self.module_related_non_seeds = os.path.join(self.seeds, "module_related_non_seeds.pckl")

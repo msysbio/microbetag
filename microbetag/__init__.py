@@ -1,8 +1,19 @@
 from .config import Config
-from .helpers import MappingPaths, PathwayComplementarity, Faprotax, NetworkHandler, AbdTableHandler, SeedComplementarityHandler, BinsHandler, GenresHandler, manta_input_net
-from .utils import ko_list_parser, merge_ko, extend_complements, load_phenotypic_traits, extend_faprotax, extend_complements
-from .pathway_complementarity import export_pathway_complementarities, all_complements, all_alternatives, build_kegg_url
-from .seed_complementarity import ExportSeedComplementarities, load_seed_complement_files, build_url_with_seed_complements
+from .helpers import (
+    MappingPaths, PathwayComplementarity,
+    Faprotax, NetworkHandler, AbdTableHandler, SeedComplementarityHandler, BinsHandler,
+    manta_input_net
+)  # GenresHandler
+from .utils import (
+    ko_list_parser, merge_ko, extend_complements, load_phenotypic_traits,
+    extend_faprotax, extend_complements
+)
+from .pathway_complementarity import (
+    export_pathway_complementarities, all_complements, all_alternatives, build_kegg_url
+)
+from .seed_complementarity import (
+    ExportSeedComplementarities, load_seed_complement_files, build_url_with_seed_complements
+)
 from .build_mtg_cx2 import build_pseudo_cx, UpdateCX2Netork, build_ndex2_net
 
 import os

@@ -9,7 +9,7 @@ import tarfile
 import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
-
+from .utils import convert_to_json_serializable
 
 class ExportSeedComplementarities():
     """
@@ -96,7 +96,10 @@ class ExportSeedComplementarities():
             model_mets = [met.id for met in model.metabolites]
             models_tmp_non_seeds = current_nonSeeds[model_id]
             models_tmp_seeds = current_seeds[model_id]
-            models_seeds = []; models_nonSeeds = models_tmp_non_seeds.copy()
+
+            models_seeds = []
+            # NOTE: moldes_tmp_non_seeds would be set by default, but not when loaded by a json file
+            models_nonSeeds = set(models_tmp_non_seeds.copy())
 
             # Check if we keep intra- or extracellular compound
             for pot_seed in models_tmp_seeds:
@@ -151,8 +154,9 @@ class ExportSeedComplementarities():
 
         with open(self.updated_seed_sets, "w") as f:
             json.dump(updated_seeds, f)
+
         with open(self.updated_non_seed_sets, "w") as f:
-            json.dump(updated_nonSeeds, f)
+            json.dump(convert_to_json_serializable(updated_nonSeeds), f)
 
     def module_related_seeds(self):
         """
