@@ -16,7 +16,9 @@ setup(
     include_package_data=True,
     package_data={
         'microbetag': [
-            "mtg_maps_models/*"
+            "mtg_maps_models/*",
+            "PhyloMint/*",
+            "PhyloMint/lib/*"
         ]
     },
     install_requires=requirements,

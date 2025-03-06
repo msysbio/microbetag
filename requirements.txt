@@ -14,13 +14,13 @@ scipy==1.10.1
 # depends on scikit-learn==1.2.0
 ModelSEEDpy   # ==0.4.0   # on docker, it says 0.2.2 yet on PyPI there is no such version..
 gurobipy==10.0.0
+python-libsbml==5.20.2
 
 # We will install 1.2.0 since phenotrex hase an independent conda env
 scikit-learn==1.2.0
 
-# manta version
-git+https://github.com/hariszaf/manta.git@scipy-version 
 
+# GAPSEQ
 # r-base=4.0.*
 # r-data.table
 # r-stringr
