@@ -172,6 +172,7 @@ seed_complementarity:
   required: false
   type: bool
 
+
 input_type_for_seed_complementarities:
   value: bins_fasta
   value_from: 
@@ -192,6 +193,14 @@ input_type_for_seed_complementarities:
   type: string
   required: true
 
+
+prev_calc_seed_sets:
+  dir_path: ../test_data/test_phylomint/output_files/
+  required: false 
+  description: >
+    Path to directory with SeedSetDic.json and nonSeedSetDic.json files if previously calculated for the genomes under study
+    Leave empty if no previously calculated dictionaries.
+  type: string
 
 # -----
 # Metabolic network reconstruction: there parameters should be considered only in case seed complementarity 
