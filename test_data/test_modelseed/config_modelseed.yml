@@ -1,0 +1,85 @@
+# Author: Haris Zafeiropoulos
+# Date: May, 2025
+# Description: configuration file for running ModelSEED test
+
+bins_fasta:
+  dir_path: input_files
+  description: Name of the folder with the bins .fasta files.
+  required: false
+  type: string
+
+output_directory:
+  dir_path: output_files
+  description: Name of the output folder that will be built inside the io_path directory.
+  required: true
+  type: string
+
+threads:
+  value: 2
+  description: "Number of CPUs to be used."
+  type: integer
+
+# -----
+# This is required for microbetag to build its Config instance as needed to fire reconstructions
+# It will also be the reason you will have a folder called seed_complementarity in the output_files which is gonna be empty
+# since no seed complementarities will be inferred in this test, only GEMs will be built
+# -----
+seed_complementarity:
+  value: true
+  description:
+    This is the most time-consuming and challengint step of the workflow. You may perform microbetag with or without it by setting
+    this argument as true or false correspondinly.
+  required:
+    value: false
+    when: microbetag is to run partially to build GEMs (e.g. test_modelseed.py under `tests/`)
+  type: bool
+
+genre_reconstruction_with:
+  value: modelseedpy
+  value_from:
+    - modelseedpy
+    - carveme
+  required:
+    value: true
+    when: seed_complementarity == true
+
+gapfill_model:
+  value: true
+  description: "If true, modelseedpy will gapfill the reconstruction."
+  type: bool
+
+gapfill_media:
+  value: true
+  description: If true, modelseedpy will
+  type: bool
+
+input_type_for_seed_complementarities:
+  value: bins_fasta
+  value_from:
+    - bins_fasta
+    - coding_regions
+    - proteins_faa
+    - models
+  description: >
+    Clarifies what is the information the input files to be used for the GEMs reconstruction include. 
+    This parameter is strongly related to the `sequence_files_for_reconstructions` as it is the last that specifies the path to the files described here. 
+
+    - If GEMs are already available, then you may set the `input_type_for_seed_complementarities` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. 
+
+    - If you intend to use ModelSEEDpy to reconstruct GEMs but you have already RAST annotated your genomes, i.e. gto, gto_2 and their corresponding .faa files are available, then you may set this parameter as `proteins_faa` and 
+    give the directory path to the .faa files in the `sequence_files_for_reconstructions`.
+
+    - If none of the above is available, then set this parameter as bins_fasta and leave the sequence_files_for_reconstructions blank and microbetag will use the fasta files you provided in the `bins_fasta` parameter.
+  type: string
+  required: true
+
+# Note, in this test case we are using fasta files, this is why this parameter leaves empty.
+sequence_files_for_reconstructions:
+  dir_path:
+  description: >
+    Directory with files to be used as input for the GENRE reconstruction step. 
+    These can be either .fa/.fasta, .faa files, .gto files or even .xml files files, in case genome scale reconstructions are already available.
+    By default, microbetag will used the .faa files returned from the Prodigal step if carveme is set as the genre_reconstruction_with parameter, and the original .fasta in case of modelseed.
+    In case you provide your own files to be used for the reconstruction, it is a good practice to have those organized in a separate folder.
+  required: false
+  type: string

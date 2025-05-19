@@ -2,16 +2,18 @@ import os
 import unittest
 from microbetag.tools import run_prodigal
 
-cwd = os.getcwd()
+cwd      = os.getcwd()
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-test_data = os.path.join(root_dir, "test_data", "test_prodigal")
+test_data   = os.path.join(root_dir, "test_data", "test_prodigal")
 input_files = os.path.join(test_data, "input_files")
-output_dir = os.path.join(test_data, "output_files")
+output_dir  = os.path.join(test_data, "output_files")
 
-bin_fa = os.path.join(input_files, "bin_101.fa")
-bin_id, extension = os.path.splitext(bin_fa)
-bin_id = os.path.basename(bin_id)  # bin_101
+os.makedirs(output_dir, exist_ok=True)
+
+bin_fa    = os.path.join(input_files, "bin_101.fa")
+bin_id, _ = os.path.splitext(bin_fa)
+bin_id    = os.path.basename(bin_id)  # bin_101
 
 
 class testProdigal(unittest.TestCase):

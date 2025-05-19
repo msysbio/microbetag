@@ -1,0 +1,101 @@
+# Author: Haris Zafeiropoulos
+# Date: May, 2025
+# Description: configuration file for running CarveMe test
+
+
+bins_fasta:
+  dir_path: input_files/my_bins
+  description: Name of the folder with the bins .fasta files.
+  required: false
+  type: string
+
+
+output_directory: 
+  dir_path: output_files
+  description: Name of the output folder that will be built inside the io_path directory.
+  required: true
+  type: string
+
+
+threads:
+  value: 2
+  description: "Number of CPUs to be used."
+  type: integer
+
+
+seed_complementarity:
+  value: true
+  description: > 
+    This is the most time-consuming and challengint step of the workflow. You may perform microbetag with or without it by setting
+    this argument as true or false correspondinly.
+  required:
+    value: false
+    when: microbetag is to run partially to build GEMs (e.g. test_modelseed.py under `tests/`)
+  type: bool
+
+
+input_type_for_seed_complementarities:
+  value: proteins_faa
+  value_from: 
+    - bins_fasta
+    - coding_regions
+    - proteins_faa
+    - models
+  description: >
+    Specifies the type of information included in the input files for GEM reconstruction.
+    This parameter is closely related to `sequence_files_for_reconstructions`, which defines the path to the files described here.
+
+    - If GEMs are already available, set `input_type_for_seed_complementarities` to models 
+    and provide the path to the .xml models via `sequence_files_for_reconstructions`.
+    - If you plan to use ModelSEEDpy for GEM reconstruction and have already annotated your genomes with RAST (i.e., gto, gto_2, 
+    and their corresponding .faa files are available), set this parameter to `proteins_faa` and specify the directory containing 
+    the .faa files in `sequence_files_for_reconstructions`.
+    - If neither of the above is available, set this parameter to bins_fasta and leave `sequence_files_for_reconstructions` blank.
+  type: string
+  required: true
+
+# -----
+# Metabolic network reconstruction: 
+# there parameters should be considered only in case seed complementarity is about to be performed and metabolic networks are not already available
+# -----
+sequence_files_for_reconstructions:
+  dir_path: input_files/faa
+  required: 
+    value: true
+    when: if input_type_for_seed_complementarities != "bins_fasta". Could be either .fna or .faa files.
+  description: 
+  type: string
+
+gene_predictor:
+  value: prodigal
+  value_from: 
+    - fragGeneScan
+    - prodigal
+    - RAST
+  required: 
+    value: false
+    when: orfs_per_bin is None
+  description: "RAST annotation is required/strongly suggested* if modelseedpy is going to be used as genre_reconstruction_with.
+  Otherwise, the user may choose among fragGeneScan or prodigal; in the latter, the .faa returned by DiTing will be used."
+  type: string
+
+genre_reconstruction_with:
+  value: carveme
+  value_from: 
+    - modelseedpy
+    - carveme
+  required: 
+    value: true
+    when: seed_complementarity == true
+
+gapfill_model:
+  value: 
+  description: "If true, modelseedpy will gapfill the reconstruction."
+  type: bool
+
+gapfill_media: 
+  value: 
+  description: If true, modelseedpy will 
+  type: bool
+
+

@@ -21,15 +21,23 @@ import unittest
 from microbetag.config import Config
 from microbetag.genres import GEMSReconstruction
 
-root = os.path.dirname(os.path.dirname(__file__))
-
+root      = os.path.dirname(os.path.dirname(__file__))
 test_data = os.path.join(root, "test_data", "test_modelseed")
 
-input_dir = os.path.join(test_data, "input_files")
+input_dir  = os.path.join(test_data, "input_files")
 output_dir = os.path.join(test_data, "output_files")
 
+if not os.path.exists(input_dir):
+    import tarfile
+    from pathlib import Path
+    tar_gz = ".".join([input_dir, "tar.gz"])
+    file_path = Path(tar_gz)
+    output_dir = file_path.parent
+    with tarfile.open(file_path, "r:gz") as tar:
+        # tar.extractall(path=output_dir, filter="data")
+        tar.extractall(output_dir)
 
-config_file = os.path.join(test_data, "config_v103_modelseed.yml")
+config_file = os.path.join(test_data, "config_modelseed.yml")
 with open(config_file, "r") as yaml_file:
     config = Config(yaml.safe_load(yaml_file), config_file)
 
