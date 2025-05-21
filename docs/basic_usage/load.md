@@ -95,9 +95,7 @@ Make sure you enable the MGG style and cyPanels:
 ![panels](../_static/img/app/show_panels.png)
 
 
-
+<!-- Download files -->
 
 [1]:../_static/download/load/network_output.edgelist
 [2]:../_static/download/load/microbetag_annotated.cx
-
-

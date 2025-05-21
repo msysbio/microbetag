@@ -25,7 +25,7 @@ microbetag
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutorials 
+   :caption: Tutorials: on-the-fly
 
    basic_usage/input
    basic_usage/mgg_totorials
@@ -35,7 +35,7 @@ microbetag
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutorials - advanced use
+   :caption: Tutorials: stand-alone
 
    advanced_use/tutorials
 

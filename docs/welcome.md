@@ -118,6 +118,7 @@ and the [3D’omics](https://www.3domics.eu) Horizon 2020 project (101000309).
 
 ## License
 
-*microbetag* is under [GNU General Public License v3.0](https://opensource.org/license/gpl-3-0). For third-party components separate licenses apply. The MGG CytoscapeApp is under [Apache License, Version 2.0](https://opensource.org/license/apache-2-0).
+- *microbetag* is under [GNU General Public License v3.0](https://opensource.org/license/gpl-3-0). For third-party components separate licenses apply. 
+- The `MGG` CytoscapeApp is under [Apache License, Version 2.0](https://opensource.org/license/apache-2-0).
 
 

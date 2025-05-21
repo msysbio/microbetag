@@ -10,17 +10,21 @@ Large dataset
 ===================
 
 ```{Note}
-We define a dataset as large if it is intended for use with `microbetagDB` and contains several thousand taxa (sequence IDs). While the number of samples also influences microbetag's runtime, its impact is significantly smaller.
+We define a dataset as large if it is intended for use with `microbetagDB` and contains several thousand taxa (sequence IDs). 
+While the number of samples also influences microbetag's runtime, its impact is significantly smaller.
 
-If you want to annotate a dataset of any size using your own genomes, bins, or MAGs, follow the corresponding tutorial [here](local.md).
+If you want to annotate a dataset of any size using your own genomes, bins, or MAGs, follow the corresponding tutorial 
+[here](local.md).
 
 ```
 
-In case of large datasets, `microbetag` full on-the-fly run is probably not an option, even if you do run the preprocessing step. 
+In case of large datasets, `microbetag` full on-the-fly run is probably not an option, 
+even if you do run the preprocessing step. 
 
 For example, imagine you have a 16S rRNA marker-gene dataset and a couple of hundreds of samples. 
 
-Based on the [`microbetag_prep` tutorial](prep.md), you have taxonomically annotated them with the GTDB-oriented 16S reference database, and you built a co-occurrence network using FlashWeave. 
+Based on the [`microbetag_prep` tutorial](prep.md), you have taxonomically annotated them with the 
+GTDB-oriented 16S reference database, and you built a co-occurrence network using FlashWeave. 
 
 Now, let's say you wish to perform network clustering on your network. 
 Asking for this on the on-the-fly version of `microbetag` will lead to a `RuntimeError` and your session will probably fail. 
@@ -64,18 +68,21 @@ This way, we ended up with an abundance table which in its last column had the S
 ```{note}
 The code for this part is not included since this is beyond the scope of this tutorial.
 The point of this step is that we started with a taxonomy table which had a rather old Silva version 
-and we built an abundance table with the corresponding sequences instead of the taxonomies, in order to use the `microbetag_prep` tool.
+and we built an abundance table with the corresponding sequences instead of the taxonomies, 
+in order to use the `microbetag_prep` tool.
 
 In case you have your own OTUs/ASVs, you just need to use the abundance table with those along with the `microbetag_prep` tool. 
 ```
 
 
-Using the `Subgingival_plaque_taxonomy_Silva_seq.csv`, we used the Docker `microbetag_prep` tool to get a GTDB-based taxonomy assignment and a FlashWeave network. 
+Using the `Subgingival_plaque_taxonomy_Silva_seq.csv`, we used the Docker `microbetag_prep` tool to get 
+a GTDB-based taxonomy assignment and a FlashWeave network. 
 To this end, we first created a folder called `subgingival_plaque` where we moved the 
 `Subgingival_plaque_taxonomy_Silva_seq.csv` file. 
 We then downloaded the [`config.yml`](../_static/download/large_dataset/config.yml) file for the `microbetag_prep` tool, 
 and we set its parameters accordingly.
-In this case, we set the `sensitive` parameter as `false`, since the number of taxa present would lead to a vast number of associations.
+In this case, we set the `sensitive` parameter as `false`, since the number of taxa present would lead to 
+a vast number of associations.
 The `heterogeneous` parameter was also set to `false`. 
 
 We then ran:
@@ -109,8 +116,8 @@ which resulted in the `prep_output` folder, in the mounted `/media` folder:
 Make sure that you always use the configuration file version that matches the tool version you are using.
 ```
 
-Thus, `microbetag_prep` returned [GTDB_tax_assigned_abundance_table.tsv](../_static/download/large_dataset/prep_output/GTDB_tax_assigned_abundance_table.tsv) that keeps the same sequence identifiers as the original but now the taxonomy has been replaced and instead of 
-the Silva one, we have the GTDB. 
+Thus, `microbetag_prep` returned [GTDB_tax_assigned_abundance_table.tsv](../_static/download/large_dataset/prep_output/GTDB_tax_assigned_abundance_table.tsv) that keeps the same sequence identifiers as the original, but now 
+the taxonomy has been replaced and instead of the Silva one, we have the GTDB. 
 Also, the [network_output.edgelist](../_static/download/large_dataset/prep_output/network_output.edgelist)
 is the result of FlashWeave
 
@@ -119,8 +126,8 @@ So now, as in the preparation tutorial, we can use those two files with the on-t
 
 Only this time, we can combine them with the stand-alone tool and/or the *microbetag* API. 
 
-So, what we did was to first run the on-the-fly version asking just for the FAPROTAX and/or phenDB-like annotations, i.e. 
-the node-level annotations. 
+So, what we did was to first run the on-the-fly version asking just for the FAPROTAX and/or phenDB-like annotations, 
+i.e. the node-level annotations. 
 
 ```{hint}
 Since we already have a network and our taxonomies in `microbetag`'s prefered scheme, 
@@ -132,7 +139,8 @@ and then, itse phenDB-like traits.
 
 ### Load base network - edgelist
 
-From `File > Import > Network from file` we loaded the `network_output.edgelist` as it was returned by the `microbetag_prep` tool. 
+From `File > Import > Network from file` we loaded the `network_output.edgelist` as it was returned 
+by the `microbetag_prep` tool. 
 
 We then loaded our updated taxonomy table on `MGG` by clicking 
 `Apps > MGG > Import Data > Import Abundance Data`. 
@@ -143,8 +151,8 @@ We then performed a first round of `microbetag` annotation asking only for the F
 ![fapro_sets](../_static/img/large_data/faprotax_settings.png)
 
 
-After a few seconds we got back a FAPROTAX annotated network; by clicking on the `Show Columns...` button of the Nodes table, we may see 
-what are the namespaces of the columns of our networ:
+After a few seconds we got back a FAPROTAX annotated network; by clicking on the `Show Columns...` button of the Nodes table, 
+we may see what are the namespaces of the columns of our network:
 
 ![only_fapro](../_static/img/large_data/faprotax_nodes.png)
 
@@ -160,14 +168,17 @@ and after a couple of seconds we got back a network with both the phenDB-like an
 
 Now, we wanted to cluster our network using the `manta` algorithm that `microbetag` also makes use of.
 We could do this either by installing `manta` and run it independently, or you can use it through the stand-alone tool. 
-Using the `microbetag` wrapping functions we wrote the [`manta_large_dataset.py`](../_static/download/large_dataset/manta.py) to run `manta`.
-As you can see, this script makes use of the initial `network.edgelist` and is independent of the annotation steps we performed above.  
+Using the `microbetag` wrapping functions we wrote the [`manta_large_dataset.py`](../_static/download/large_dataset/manta.py) 
+to run `manta`.
+As you can see, this script makes use of the initial `network.edgelist` and is independent of the annotation steps 
+we performed above.  
 
 
 After a couple of minutes (~15', depends on your computing system), 
 we got the [`manta_annotated.cyjs`](../_static/download/large_dataset/manta_output/manta_annotated.cyjs),
 a network in CYJS format carrying only the initial nodes and eges, and two new columns, one called `cluster` with the number 
-of the assigned cluster to each node, and another called `assignement` with a characterization of the assignment either as `strong` or `week`.
+of the assigned cluster to each node, and another called `assignement` with a characterization of the assignment 
+either as `strong` or `week`.
 
 ```{note}
 The `manta_basenet.cyjs` that was also returned, it is required from `manta` to run and it is just  
@@ -185,14 +196,16 @@ To do this, we had to first export the `manta` annotated node table
 
 ![export](../_static/img/large_data/export_table.png)
 
-You can find the exported table called `manta_annotated.node.csv` [here](../_static/download/large_dataset/manta_annotated.node.csv)
+You can find the exported table called `manta_annotated.node.csv` 
+[here](../_static/download/large_dataset/manta_annotated.node.csv)
 
 ```{hint}
 On the exported `.csv` with the cluster column, make sure you convert the column to **integer**.
 `microbetag` expects the `microbetag::cluster` to be integer, and clustering algorithms may return clusters as float!
 ```
 
-And now, we can load the table with the clusters, by first moving to the network with the FAPROTAX and the phenDB-like annotations
+And now, we can load the table with the clusters, by first moving to the network with the FAPROTAX and 
+the phenDB-like annotations
 and clicking on the `Import Table From File...` button. 
 After selecting the `manta_annotated.node.csv`, we had to specify:
 - in which of the open network collections to add the table; in our case we had named this `faprotax_and_phen`
@@ -201,7 +214,14 @@ After selecting the `manta_annotated.node.csv`, we had to specify:
 ![import_from_table](../_static/img/large_data/ImportColumnsFromTable.png)
 
 
-Now, we have all required elements of the nodes annotation! 
-We have both FAPROTAX and phenDB annotations and we also have clusters! 
-Therefore, **after renaming the `cluster` column to `microbetag::cluster`**, we are good to go with the [**enrichment analysis test**](../basic_usage/enrichment.md)!
+Now, we have all required elements of the nodes' annotation! 
+We have both FAPROTAX and phenDB annotations, and we also have clusters! 
+Therefore, **after renaming the `cluster` column to `microbetag::cluster`**, we are good to go 
+with the [**enrichment analysis test**](../basic_usage/enrichment.md)!
+
+
+```{hint}
+[Here](https://cytoscape.org/cytoscape-tutorials/protocols/importing-data-from-tables/#/) 
+is a link on how to add data on Cytoscape from spreadsheet tables.
+```
 

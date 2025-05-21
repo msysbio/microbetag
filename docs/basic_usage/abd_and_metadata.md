@@ -1,13 +1,10 @@
 ---
-title: Using abundance & metadata
-layout: default
-parent: Cytoscape tutorials
-nav_order: 2
+title      : Using abundance & metadata
+layout     : default
+parent     : Cytoscape tutorials
+nav_order  : 2
 description: "tutorial using an abundance table and a metadata file as input"
 ---
-
-
-
 
 # .. using an abundance table and a metadata file
 

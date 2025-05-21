@@ -10,10 +10,6 @@ usemath: true
 
 # `microbetag` on Cytoscape
 
-<div style="display: flex; gap: 10px;">
-    <span class="label-green">microbetag web-app v1.0.1</span>
-    <span class="label-orange">MGG v1.0.0</span>
-</div>
 
 ![microbetag CyApp](../_static/img/cyApp.png)
 
@@ -21,7 +17,7 @@ usemath: true
 <div style="display: flex; gap: 10px;">
     <br><br>  
    <a href="https://apps.cytoscape.org/apps/mgg" class="btn-green"> CytoscapeApp </a>
-   <a href="https://github.com/hariszaf/microbetag/tree/gh-pages/download/mgg" class="btn-purple"> Tutorial files </a>
+   <a href="../_static/download/" class="btn-purple"> Tutorial files </a>
 </div>
 
 

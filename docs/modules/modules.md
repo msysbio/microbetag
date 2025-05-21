@@ -120,44 +120,61 @@ between all the donor's and the beneficiary's genomes.
 
 
 
-## Seed scores and complements based on genome-scale draft reconstructions (GEMs)
+## Seeds complementarity
+
+**Seed scores and complements based on genome-scale draft reconstructions (GEMs)**
 
 Based on Borenstein *et al.* (2008) {cite:p}`borenstein2008large`
-<!-- [5]  -->
 a metabolic network's “seed set” is the set of compounds that, based on the network topology, are exogenously acquired".
 Here is an example (based on the [Borenstein lab webpage](https://borensteinlab.sites.tau.ac.il/items-1/netseed)):
 
 ![seed_concept](../_static/img/seed_concept_example.png)
 
 
-Node A is a seed, as it cannot be activated by any other node in the network.
-Nodes F, G, and H are also seeds, but they are interdependent, i.e. activating one of these nodes 
+Node *A* is a seed, as it cannot be activated by any other node in the network.
+Nodes *F*, *G*, and *H* are also seeds, but they are interdependent, i.e. activating one of these nodes 
 would activate the rest, but at least one must be active to activate the rest. 
-These nodes form a "seed group".
-To quantify the relevance of each identified seed, we assign each seed a **confidence level (C)**, ranging from 0 to 1. 
-A confidence level of 0 would correspond to a non-seed node, while a 1 would correspond to a seed that cannot be activated by another node. Seeds which belong to a seed group with more than 1 seed are given a fractional confidence level, the inverse of the number of seeds in the group. 
+These nodes form a *"seed group"*.
+
+To quantify the relevance of each identified seed, we assign each seed a **confidence level ($C$)**, ranging from 0 to 1. 
+A confidence level of 0 would correspond to a non-seed node, while a 1 would correspond to a seed that cannot be activated by another node. 
+Seeds which belong to a seed group with more than 1 seed are given a fractional confidence level, the inverse of the number of seeds in the group. 
 <!-- Nodes F, G, and H would then each have a confidence level of 1/3. -->
 
 Based on the seed concept, several scores between metabolic models of pairs of species have been described. 
-As described in the PhyloMInt paper: the **Metabolic Complementarity Index** ($ MI_{Complementarity} $) is calculated as the 
-*"fraction of the seed set of the genome-scale reconstruction of species A, that is found within B’s metabolic network but not part of B’s seed set, normalized by the number of A’s seed set in B’s entire metabolic network"*. 
-This complementarity score represents the **potential for A’s to utilize the potential metabolic output of B**.
+
+As described in the PhyloMInt paper, and using the corresponding GEMs of species *A* and *B*: 
+
+```{important}
+**Metabolic Complementarity Index** ($MI_{Complementarity}$) 
+
+The fraction of the seed set of $species_A$, that is found within *B*’s metabolic network but not part of *B*’s seed set, 
+normalized by the number of *A*’s seed set in *B*’s entire metabolic network.
 
 
 $$ 
 MI_{Complementarity} = \frac {\lvert SeedSetA \cap \neg SeedSetB \rvert} { SeedSetA \cap (SeedSetB \cup \neg SeeedSetB)}
 $$
 
+> **$MI_{Complementarity}$ represents *A*’s potential to make use of *B*'s potential metabolic output**.
+```
 
 
-Similarly, as described in the PhyloMInt paper, the **Metabolic Competition Index** ($MI_{Competition}$)
-*"is calculated as the fraction of A’s seed set that is also in B’s seed set, normalized by the weighted sum of the confidence score"*.
-MIC estimates the baseline **metabolic overlap** between two given metabolic networks.
+Similarly: 
 
+
+```{important}
+**Metabolic Competition Index** ($MI_{Competition}$)
+
+The fraction of *A*’s seed set that is also part of *B*’s seed set, normalized by the weighted sum of the confidence score.
 
 $$ 
 MI_{Competition} = \frac {\sum C( SeedSetA \cap SeedSetB )} {\sum C(SeedSetA)}
 $$
+
+
+> **$MI_{Competition}$ estimates the baseline **metabolic overlap** between two given metabolic networks.**
+```
 
 
 
