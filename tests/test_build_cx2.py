@@ -10,9 +10,10 @@ from microbetag.build_mtg_cx2 import mtg_annotate_network
 
 
 # Get the directory of the current script
-root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-test_data = os.path.join(root_dir, "test_data", "test_build_cx2")
-config_file = os.path.join(test_data, "config_v103.yml")
+root_dir    = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print(root_dir)
+test_data   = os.path.join(root_dir, "test_data", "test_build_cx2")
+config_file = os.path.join(test_data, "config_buildCX2.yml")
 
 
 class TestBuildingCX2(unittest.TestCase):

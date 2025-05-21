@@ -1,0 +1,130 @@
+# Author: Haris Zafeiropoulos
+# Date: May, 2025
+# Description: configuration file for buliding a microbetag-annotated CX2 format network
+
+# Note:
+# For this test, keep in mind that we provide INPUT for the test, as part of the `output_files` folder
+# This is because microbetag expects annotations to be under specific sub-folders within its main output directory.
+
+abundance_table_file: 
+  file_path: input_files/thirty_Samples.tsv
+  description: "Filename of the abundance table file.
+  The taxonomy scheme in this case is irrelevant.
+  However, you need to make sure that the sequence identifiers used in this table, are the same
+  with those in your network (if one provided) as well as with those in your bins/faa/xml files, again if such provdied."
+  required: true
+  examples: 
+    - thirty_Samples.tsv
+    - counts_genomes_taxonomies.tsv
+  type: string
+
+
+output_directory: 
+  dir_path: output_files
+  description: Name of the output folder that will be built inside the io_path directory.
+  required: true
+  type: string
+
+
+edge_list:
+  file_path: input_files/edgelist.csv
+  description: >
+    If co-occurrence network already available, please provide its edge list; a 2 column tab separated file.
+  required: false
+  examples: 
+    - edgelist.csv
+  type: string
+
+# -----
+# Annotations types: We include them all and provide their output from other tests, so we check whether the CX2
+# is being built as expected
+# -----
+faprotax_annotation:
+  value: true
+  description: >
+    Runs FAPROTAX on you abundance table and annotate network nodes with its predictions
+  default: true
+  type: bool
+
+
+phenotrex_traits:
+  value: true
+  description: >
+    Runs phenotrex on your genomes to annotate them with COGs and then predicts whether they carry a set of phenotypic traits
+    or not, using the microbetagDB set of models 
+  default: true
+  type: bool
+
+
+pathway_complementarity:
+  value: true
+  description: >
+    Annotates your genomes with KEGG ORTHOLOGY terms, if ko_merged_file is null and annotates your network with pathway complementarities
+  default: true
+  type: bool
+
+
+seed_complementarity:
+  value: true
+  description: >
+    Builds GENREs if not such are provided and annotates your network with seed complementarities
+  default: true
+  type: bool
+
+
+network_clustering:
+  value: true
+  description: >
+    Runs manta network clustering algorithm on your network and annotates nodes with their corresponding cluster number
+  default: false
+  type: bool
+
+
+prev_calc_path_compl:
+  file_path: output_files/pathway_complementarity/pathCompls.json
+  description: >
+
+  required: false
+  when: 
+  default: 
+  example: pathCompls.json
+
+
+# -----
+# Seed complementarity
+# -----
+
+input_type_for_seed_complementarities:
+  value: bins_fasta
+  value_from: 
+    - bins_fasta
+    - coding_regions
+    - proteins_faa
+    - models
+  description: "Clarifies what is the information the input files to be used for the GEMs reconstruction include. \
+    This parameter is strongly related to the `sequence_files_for_reconstructions` as it is the last that specifies the path to the files described here. \
+    If GEMs are already available, then you may set the `input_type_for_seed_complementarities` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. \
+    If you intend to use ModelSEEDpy to reconstruct GEMs but you have already RAST annotated your genomes, i.e. gto, gto_2 and their corresponding .faa files are available, then you may set this parameter as `proteins_faa` and \
+    give the directory path to the .faa files in the `sequence_files_for_reconstructions`. \
+    If none of the above is available, then set this parameter as bins_fasta and leave the sequence_files_for_reconstructions blank."
+  type: string
+  required: true
+
+
+# -----
+# manta 
+# -----
+prev_clustered_network:
+  file_path: output_files/manta_annotated.cyjs
+  description: >
+    In case you have performed manta already in a previous run of microbetag or as a stand-alone tool, 
+    you may provide directly its findings in CYJS format.
+    Attention! When microbetag is about to actually run the manta step, it will first build a basenet.cyjs 
+    that will then use for manta as its input. Please, make sure you provide the manta.cyjs and and not this basenet cyjs. 
+  type: string
+  required: false
+  example: 
+    - microbetag/ext_data/input_data/manta.cyjs
+    - microbetag_run_carve/plaque_manta_net.cyjs
+
+

@@ -49,9 +49,12 @@ gapfill_model:
   type: bool
 
 gapfill_media:
-  value: true
-  description: If true, modelseedpy will
-  type: bool
+  file_path:
+  description: >
+    Tab separated file with the media that will be used to gapfill the model, 
+    If non provided, and `gapfill_model` is true, the model will be gapfilled using a complete medium,
+    meaning all exchange reactions of the draft reconstruction will be considered free to get a high uptake.
+  type: Path
 
 input_type_for_seed_complementarities:
   value: bins_fasta

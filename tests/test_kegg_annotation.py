@@ -4,30 +4,28 @@ import unittest
 from microbetag.utils import ko_list_parser, bin_kos_to_file, merge_ko
 from microbetag.tools import kegg_annotation
 
+# Project root directory
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-test_data = os.path.join(root, "test_data")
-test_data = os.path.join(test_data, "test_kegg_annotation")
+# Test data paths
+test_data_dir = os.path.join(root, "test_data", "test_kegg_annotation")
 
 # Input files
-input_dir = os.path.join(test_data, "input_files")
-faas      = [os.path.join(input_dir, x) for x in os.listdir(input_dir) if x.endswith(".faa")]
-bin_ids   = [os.path.splitext(faa)[0].split("/")[-1] for faa in faas]
+input_dir = os.path.join(test_data_dir, "input_files")
+faas      = [os.path.join(input_dir, f) for f in os.listdir(input_dir) if f.endswith(".faa")]
+bin_ids   = [os.path.splitext(os.path.basename(faa))[0] for faa in faas]
 threads   = 2
 
-# Database files
-# NOTE (Haris Zafeiropoulos, 2025-05-17):
-# The `ko_list_tests` is part of the original `ko_list` file and is being used here for time-efficiency
-kegg_db_dir = os.path.join(root, "ext_data/kofam_database")
-ko_list     = os.path.join(kegg_db_dir, "ko_list_tests")
+# KEGG database paths
+kegg_db_dir = os.path.join(root, "ext_data", "kofam_database")
+ko_list     = os.path.join(kegg_db_dir, "ko_list_tests")  # Subset used for faster testing
 
 # Output files
-kegg_annotations = os.path.join(test_data, "output_files")
-hmmout_dir       = os.path.join(kegg_annotations, "hmmout")
-
+output_dir = os.path.join(test_data_dir, "output_files")
+hmmout_dir = os.path.join(output_dir, "hmmout")
+ko_merged  = os.path.join(output_dir, "ko_merged.txt")
+os.makedirs(output_dir, exist_ok=True)
 os.makedirs(hmmout_dir, exist_ok=True)
-
-ko_merged = os.path.join(kegg_annotations, "ko_merged.txt")
 
 
 class testKEGGAnnotation(unittest.TestCase):
@@ -60,7 +58,9 @@ class testKEGGAnnotation(unittest.TestCase):
 
         merge_ko(hmmout_dir, ko_merged)
 
-        self.assertTrue(os.stat(ko_merged).st_size == 0)
+        # Check whether ko_merged exists and has a non-zero size
+        self.assertTrue(os.path.exists(ko_merged), f"File {ko_merged} does not exist.")
+        self.assertTrue(os.stat(ko_merged).st_size > 0, f"File {ko_merged} is empty.")
 
 
 if __name__ == "__main__":

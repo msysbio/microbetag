@@ -30,20 +30,27 @@ test_data = os.path.join(root_dir, "test_data", "test_path_compl")
 
 # Input
 input_dir = os.path.join(test_data, "input_files")
-ko_merged = os.path.join(
-    input_dir, "ko_merged_7bins.txt"
-)  # ko_merged.txt is the output of the merge_ko() function; run_kegg_annotation.py test
+# ko_merged.txt is the output of the merge_ko() function; run_kegg_annotation.py test
+ko_merged = os.path.join(input_dir, "ko_merged_7bins.txt")
+
+if not os.path.exists(ko_merged):
+    try:
+        os.system(f"gunzip {ko_merged}")
+    except Exception:
+        raise ("ko_merged (3-column KO annotation file, is not provided)")
 
 # Output
 output_dir = os.path.join(test_data, "output_files")
 alts_file  = os.path.join(output_dir, "alternatives.json")
 compl_file = os.path.join(output_dir, "complementarities.json")
+os.makedirs(output_dir, exist_ok=True)
 
-# In this test, we use two approaches for the same thing: getting the paths to the mapping files.
-# The first one is to use the MappingPaths class that is a wrapper for the microbetag module.
-# To this end, we make the Config class that has the root working directory as an attribute.
-# The second approach is to use the microbetag module directly and its attributes.
-
+# In this test, we use two approaches for the same thing: getting the paths to the mapping files:
+#
+# 1. using the MappingPaths class; a wrapper for the microbetag module.
+#   To this end, we make the Config class that has the root working directory as an attribute.
+#
+# 2.using the microbetag module directly and its attributes
 
 class Config:
     def __init__(self):

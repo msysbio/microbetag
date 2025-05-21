@@ -14,12 +14,24 @@ config_file = os.path.join(test_data, "config_mtg.yml")
 
 # If input files are compressed - github
 input_dir = os.path.join(test_data, "input_files")
+
 if not os.path.isdir(input_dir):
+
     input_tar = ".".join([input_dir, "tar.gz"])
+
     if os.path.exists(input_tar):
         os.system(f"tar -zxvf {input_tar} -C {test_data}")
 
+# Path to ko_merged.txt - decompress if needed
+ko_merged = os.path.join(input_dir, "ko_merged.txt")
 
+if not os.path.exists(ko_merged):
+
+    ko_merged_gz = ".".join([ko_merged, "gz"])
+    os.system(f"gunzip {ko_merged_gz}")
+
+
+# Test
 class testMicrobetag(unittest.TestCase):
 
     def testMicrobetagRun(self):

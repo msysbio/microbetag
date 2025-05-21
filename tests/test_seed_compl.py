@@ -26,17 +26,18 @@ class Config:
         self.genres = self.for_reconstructions = models_dir
 
         # By default, microbetag will check whether both scores and complements files have been previously built.
-        # If not, it will try to calculate them, except if you ask not to, i.e. having ge_scors and/or get_complements as False
+        # If not, it will try to calculate them, except if you ask not to,
+        # i.e. having ge_scors and/or get_complements as False
         self.get_scores      = True
         self.get_complements = True
 
         # Directory where to save seed complementarity - related files
         os.makedirs(out_dir, exist_ok=True)
 
-        self.seeds_outdir     = out_dir
-        self.seed_complements = os.path.join(out_dir, "seed_complements.pckl")
-        self.module_seeds     = os.path.join(self.seeds_outdir, "kegg_module_related_seeds.pckl")
-        self.module_nonseeds  = os.path.join(
+        self.seeds_outdir    = out_dir
+        self.seed_compl_pckl = os.path.join(out_dir, "seed_complements.pckl")
+        self.module_seeds    = os.path.join(self.seeds_outdir, "kegg_module_related_seeds.pckl")
+        self.module_nonseeds = os.path.join(
             self.seeds_outdir, "kegg_module_related_nonseeds.pckl"
         )
 
@@ -45,7 +46,8 @@ class Config:
         self.metanetx_compounds        = maps.metanetx_compounds
 
         # By default, this argument is True and not part of the complete pipeline YAML template.
-        # We only provide the option in case you need BiGG seed sets, non-seed sets out of the seed complemenarity concept.
+        # We only provide the option in case you need BiGG seed sets,
+        # non-seed sets out of the seed complemenarity concept.
         self.switch_namespace = True
 
         self.threads       = 2
@@ -57,7 +59,8 @@ class Config:
 # Case 1: getting seed complementarities after calculating seed and non-seed sets
 c = Config(out_dir=out_dir)
 
-# Case 2: geting complementarities by using previously computed seed and non-seed sets, in this case those computed in Case 1.
+# Case 2: geting complementarities by using previously computed seed and non-seed sets,
+# in this case those computed in Case 1.
 c_wt_sets               = Config(out_dir=out_dir_wt_sets)
 c_wt_sets.skip_sets     = True
 c_wt_sets.prev_conf     = previous_confidence
