@@ -13,7 +13,7 @@ Output:
 """
 
 __version__ = "1.0.4"
-__author__ = "Haris Zafeiropoulos <haris.zafeiropoulos@kuleuven.be>"
+__author__  = "Haris Zafeiropoulos <haris.zafeiropoulos@kuleuven.be>"
 
 import os
 import sys
@@ -38,16 +38,12 @@ from .tools import (
     run_seed_complementarity,
     run_manta,
 )
-from .db import (
-    get_phen_traits,
-    get_path_compls_otf,                  # otf
-    get_patric_id_of_gc_accession_list,   # otf
-    update_for_patric
-)
+
 from .config import Config
 from .genres import GEMSReconstruction
 from .build_mtg_cx2 import mtg_annotate_network
-from .helpers import otf_seqid_ncbi_gtdb_map, manta_input_net
+from .helpers import manta_input_net
+
 from .pathway_complementarity import export_pathway_complementarities
 
 
@@ -61,9 +57,9 @@ def _run_orf_prodigal(config: Config):
 
     if config.bin_filenames is None:
         logger.error(
-            "Bins files have not been provided and they are required for the precalculation steps of microbetag."
-            "Provide the path to the directory with your bins/MAGs under the `bins_fasta` parameter of"
-            "the config.yml file."
+            "Bin files have not been provided."
+            "Please set the path to the directory with your bins/MAGs to the `bins_fasta` parameter of"
+            "the configuration YAML file."
         )
 
     for bin_fa in config.bin_filenames:
@@ -109,7 +105,8 @@ def _run_kegg_annotate(config: Config):
                 faa, bin_id, config.kegg_pieces_dir, config.kegg_db_dir, ko_dic, config.threads,
             )
 
-            # Out of the 24K hmmout files, make a single one with the predictions as backup and one with the 3-columns
+            # Out of the 24K hmmout files, make a single one with the predictions as backup
+            # and one with the 3-columns
             if check:
                 bin_kos_to_file(hmmout_dir=bin_kos_dir, bin_id=bin_id)
 
@@ -168,11 +165,20 @@ def run_microbetag(config: Config):
 
     Returns:
         mtg_net: A microbetag-annotated network in CX2 format. CX2 is a JSON-based format, so it is
-                easy to use for the response of the on-the-fly version to the query from MGG. 
+                easy to use for the response of the on-the-fly version to the query from MGG.
     Note:
-        The mtg_net returned, is also saved as a .cx2 file in the output_directory using a timestamp 
+        The mtg_net returned, is also saved as a .cx2 file in the output_directory using a timestamp
         on its filename, e.g. mtag_net_2025-05-08_17-47.cx2.
     """
+
+    if config.onthefly or config.api:
+        from .db import (
+            get_phen_traits,
+            get_path_compls_otf,
+            patric_from_gc_list,
+            update_for_patric
+        )
+        from .helpers import otf_seqid_ncbi_gtdb_map
 
     # ----------------
     # Build network if not available
@@ -188,17 +194,8 @@ def run_microbetag(config: Config):
             "[STEP] NETWORK INFERENCE WITH FLASHWEAVE. "
             "Using the abundance table provided, microbetag is about to build a co-occurrence network.\n"
         )
-        try:
-            run_flashweave(config)
-        except Exception:
-            error_msg = (
-                "FlashWeave failed. Check on your abundance data and/or metadata file format.\n "
-                "Also, make sure that the further FlashWeave arguments you provide, they are in line "
-                "with your data's idiosyncracy. \n"
-                "You may consult: https://github.com/meringlab/FlashWeave.jl"
-            )
-            logger.error(error_msg)
-            raise RuntimeError(error_msg)
+
+        run_flashweave(config)
 
     # ----------------
     # FAPROTAX
@@ -206,9 +203,13 @@ def run_microbetag(config: Config):
     if config.abundance_table is not None and config.faprotax:
 
         logger.info("[STEP] LITERATURE ANNOTATION WITH FAPROTAX")
+
         try:
+
             run_faprotax(config)
+
         except Exception:
+
             error_msg = "FAPROTAX failed."
             logger.error(error_msg)
             raise RuntimeError(error_msg)
@@ -221,19 +222,29 @@ def run_microbetag(config: Config):
         logger.info("[STEP] PREDICTING PHENOTYPIC TRAITS")
 
         if config.bins_ids is not None and not config.onthefly:
+
             try:
+
                 phenotrex_genotype(config=config)
                 phenotrex_predict(config=config)
+
             except Exception:
+
                 error_msg = "Running phenotrex on your genomes/bins failed."
                 logger.error(error_msg)
                 raise RuntimeError(error_msg)
 
         elif config.onthefly:
+
             try:
+
                 get_phen_traits(config.repr_genomes_present, config.predictions_path)
+
             except Exception:
-                error_msg = "Phenotypic traits for the genomes under study failed to be exported from microbetagDB."
+
+                error_msg = (
+                    "Phenotypic traits for the genomes under study failed to be exported from microbetagDB."
+                )
                 logger.error(error_msg)
                 raise RuntimeError(error_msg)
 
@@ -241,15 +252,22 @@ def run_microbetag(config: Config):
     # Prodigal - ORF prediction
     # ----------------
     if (
-        config.pathway_complementarity or config.seed_complementarity
+        config.path_compl or config.seed_compl
     ) and not config.onthefly:
 
-        if config.ko_merged is None and len(os.listdir(config.prodigal)) != len(config.bins_ids):
+        if (
+            config.ko_merged is None and
+            len(os.listdir(config.prodigal)) != len(config.bins_ids)
+        ):
 
             logger.info("[INTERMEDIATE STEP] PREDICTING ORFs WITH PRODIGAL THROUGH DiTing")
+
             try:
+
                 _run_orf_prodigal(config)
+
             except Exception:
+
                 error_msg = "Prodigal failed to run on your genomes/bins."
                 logger.error(error_msg)
                 raise RuntimeError(error_msg)
@@ -257,30 +275,38 @@ def run_microbetag(config: Config):
     # ----------------
     # Maps required for otf in case of complementaritites
     # ----------------
-    if (config.pathway_complementarity or config.seed_complementarity) and config.onthefly:
+    if (config.path_compl or config.seed_compl) and config.onthefly:
 
-        config.pairs_of_interest, config.relative_genomes, config.mspecies_map_df = otf_seqid_ncbi_gtdb_map(config)
+        (
+            config.pairs_of_interest,
+            config.relative_genomes,
+            config.mspecies_map_df
+
+        ) = otf_seqid_ncbi_gtdb_map(config)
 
     # ----------------
     # Pathway complementarity
     # ----------------
-    if config.pathway_complementarity:
+    if config.path_compl:
 
         logger.info("[STEP] EXTRACTING PATHWAY COMPLEMENTARITIES.")
 
         # ----------------
-        # KEGG annotation - based on the DiTing implementation // required in case of pathway complementarities
+        # KEGG annotation - based on the DiTing implementation
         # ----------------
 
-        if config.ko_merged is None and not config.onthefly:
+        if (
+            not config.prev_path_compl and
+            not config.ko_merged and
+            not config.onthefly
+        ):
 
             logger.info("[INTERMEDIATE STEP] KEGG ANNOTATION OF THE ORFs \n")
 
             _run_kegg_annotate(config)
 
-        elif not config.onthefly:
-
-            logger.info("A 3-col KEGG annotation file already available.")
+            # NOTE (Haris Zafeiropoulos, 2025-05-20):
+            # In the stand-alone version, 'else' suggests a 3-col KEGG annotation file already available
 
         # ----------------
         # Extract pathway complementarities
@@ -292,18 +318,20 @@ def run_microbetag(config: Config):
 
         else:
 
-            pivot_df = load_merged_ko_file(config.ko_merged)  # Load ko_merged.txt
+            if not config.prev_path_compl:
 
-            if not os.path.exists(config.alts_file) or not os.path.exists(
-                config.compl_file
-            ):
+                pivot_df = load_merged_ko_file(config.ko_merged)  # Load ko_merged.txt
 
-                _, _ = export_pathway_complementarities(config, pivot_df)
+                if not os.path.exists(config.alts_file) or not os.path.exists(
+                    config.compl_file
+                ):
+
+                    _, _ = export_pathway_complementarities(config, pivot_df)
 
     # ----------------
     # Seed complementarity
     # ----------------
-    if config.seed_complementarity:
+    if config.seed_compl:
 
         logger.info("[STEP] EXTRACTING SEED COMPLEMENTARITIES.")
 
@@ -327,7 +355,7 @@ def run_microbetag(config: Config):
             config.get_complements = True
 
             # Get dictionary with GTDB accession ids to their correspoding PATRIC
-            gc_to_patric_ids        = get_patric_id_of_gc_accession_list(config.repr_genomes_present)
+            gc_to_patric_ids        = patric_from_gc_list(config.repr_genomes_present)
             config.gc_to_patric_ids = update_for_patric(config, gc_to_patric_ids)
 
         run_seed_complementarity(config)
@@ -400,7 +428,8 @@ def _print_config_message():
 
 def main():
     """
-    Loads and parses a configuration YAML file and invokes the main function for running the microbetag pipeline.
+    Loads and parses a configuration YAML file 
+    and invokes the main function for running the microbetag pipeline.
     """
     parser = argparse.ArgumentParser(description="Microbetag CLI")
 

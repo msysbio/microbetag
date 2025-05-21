@@ -74,11 +74,6 @@ class Config:
         else:
             self.base_dir = os.path.dirname(config_file)
 
-        self.onthefly = _required(conf, "onthefly", "value")
-
-        # Threads to be used
-        self.threads = conf["threads"]["value"] if conf["threads"]["value"] else 2
-
         # Output dir
         output_dir = conf.get("output_directory", {}).get("dir_path")
         if output_dir:
@@ -86,16 +81,32 @@ class Config:
         else:
             raise ValueError("Output directory needs to be specified.")
 
+        # Build output dir
+        os.makedirs(self.output_dir, exist_ok=True)
+
+        # Mappings
+        mappings = MappingPaths()
+        self.__dict__.update(vars(mappings))
+
+        # Checks whether microbetag is running on the on-the-fly version, by default False
+        self.onthefly = conf.get("onthefly", {}).get("value", False)
+        self.api      = conf.get("api", {}).get("value", False)
+
+        # Threads to be used
+        self.threads = conf.get("threads",{}).get("value", 2)
+
         # Steps
-        self.faprotax    = conf.get("faprotax_annotation", {}).get("value")
-        self.phen_traits = conf.get("phenotrex_traits", {}).get("value")
-        self.path_compl  = conf.get("pathway_complementarity", {}).get("value")
-        self.seed_compl  = conf.get("seed_complementarity", {}).get("value")
-        self.net_cluster = conf.get("network_clustering", {}).get("value")
+        self.faprotax    = conf.get("faprotax_annotation", {}).get("value", False)
+        self.phen_traits = conf.get("phenotrex_traits", {}).get("value", False)
+        self.path_compl  = conf.get("pathway_complementarity", {}).get("value", False)
+        self.seed_compl  = conf.get("seed_complementarity", {}).get("value", False)
+        self.net_cluster = conf.get("network_clustering", {}).get("value", False)
 
         # Bins/MAGs/genomes
         bins_fasta     = conf.get("bins_fasta", {}).get("dir_path")
         self.bins_path = resolve_file_path(self.base_dir, bins_fasta)
+
+        _logger_.warn("No genomes/bins were provided as input files.")
 
         # The abundance table is now optional, if no abundance table and no network provided,
         # then it will only run pre-calculations
@@ -108,16 +119,17 @@ class Config:
             self.base_dir, edge_list
         )
 
+        # -------
         # NOTE: Setting precalculations only as true allows to get a Config instance
         # without providing an abundance table or network, meaning you can use the Config instance
         # for partial/specific tasks of microbetag.
-        precalc_only      = conf.get("precalculations_only").get("value")
+        # -------
+
+        precalc_only      = conf.get("precalculations_only", {}).get("value")
         self.precalc_only = precalc_only if precalc_only in [0, 1] else False
 
         if (
-            self.abundance_table is None and
-            self.network is None and
-            precalc_only is False
+            self.abundance_table is None and self.network is None and precalc_only is False
         ):
             raise ValueError(
                 "You need to provide at least one between an abundance table"
@@ -125,17 +137,13 @@ class Config:
             )
 
         # IMPORTANT: Sequence to taxonomy map -- required if no abundance table is needed
-        sequence_taxonomy_map = conf.get("sequence_id_taxonomy_map", {}).get(
-            "file_path"
-        )
+        sequence_taxonomy_map      = conf.get("sequence_id_taxonomy_map", {}).get("file_path")
         self.sequence_taxonomy_map = resolve_file_path(
             self.base_dir, sequence_taxonomy_map
         )
 
         if (
-            self.abundance_table is None
-            and self.sequence_taxonomy_map is None
-            and precalc_only is False
+            self.abundance_table is None and self.sequence_taxonomy_map is None and precalc_only is False
         ):
             raise ValueError(
                 "Since an abundance table is not provided, you need to provide a 2-column file "
@@ -149,6 +157,7 @@ class Config:
                 self.sequence_id_column_name,
                 self.taxonomy_column_name,
                 self.delimiter,
+
             ) = load_abundance(self.abundance_table)
 
             self.seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
@@ -159,15 +168,18 @@ class Config:
                 self.sequence_taxonomy_map, sep=self.delimiter
             )
             seq_to_taxon_df.columns = ["sequence_id", "taxonomy"]
-            self.seq_to_taxon_df = seq_to_taxon_df
-            self.seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
+            self.seq_to_taxon_df    = seq_to_taxon_df
+            self.seq_ids            = self.seq_to_taxon_df["sequence_id"].unique().tolist()
 
         elif self.abundance_table and self.network:
 
+            # -------
             # NOTE: Not all sequence ids in the seq_ids need to have a taxonomy in this case --
             # only those coming from the abundance table
             # Yet, in case that the network has taxa not present in the abundance table, it will lead to errors.
-            network_df = get_edgelist(self.network)
+            # -------
+
+            network_df  = get_edgelist(self.network)
             net_seq_ids = (
                 pd.concat([network_df.iloc[:, 0], network_df.iloc[:, 1]])
                 .unique()
@@ -179,6 +191,7 @@ class Config:
                 self.sequence_id_column_name,
                 self.taxonomy_column_name,
                 self.delimiter,
+
             ) = load_abundance(self.abundance_table)
 
             abd_seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
@@ -186,23 +199,15 @@ class Config:
 
         else:
             _logger_.warning(
-                "Neither an abundance table nor a network was procided.\n"
+                f"{emojis.WARNING_EMOJI}Neither an abundance table nor a network was procided.\n"
                 "microbetag will only run some pre-calculations not requiring them.\n"
-                "This is only good to use if you are are quite familiar with microbetag"
-                f"and you know what you are doing. {emojis.WARNING_EMOJI}"
             )
 
-        # Set bins --- NOTE: CHECK FOR CONFLICTS
+        # Set bins
         self.bins_ids = None
         if self.bins_path is not None:
             bn = BinsHandler(config=self)
             self.__dict__.update(vars(bn))
-
-        # Get pathway complementarity related variables
-        pcompl = conf.get("pathway_complementarity", {}).get("value")
-        self.pathway_complementarity = pcompl if pcompl in [0, 1] else True
-        pc = PathwayComplementarity(config=self)
-        self.__dict__.update(vars(pc))
 
         # Load abundance table with taxonomy
         nsc = AbdTableHandler(config=self)
@@ -212,41 +217,43 @@ class Config:
         nh = NetworkHandler(config=self)
         self.__dict__.update(vars(nh))
 
-        # Build output dir
-        os.makedirs(self.output_dir, exist_ok=True)
+        # Flashweave arguments
+        self.flashweave_args = conf.get("flashweave_args", {})
 
-        self.predictions_path = os.path.join(self.output_dir, "phen_predictions")
-        os.makedirs(self.predictions_path, exist_ok=True)
+        metadata_file      = conf.get("metadata_file", {}).get("file_path")
+        self.metadata_file = resolve_file_path(self.base_dir, metadata_file)
+        self.metadata      = "false" if self.metadata_file in ("false", None) else "true"
+
+        # Update conf variables for pathway complementarity module
+        if self.path_compl:
+            pc = PathwayComplementarity(config=self)
+            self.__dict__.update(vars(pc))
 
         # Open Reading Frames
-        orfs = conf.get("orfs", {}).get("path")
-        if orfs is None:
-            self.prodigal = os.path.join(self.output_dir, "ORFs")
-            os.makedirs(self.prodigal, exist_ok=True)
-        else:
-            self.prodigal = os.path.join(self.base_dir, orfs)
+        if not self.onthefly and self.path_compl:
+            orfs = conf.get("orfs", {}).get("path")
+            if orfs is None:
+                self.prodigal = os.path.join(self.output_dir, "ORFs")
+                os.makedirs(self.prodigal, exist_ok=True)
+            else:
+                self.prodigal = os.path.join(self.base_dir, orfs)
 
         # ModelSEEDpy arguments
-        self.gapfill_model = conf["gapfill_model"]["value"]
-        self.gapfill_media = conf["gapfill_media"]["value"]
-
-        # Flashweave arguments
-        self.metadata_file   = conf.get("metadata_file").get("file_path")
-        self.metadata        = "false" if self.metadata_file == "false" else "true"
-        self.flashweave_args = conf["flashweave_args"]
+        self.gapfill_model = conf.get("gapfill_model", {}).get("value")
+        self.gapfill_media = conf.get("gapfill_media", {}).get("value")
 
         # Phenotrex
-        self.phen_classes   = os.path.join(self.cwd, "mtg_maps_models/phenDB/classes/")
-        self.genotypes_file = os.path.join(self.output_dir, "train.genotype")
-        min_proba           = conf.get("min_proba", {}).get("value")
-        self.min_proba      = min_proba if not None else 0.6
+        if self.phen_traits:
 
-        # Mappings
-        mappings = MappingPaths()
-        self.__dict__.update(vars(mappings))
+            self.predictions_path = os.path.join(self.output_dir, "phen_predictions")
+            self.phen_classes     = os.path.join(self.cwd, "mtg_maps_models/phenDB/classes/")
+            self.genotypes_file   = os.path.join(self.output_dir, "train.genotype")
+            self.min_proba        = conf.get("min_proba", {}).get("value", 0.75)
+
+            os.makedirs(self.predictions_path, exist_ok=True)
 
         # FAPROTAX
-        if self.abundance_table is not None:
+        if self.abundance_table is not None and self.faprotax:
             faprotax = Faprotax(config=self)
             self.__dict__.update(vars(faprotax))
 
@@ -254,17 +261,19 @@ class Config:
         # net_clust = conf.get("network_clustering").get("value")
         # self.net_cluster = net_clust if net_clust in [0, 1] else False
         if self.net_cluster:
-            self.prev_manta_net = conf.get("prev_clustered_network").get("file_path")
-            self.manta_net = (
-                os.path.join(self.base_dir, self.prev_manta_net)
-                if self.prev_manta_net is not None
-                else os.path.join(self.output_dir, "manta_annotated.cyjs")
-            )
-            self.base_network_file = os.path.join(self.output_dir, "basenet.cyjs")
+
+            self.prev_manta_net = conf.get("prev_clustered_network", {}).get("file_path", None)
+
+            if self.prev_manta_net:
+                self.manta_net = resolve_file_path(self.base_dir, self.prev_manta_net)
+            else:
+                self.base_network_file = os.path.join(self.output_dir, "basenet.cyjs")
+                self.manta_net         = os.path.join(self.output_dir, "manta_annotated.cyjs")
 
         # Seed complementarity
-        sc = SeedComplementarityHandler(config=self)
-        self.__dict__.update(vars(sc))
+        if self.seed_compl:
+            sc = SeedComplementarityHandler(config=self)
+            self.__dict__.update(vars(sc))
 
         # Intermediate annoteted network file name
         self.microbetag_annotated_network_file = os.path.join(
@@ -329,10 +338,3 @@ def load_abundance(abd_file: str) -> tuple[pd.DataFrame, str, str, str]:
     seq_id_to_taxonomy         = abd_tab_df[[sequence_id_column_name, taxonomy_column_name]]
     seq_id_to_taxonomy.columns = ["sequence_id", "taxonomy"]
     return seq_id_to_taxonomy, sequence_id_column_name, taxonomy_column_name, delimiter
-
-
-def _required(conf, key1, key2):
-    value = conf.get(key1, {}).get(key2)
-    if value is None:
-        raise ValueError(f"Missing required configuration: {key1}.{key2}")
-    return value

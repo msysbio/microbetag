@@ -1,3 +1,5 @@
+import os
+
 from .config import Config
 
 from .helpers import (
@@ -9,7 +11,8 @@ from .helpers import (
     SeedComplementarityHandler,
     BinsHandler,
     manta_input_net,
-)  # GenresHandler
+    otf_seqid_ncbi_gtdb_map
+)
 
 from .utils import (
     ko_list_parser,
@@ -32,12 +35,45 @@ from .seed_complementarity import (
     build_url_with_seed_complements,
     kegg_module_related_intersect,
 )
-from .build_mtg_cx2 import mtg_annotate_network
 
 from .db import (
     get_genomes_for_ncbi_tax_id,
     get_ncbi_tax_if_for_genome,
-    get_patric_id_of_gc_accession_list,
+    patric_from_gc_list,
     get_phen_traits,
     get_path_compls_for_ncbi_ids
 )
+
+from .genres import (
+    GEMSReconstruction
+)
+
+from .networks import (
+    get_edgelist,
+    build_base_graph,
+    read_cyjson
+)
+
+from .tools import (
+    run_faprotax,
+    run_flashweave,
+    run_manta,
+    phenotrex_predict,
+    phenotrex_genotype,
+    kegg_annotation,
+    run_prodigal,
+    hmmsearch,
+    run_seed_complementarity,
+)
+
+from .build_mtg_cx2 import mtg_annotate_network
+
+from .microbetag import (
+    run_microbetag
+)
+
+
+_KEGG_MAPPINGS         = os.path.join(os.path.dirname(__file__), "mtg_maps_models", "kegg_mappings")
+_KEGG_TERMS_PER_MODULE = os.path.join(_KEGG_MAPPINGS, "kegg_terms_per_module.tsv")
+_MODULE_DEFINITION_MAP = os.path.join(_KEGG_MAPPINGS, "module_definition_map.json")
+_KEGG_MODULES_TO_MAPS  = os.path.join(_KEGG_MAPPINGS, "module_map_pairs.tsv")

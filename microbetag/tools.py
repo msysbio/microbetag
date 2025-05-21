@@ -1,3 +1,6 @@
+"""
+Functions invoking other software/tools in the microbetag pipeline.
+"""
 import os
 import sys
 import glob
@@ -5,7 +8,11 @@ import shutil
 
 import subprocess
 import multiprocessing
-from typing import List, TYPE_CHECKING
+
+from tqdm import tqdm
+
+from julia.api import Julia
+from typing import TYPE_CHECKING
 
 from .utils import (
     get_files_with_suffixes,
@@ -15,7 +22,6 @@ from .utils import (
     ensure_same_namespace_after_fw,
     mtg_logger,
 )
-
 from .seed_complementarity import ExportSeedComplementarities
 
 
@@ -26,10 +32,15 @@ if TYPE_CHECKING:
 _logger_ = mtg_logger(__name__)
 
 
-def run_seed_complementarity(config: "Config"):
+def run_seed_complementarity(config: "Config") -> None:
     """
-    Invoke PhyloMInt as edited from microbetag team to support parallel calculation of the seed and non seed sets
-    and save corresponding sets to json files.
+    Based on the type of files to be used for the seed complementarity step, adjustments are needed
+    in terms of inner architecture of the files, then invokes
+    :class:`.ExportSeedComplementarities`
+    to get seed and non-seed sets, and based on those export seed complementarities.
+
+    Args:
+        config: Instance of the microbetag :class:`.Config` class
     """
 
     if config.prev_conf is None or os.path.exists(config.prev_conf) is False:
@@ -58,7 +69,7 @@ def run_seed_complementarity(config: "Config"):
     seeds = ExportSeedComplementarities(config)
 
     # If no seed and/or non-seed sets are missing, get them
-    if seeds.skip_sets is False and seeds.api is False:
+    if config.skip_sets is False and config.api is False:
         seeds.get_sets()
 
     # If either the phylomint scores file or the one with the seed complementarities (pckl) is missing, exract them
@@ -66,7 +77,7 @@ def run_seed_complementarity(config: "Config"):
         seeds.get_scores_and_compls()
 
 
-def hmmsearch(params: List):
+def hmmsearch(params: list) -> None:
     """
     Function to invoke hmmsearch software.
 
@@ -74,7 +85,12 @@ def hmmsearch(params: List):
         params: list of parameters to be passed to the hmmsearch function.
 
     Note:
-        We use only 1 cpu since we use a muliprocessing.Pool in the kegg_annotation(). 
+        We use only 1 cpu since we use a muliprocessing.Pool in the kegg_annotation().
+
+    Cite:
+        HMMER 3.4 (Aug 2023); http://hmmer.org/
+        Copyright (C) 2023 Howard Hughes Medical Institute.
+        Freely distributed under the BSD open source license.
     """
     (threshold_method, threshold, outtype, output, hmm_db, faa) = params
 
@@ -99,12 +115,17 @@ def hmmsearch(params: List):
         _logger_.warning("Something wrong with KEGG hmmsearch!")
 
 
-def run_prodigal(fasta, basename, outdir):
+def run_prodigal(fasta: str, basename: str, outdir: str) -> None:
     """
     Function to predict ORFs using Prodigal.
     By default outdir is the ORFs folder
     fna	FASTA nucleic acid	Used generically to specify nucleic acids
     ffn	FASTA nucleotide of gene regions	Contains coding regions for a genome
+
+    Cite:
+        Hyatt D, Chen GL, LoCascio PF, Land ML, Larimer FW, Hauser LJ. 
+        Prodigal: prokaryotic gene recognition and translation initiation site identification. 
+        BMC bioinformatics. 2010 Dec;11:1-1.
     """
 
     faa_file = os.path.join(outdir, basename + ".faa")
@@ -138,10 +159,17 @@ def run_prodigal(fasta, basename, outdir):
             _logger_.warning("Something wrong with prodigal annotation!")
 
 
-def kegg_annotation(faa: str, basename: str, out_dir: str, db_dir: str, ko_dic: dict, threads: int) -> bool:
+def kegg_annotation(
+    faa: str,
+    basename: str,
+    out_dir: str,
+    db_dir: str,
+    ko_dic: dict,
+    threads: int
+) -> bool:
     """
-    Function to perform KEGG annotation.
-    The function invokes hmmsearch.
+    Function to perform KEGG annotation in parallel.
+    The function invokes `hmmsearch`.
 
     Args:
         faa:      Filepath to the .faa file of the bin in process
@@ -189,17 +217,25 @@ def kegg_annotation(faa: str, basename: str, out_dir: str, db_dir: str, ko_dic: 
         params.append((threshold_method, info[0], outtype, output, hmm_db, faa))
 
     _logger_.info("Number of KEGG processes to be performed: %s", str(len(params)))
-    process = multiprocessing.Pool(threads)
-    process.map(hmmsearch, params)
+
+    # process = multiprocessing.Pool(threads)
+    # process.map(hmmsearch, params)  # i.e. hmmsearch()
+
+    with multiprocessing.Pool(threads) as pool:
+        for _ in tqdm(pool.imap_unordered(hmmsearch, params), total=len(params)):
+            pass
 
     return True
 
 
-def phenotrex_genotype(config: "Config"):
+def phenotrex_genotype(config: "Config") -> None:
     """
     Runs the `compute-genotype` program of phenotrex to get COGs present in the list of genomes under study.
 
     Cite:
+        Feldbauer R, Schulz F, Horn M, Rattei T. Prediction of microbial phenotypes based on comparative genomics. 
+        BMC bioinformatics. 2015 Dec;16:1-8.
+        https://phenotrex.readthedocs.io
     """
     if not os.path.exists(config.genotypes_file):
 
@@ -256,11 +292,14 @@ def phenotrex_genotype(config: "Config"):
                 sys.exit(1)
 
 
-def phenotrex_predict(config: "Config"):
-    """ 
-    Runs the `predict` program of `phenotrex` to predict whether a genome does have a trait or not.
+def phenotrex_predict(config: "Config") -> None:
+    """
+    Runs the :func:`predict` program of `phenotrex` to predict whether a genome does have a trait or not.
 
     Cite:
+        Feldbauer R, Schulz F, Horn M, Rattei T. Prediction of microbial phenotypes based on comparative genomics.
+        BMC bioinformatics. 2015 Dec;16:1-8.
+        https://phenotrex.readthedocs.io
     """
     # Get predictions
     phen_models = [
@@ -315,11 +354,13 @@ def phenotrex_predict(config: "Config"):
         sys.exit(0)
 
 
-def run_manta(config: "Config"):
+def run_manta(config: "Config") -> None:
     """
     Runs the manta package to perform network clustering.
 
     Cite:
+        Röttjers L, Faust K. Manta: A clustering algorithm for weighted ecological networks. 
+        Msystems. 2020 Feb 25;5(1):10-128.
     """
     # Build the manta command
     _logger_.info("Running manta clustering algorithm.")
@@ -356,14 +397,14 @@ def run_manta(config: "Config"):
         config.network_clustering = False
 
 
-def run_flashweave(config: "Config"):
-    """ 
-    Runs FlashWeave to infer co-occurrence network. 
+def run_flashweave(config: "Config") -> None:
+    """
+    Runs FlashWeave to infer co-occurrence network.
 
     Cite:
+        Tackmann J, Rodrigues JF, von Mering C. Rapid inference of direct interactions in large-scale ecological
+        networks from heterogeneous microbial sequencing data. Cell systems. 2019 Sep 25;9(3):286-96.
     """
-    # Run FlashWeave
-    from julia.api import Julia
 
     _logger_.info("Fix FlashWeave arguments from config.")
 
@@ -392,40 +433,60 @@ def run_flashweave(config: "Config"):
 
     learn_in = ",".join(f"{arg[0]}={arg[1]}" for arg in pair_args)
 
-    _logger_.info("Init Julia through Python!")
-    jl = Julia(compiled_modules=False)
-    jl.using("FlashWeave")
+    # Checking for Julia instance
+    if not hasattr(config, 'julia_instance'):
+        _logger_.info("Init Julia through Python!")
+        config.jl = Julia(compiled_modules=False)
+        config.jl.using("FlashWeave")
 
     # Run FlashWeave based on presence/absence of a metadata file
-    if config.metadata_file:
-        _logger_.info("Running FlashWeaeve along with a metadata file.")
-        _logger_.info(
-            f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", "{config.metadata_file}", {learn_in}))'
-        )
-        jl.eval(
-            f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", "{config.metadata_file}", {learn_in}))'
-        )
-    else:
-        _logger_.info("Running FlashWeaeve.")
-        _logger_.info(
-            f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", {learn_in}))'
-        )
-        jl.eval(
-            f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", {learn_in}))'
-        )
+    try:
 
-    ensure_same_namespace_after_fw(config)
+        if config.metadata_file:
+
+            _logger_.info("Running FlashWeaeve along with a metadata file.")
+            config.jl.eval(
+                f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", "{config.metadata_file}", {learn_in}))'
+            )
+        else:
+            _logger_.info("Running FlashWeaeve.")
+
+            config.jl.eval(
+                f'save_network("{config.network}", learn_network("{config.flashweave_abd_table}", {learn_in}))'
+            )
+
+    except Exception:
+
+        error_msg = (
+            "FlashWeave failed to build a co-occurrence network. \n"
+            "Please check on your abundance data and/or metadata files format.\n "
+        )
+        raise RuntimeError(error_msg)
+
+    try:
+
+        ensure_same_namespace_after_fw(config)
+
+    except Exception:
+
+        error_msg = (
+            "FlashWeave ran but ended up with an empty edge file, meaning no co-occurrence or co-exclusive associations were found"
+            "Consider looking at https://github.com/meringlab/FlashWeave.jl for FlashWeave parameterization and limitations."
+        )
+        raise RuntimeError(error_msg)
 
 
-def run_faprotax(config: "Config"):
+def run_faprotax(config: "Config") -> None:
     """
     Runs FAPROTAX collapse_table.py script to annotate taxa based on their taxonomy using literature.
 
     Cite:
+        Louca S, Parfrey LW, Doebeli M. Decoupling function and taxonomy in the global ocean microbiome.
+        Science. 2016 Sep 16;353(6305):1272-7.
     """
 
     faprotax_params = [
-        "python3",
+        "python",
         config.faprotax_script,
         "-i",
         config.abundance_table,
@@ -445,11 +506,6 @@ def run_faprotax(config: "Config"):
     faprotax_command = " ".join(faprotax_params)
 
     try:
-        process = subprocess.Popen(
-            faprotax_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
-        _, _ = process.communicate()
+        os.system(faprotax_command)
     except Exception:
-        raise TypeError(
-            f"Something went wrong when running FAPROTAX with your abuandance table: {config.abundance_table}"
-        )
+        raise "FAPROTAX failed."

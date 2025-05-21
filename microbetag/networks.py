@@ -74,12 +74,15 @@ def get_edgelist(network_file: str) -> pd.DataFrame:
     Returns:
         A 3-column pandas.DataFrame 
     """
-    delimiter = detect_separator(network_file)
+
+    delimiter        = detect_separator(network_file)
     line_num, header = find_three_column_format(network_file, delimiter)
+
     edgelist = pd.read_csv(
         network_file, sep=delimiter, skiprows=line_num - 1, header=header
     )
     edgelist.columns = ["node_A", "node_B", "microbetag::weight"]
+
     return edgelist
 
 

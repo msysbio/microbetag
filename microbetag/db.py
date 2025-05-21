@@ -1,5 +1,5 @@
 """
-Aim: 
+Aim:
     Establishing connection and query on microbetagDB.
     Useful for the API and the on-the-fly version of microbetag, more specifically for the 
     phenotrex-based phenotypic traits and the pathway complementarity steps. 
@@ -29,19 +29,9 @@ _KEGG_MAPPINGS_ = os.path.join(
 # -----------
 # Database
 # -----------
-__script_dir__ = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(__script_dir__, ".env_dev.json")) as f:
-    c = json.load(f)
-    db_config = {
-        "user": c["Luna"]["USER_NAME"],
-        "password": c["Luna"]["PASSWORD"],
-        "host": c["Luna"]["HOST"],      # 'localhost'
-        "port": c["Luna"]["PORT"],
-        "database": c["Luna"]["DB_NAME"],
-    }
 
 
-def execute(phrase: str) -> List[Tuple]:
+def execute(phrase: str, db_config: dict) -> List[Tuple]:
     """
     Establish a database connection and perform an action
     """
@@ -72,13 +62,13 @@ def execute_in_a_pool(cursor: mysql.connector, query: str):
         print(query)
 
 
-def init_connection_pool() -> mysql.connector.pooling.MySQLConnectionPool:
+def init_connection_pool(db_config) -> mysql.connector.pooling.MySQLConnectionPool:
     """
     Initiates a connection pool.
     A pool opens a number of connections and handles thread safety when providing connections to requesters.
     For more see: https://dev.mysql.com/doc/connector-python/en/connector-python-connection-pooling.html
     """
-    connection_pool = pooling.MySQLConnectionPool(
+    connection_pool = pooling.MySQLConnectionPool(  # noqa: E203
         pool_name="microbetagDB_pool",
         pool_size=5,
         user=db_config["user"],
@@ -112,35 +102,43 @@ def alt_genome_prefix(gc):
     return gc_alt
 
 
-def get_genomes_for_ncbi_tax_id(ncbi_tax_id=1281578):
+def get_genomes_for_ncbi_tax_id(ncbi_tax_id: int, db_config: dict):
     """
     Get the genome IDs corresponding to a given NCBI Taxonomy ID from the microbetagDB.
+
+    Example: 1281578
     """
     query      = f"SELECT genomeId FROM genome2taxNcbiId WHERE ncbiTaxId = {ncbi_tax_id};"
-    genome_ids = execute(query)
+    genome_ids = execute(query, db_config)
 
     return {ncbi_tax_id: gc_unify([x[0] for x in genome_ids])}
 
 
-def get_ncbi_tax_if_for_genome(gc_id="GCA_018819265.1"):
+def get_ncbi_tax_if_for_genome(gc_id: str, db_config: dict):
+    # "GCA_018819265.1"
     #
     query      = f"SELECT ncbiTaxId FROM genome2taxNcbiId WHERE genomeId = '{gc_id}';"
-    ncbi_tax_ids = execute(query)
+    ncbi_tax_ids = execute(query, db_config)
     #
     return {gc_id: list(ncbi_tax_ids)}
 
 
-def get_patric_id_of_gc_accession_list(gc_accession_list=["GCA_003184265.1"]):
+def patric_from_gc_list(gc_accession_list: list, db_config: dict):
     """
     Gets a list of GC accession ids and returns a dictionary where the GC ids are the keys
     and their corresponding PATRIC ids are the values.
+
+    ["GCA_003184265.1"]
     """
     gc_to_patric_dict = {}
     for gc in gc_accession_list:
         gc_alt = alt_genome_prefix(gc)
         if gc_alt != 0:
-            query = f"SELECT patricId FROM patricId2genomeId WHERE gtdbGenomeAccession = '{gc}' OR gtdbGenomeAccession = '{gc_alt}';"
-            patricId = execute(query)
+            query = (
+                f"SELECT patricId FROM patricId2genomeId WHERE gtdbGenomeAccession = '{gc}' "
+                f"OR gtdbGenomeAccession = '{gc_alt}';"
+            )
+            patricId = execute(query, db_config)
             # NOTE (Haris Zafeiropoulos, 2025-05-08): Some PATRIC ids have a different suffix in the metadata file than
             # in their corresponding assembies used for the seed complementarity step.
             # Yet, keeping the part before the dot (.) - using int(patricId[0][0]) cannot be a solution since in many cases
@@ -219,24 +217,25 @@ def phen_query(gtdb_id):
     ])
 
 
-def get_phendb_traits(gtdb_genome_id="GCA_018819265.1"):
+def get_phendb_traits(gtdb_genome_id: str, db_config: dict):
     """
     Get phenotypical traits based on phenDB classes based on its GTDB representative genome
+    "GCA_018819265.1"
     """
     gtdb_id = gtdb_genome_id.strip()
 
-    rows = execute(phen_query(gtdb_id))
+    rows = execute(phen_query(gtdb_id), db_config)
 
     if len(rows) == 0:
         alt_gtdb_id = alt_genome_prefix(gtdb_genome_id)
-        rows = execute(phen_query(alt_gtdb_id))
+        rows = execute(phen_query(alt_gtdb_id), db_config)
 
     if len(rows) == 0:
-        _logger_.info(f"Genome {gtdb_genome_id} is not a NCBI accession id. It could be a MGnify or a KEGG one.")
+        _logger_.info(f"Genome {gtdb_genome_id} is not available in microbetagDB.")
         return 0
 
     query_colnames = "SHOW COLUMNS FROM phenDB;"
-    colnames = [list(x)[0] for x in execute(query_colnames)]
+    colnames = [list(x)[0] for x in execute(query_colnames, db_config)]
     genomes_traits = {i: j for i, j in zip(colnames, rows[0])}
 
     return genomes_traits  # gtdb_genome_id
@@ -312,7 +311,7 @@ def get_path_compls_otf(config):
     """
 
     # Ge the complements!
-    compls = get_path_compls_for_ncbi_ids(config.relative_genomes, config.pairs_of_interest)
+    compls = get_path_compls_for_ncbi_ids(config.relative_genomes, config.pairs_of_interest, config.db_config)
 
     # NOTE (Haris Zafeiropoulos, 2025-05-05):
     # Fix complements in the format set for the MGG
@@ -342,7 +341,11 @@ def get_path_compls_otf(config):
         json.dump(compls_serial, f)
 
 
-def get_path_compls_for_ncbi_ids(relative_genomes: Dict[str, Set[str]], pairs_of_interest: Set[Tuple[str, str]]):
+def get_path_compls_for_ncbi_ids(
+    relative_genomes: Dict[str, Set[str]],
+    pairs_of_interest: Set[Tuple[str, str]],
+    db_config: dict
+):
     """
 
     Arguments:
@@ -357,13 +360,13 @@ def get_path_compls_for_ncbi_ids(relative_genomes: Dict[str, Set[str]], pairs_of
 
     _logger_.info("===> Executing unique queries...")
     unique_queries = {q for genome_pairs in complements_ids_queries.values() for q in genome_pairs.values()}
-    unique_queries2comples = get_complement_ids(unique_queries)
+    unique_queries2comples = get_complement_ids(unique_queries, db_config)
 
     _logger_.info("===> Mapping complement IDs to genome pairs...")
     pairs_to_compl_ids = map_queries_to_pairs(complements_ids_queries, unique_queries2comples)
 
     _logger_.info("===> Fetching full complement metadata...")
-    all_compl_ids2coloured_compls = get_coloured_complements(pairs_to_compl_ids)
+    all_compl_ids2coloured_compls = get_coloured_complements(pairs_to_compl_ids, db_config)
 
     _logger_.info("===> Assembling final result...")
 
@@ -405,8 +408,9 @@ def build_complement_queries(relative_genomes, pairs_of_interest):
     return complements_ids_queries
 
 
-def get_complement_ids(unique_queries):
-    cnx_pool      = init_connection_pool()
+def get_complement_ids(unique_queries, db_config):
+
+    cnx_pool      = init_connection_pool(db_config)
     my_connection = cnx_pool.get_connection()
     cursor        = my_connection.cursor()
 
@@ -427,7 +431,10 @@ def map_queries_to_pairs(complements_ids_queries, unique_queries2comples):
     return pairs_to_compl_ids
 
 
-def get_coloured_complements(pairs_to_compl_ids: Dict[Tuple[str, str], dict[Tuple[str, str], list[str]]]):
+def get_coloured_complements(
+    pairs_to_compl_ids: Dict[Tuple[str, str], dict[Tuple[str, str], list[str]]],
+    db_config: dict
+):
     """
     Gets thes actual complement using its unique complementId and builds its KEGG url.
 
@@ -437,22 +444,22 @@ def get_coloured_complements(pairs_to_compl_ids: Dict[Tuple[str, str], dict[Tupl
     Returns:
         pairs_complements: []
     """
-    unique_compl_ids = {
+    unique_compl_ids = list({
         compl_id
         for genome_map in pairs_to_compl_ids.values()
         for compl_list in genome_map.values()
         for compl_id in compl_list
-    }
-    unique_compl_ids = list(unique_compl_ids)
+    })
     if not unique_compl_ids:
         return {}
 
-    query = """SELECT KoModuleId, complement, pathway FROM uniqueComplements
-               WHERE complementId IN ('{}') ORDER BY FIELD(complementId, '{}');""".format(
-        "','".join(unique_compl_ids), "','".join(unique_compl_ids)
+    uqids = "','".join(unique_compl_ids)
+    query = (
+        "SELECT KoModuleId, complement, pathway FROM uniqueComplements"
+        f"WHERE complementId IN ('{uqids}') ORDER BY FIELD(complementId, '{uqids}');"
     )
 
-    cnx_pool                 = init_connection_pool()
+    cnx_pool                 = init_connection_pool(db_config)
     my_connection            = cnx_pool.get_connection()
     cursor                   = my_connection.cursor()
 

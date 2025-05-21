@@ -4,6 +4,11 @@
 
 # Licensed under GNU LGPL.3, see LICENCE file
 
+"""
+Utility functions to be used across the `microbetag` library.
+"""
+
+
 import os
 import re
 import sys
@@ -19,59 +24,116 @@ import logging
 import colorlog
 import numpy as np
 import pandas as pd
-from typing import List
+import pkg_resources
+from pathlib import Path
+from typing import Any, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .config import Config
 
 
 # Handling data related
-def get_library_version(library_name):
-    import pkg_resources
+def get_library_version(library_name: str) -> str:
+    """
+    Returns the version of a Python library
+    """
 
     try:
         version = pkg_resources.get_distribution(library_name).version
         return version
+
     except pkg_resources.DistributionNotFound:
         return "Library not found"
+
     except Exception as e:
-        return str(e)
+        return str(f"lala{e}")
 
 
-def resolve_relative_path(base_dir, file_path):
-    # Count the number of "../" at the beginning
-    steps_back = 0
-    while file_path.startswith("../"):
-        steps_back += 1
-        file_path = file_path[3:]  # Remove the leading "../"
+def resolve_relative_path(base_dir: str, file_path: str) -> str:
+    """
+    Resolves a relative file path into an absolute file path based on a given base directory.
 
-    # Move back "steps_back" levels from base_dir
-    for _ in range(steps_back):
-        base_dir = os.path.dirname(base_dir)
+    This function processes a relative `file_path` (which may contain one or more `../` 
+    segments) and resolves it into an absolute path by moving back the corresponding 
+    number of directory levels from `base_dir`. It returns the resulting absolute file path.
 
-    # Combine the modified base_dir with the remaining file_path
-    return os.path.join(base_dir, file_path)
+    Parameters
+    ----------
+    base_dir : str
+        The base directory from which to resolve the relative `file_path`. This should
+        be an absolute path to a directory.
+
+    file_path : str
+        The relative file path to be resolved. It may contain `../` to navigate up the 
+        directory hierarchy.
+
+    Returns
+    -------
+    str
+        The resolved absolute file path.
+
+    Examples
+    --------
+    >>> resolve_relative_path("/home/user/docs", "../files/report.txt")
+    '/home/user/files/report.txt'
+
+    """
+
+    return str(Path(base_dir).resolve().joinpath(file_path).resolve())
 
 
-def resolve_file_path(base_dir, file_path):
+def resolve_file_path(base_dir: str, file_path: str) -> str:
+    """
+    Resolves a file path relative to a given base directory and returns the absolute file path.
 
-    # If the file_path is None, return None
+    If the provided `file_path` is relative, it is resolved using the `base_dir`. The function
+    handles absolute paths, user directory expansion (e.g., `~`), and relative paths (e.g., `../`).
+
+    Parameters
+    ----------
+    base_dir : str
+        The base directory to resolve relative paths from.
+
+    file_path : str
+        The file path to resolve. It can be absolute, relative, or use `~` for the home directory.
+
+    Returns
+    -------
+    str
+        The resolved absolute file path.
+
+    Raises
+    ------
+    FileNotFoundError
+        If the resolved file path does not exist.
+
+    Examples
+    --------
+    >>> resolve_file_path("/home/user/docs", "~/file.txt")
+    '/home/user/file.txt'
+    """
+
     if file_path is None:
-        return None
+        return None  # Return None if the file path is None
 
-    # Otherwise, resolve the file path based on the base directory and the user's input
+    # Handle absolute paths and ~ expansion
     if file_path.startswith("/"):
-        path = file_path
+        path = Path(file_path).resolve()
 
-    if file_path.startswith("~"):
-        path = os.path.expanduser(file_path)
+    elif file_path.startswith("~"):
+        path = Path(os.path.expanduser(file_path)).resolve()
 
-    if file_path.startswith("../"):
-        path = resolve_relative_path(base_dir, file_path)
+    elif file_path.startswith("../"):
+        # Resolve relative path using the base_dir
+        path = Path(resolve_relative_path(base_dir, file_path)).resolve()
 
     else:
-        path = os.path.join(base_dir, file_path)
+        # Relative path with respect to base_dir
+        path = (Path(base_dir) / file_path).resolve()
 
     # Check if the file exists
-    if os.path.exists(path):
-        return path
+    if path.exists():
+        return str(path)
     else:
         raise FileNotFoundError(f"File not found: {path}")
 
@@ -106,17 +168,22 @@ class SetEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def mtg_logger(script):
+def mtg_logger(filename: str) -> logging.getLogger:
     """
-    Logger 
+    Creates and returns a configured logger instance. This logger:
+
+    - Logs messages to stdout with colored formatting using `colorlog`
+    - Avoids adding duplicate handlers if called multiple times
+    - Uses the given `filename` as the logger's name
+    - Logs messages with level INFO and above
 
     Arguments:
-        script:  __file__, __name__
+        script: The filename of the script where the logger will be applied to.
 
     Returns:
-        logger: a logging function mentioning the script 
+        The logger instance.
     """
-    logger = logging.getLogger(script)
+    logger = logging.getLogger(filename)
     logger.setLevel(logging.INFO)
     if not logger.handlers:
         sh = logging.StreamHandler(sys.stdout)
@@ -137,18 +204,18 @@ def mtg_logger(script):
     return logger
 
 
-def get_files_with_suffixes(directory, suffixes):
+def get_files_with_suffixes(directory: str, suffixes: list[str]) -> list[str]:
     """
     Recursively retrieves files from a specified directory and its subdirectories
     that have extensions matching a given list of suffixes.
 
-    Parameters:
-    directory (str): The root directory to start the search.
-    suffixes (list of str): A list of file suffixes (extensions) to match.
-                            Each suffix should include the dot (e.g., '.txt', '.csv').
+    Arguments:
+        directory: The root directory to start the search.
+        suffixes: A list of file suffixes (extensions) to match.
+                  Each suffix should include the dot (e.g., '.txt', '.csv').
 
     Returns:
-    list of str: A list of full paths to files that match any of the specified suffixes.
+        A list of full paths to files that match any of the specified suffixes.
 
     Example:
     >>> get_files_with_suffixes('/path/to/directory', ['.txt', '.csv'])
@@ -162,7 +229,39 @@ def get_files_with_suffixes(directory, suffixes):
     return matching_files
 
 
-def safe_literal_eval(value):
+def safe_literal_eval(value: Any):
+    """
+    Safely evaluates a string that may represent a Python literal (e.g., list, dict, int).
+
+    This function attempts to parse a string using :class:`ast.literal_eval`, which only evaluates
+    Python literals (e.g., strings, numbers, tuples, lists, dicts, booleans, and None),
+    avoiding the security risks of `eval()`*.
+    If `value` is not a string or if evaluation fails,
+    the original value is returned unchanged.
+
+    Args
+    ----------
+    value : Any
+        The input to be evaluated. If it's a string that looks like a literal (e.g., "[1, 2]"), 
+        it will be parsed. Otherwise, it's returned as is.
+
+    Returns
+    -------
+    Any
+        The evaluated literal if successful, or the original value if evaluation fails.
+
+    Examples
+    --------
+    >>> safe_literal_eval("[1, 2, 3]")
+    [1, 2, 3]
+
+    >>> safe_literal_eval("{'a': 1}")
+    {'a': 1}
+
+    Note:
+        * Security risks of `eval`:
+        https://www.adventuresinmachinelearning.com/safe-and-secure-eval-in-python-how-to-minimize-security-risks/
+    """
     try:
         # Attempt to evaluate the value if it's a string that looks like a list
         return ast.literal_eval(value) if isinstance(value, str) else value
@@ -171,16 +270,63 @@ def safe_literal_eval(value):
         return value
 
 
-def flatten(list_of_lists: List):
+def flatten(list_of_lists: list) -> list:
     """
-    This function takes a list of lists and flattens it until it returns a list with
-    all the components of the initial one.
+    Recursively flattens a nested list into a single-level list.
+
+    This function handles arbitrarily nested lists and returns a new list
+    containing all the leaf elements in the original order.
+
+    Arguments:
+        lst : A list that may contain other nested lists.
+
+    Returns:
+    -------
+        A flat list containing all non-list elements in the original order.
+
+    Examples:
+    --------
+    >>> flatten([1, [2, [3, 4]], 5])
+    [1, 2, 3, 4, 5]
     """
     if len(list_of_lists) == 0:
         return list_of_lists
     if isinstance(list_of_lists[0], list):
         return flatten(list_of_lists[0]) + flatten(list_of_lists[1:])
     return list_of_lists[:1] + flatten(list_of_lists[1:])
+
+
+def flatten_list(lst: list, flat_list: list = None) -> set:
+    """
+    Recursively flattens a nested list and returns a set of unique elements.
+
+    This function traverses all nested lists and collects elements into a set,
+    removing any duplicates. The final result is unordered.
+
+    Parameters:
+    ----------
+    lst: A list that may contain other nested lists.
+    flat_list : Optional list. Used internally during recursion. Should not be set manually.
+
+    Returns:
+    -------
+        A set containing all unique elements from the nested list.
+
+    Examples:
+    --------
+    >>> flatten_list([1, [2, [2, 3]], 4, 1])
+    {1, 2, 3, 4}
+    """
+    if flat_list is None:
+        flat_list = []
+
+    for i in lst:
+        if isinstance(i, list):
+            flatten_list(i, flat_list)
+        else:
+            flat_list.append(i)
+
+    return set(flat_list)
 
 
 def run_until_done(command: str):
@@ -191,11 +337,11 @@ def run_until_done(command: str):
         return 1
     else:
         time.sleep(random.randint(2, 10))
-        logger.warning("recurscive run of: %s", command)
+        _logger_.warning("recurscive run of: %s", command)
         run_until_done(command)
 
 
-def file_exists_and_nonzero(filename: str):
+def file_exists_and_nonzero(filename: str) -> bool:
     """
     Check if a file exists and its size is nonzero.
 
@@ -208,19 +354,22 @@ def file_exists_and_nonzero(filename: str):
     return os.path.exists(filename) and os.path.getsize(filename) > 0
 
 
-def split_list(input_list: List, chunk_size: int):
+def split_list(input_list: list, chunk_size: int) -> list:
     """
-    Split a list to sublists of a size.
+    Split a list to sublists of a user defined size (`chunk_size`).
     """
     return [
         input_list[i: i + chunk_size] for i in range(0, len(input_list), chunk_size)
     ]
 
 
-def many_to_one_files(dir_with_files, merged_file):
+def many_to_one_files(dir_with_files: str, merged_file: str) -> None:
     """
     Makes a single file out of all files in a directory by concatenating having rows of one after the other
 
+    Arguments:
+        dir_with_files: Path of the directory the files of which to be merged
+        merged_file: Path to merged output file
     """
     command = " ".join(
         [
@@ -242,13 +391,15 @@ def many_to_one_files(dir_with_files, merged_file):
     os.system(command)
 
 
-def ko_list_parser(ko_list: str):
+def ko_list_parser(ko_list: str) -> dict:
     """
     Parses ko_list file into a dict object - based on DiTing
 
-    :param ko_list: path to the ko_list file that comes from the kofam database https://www.genome.jp/ftp/db/kofam/
-    :return: a dictionary mapping knum to threshold and score_type
-    :rtype: dict
+    Arguments:
+        ko_list: path to the `ko_list` file that comes from the kofam database https://www.genome.jp/ftp/db/kofam/
+
+    Returns:
+        A dictionary mapping knum to threshold and score_type
     """
     ko_dic = {}  # { knum : [threshold, score_type] }
     with open(ko_list) as fi:
@@ -262,14 +413,16 @@ def ko_list_parser(ko_list: str):
     return ko_dic
 
 
-def merge_ko(hmmout_dir, output):
+def merge_ko(hmmout_dir: str, output: str) -> None:
     """
     Parses the KO<>.<bin>.hmmout files produced by the kegg_annotation() function
-    to create a single 3-column file (output) with the bin_id, the corresponding conting and the KO that wa mapped to it.
+    to create a single 3-column file (output) with the bin_id, the corresponding conting 
+    and the KO that was mapped to it.
     The function then returns a dictionary with the bin ids as the keys and the set of KOs found to each as the value.
 
-    :param hmmout_dir (str): path to the .hmmout files
-    :param output (str): path/filename to save the output file
+    Args:
+        hmmout_dir: path to the .hmmout files
+        output: Path/filename to save the output file
     """
     # Under any circumstances microbetag will overwrite the ko_merged.txt file
     with open(output, "w") as fo:
@@ -283,12 +436,13 @@ def merge_ko(hmmout_dir, output):
         os.system(" ".join(["cat", bin_kos_file, ">>", output]))
 
 
-def bin_kos_to_file(hmmout_dir, bin_id):
+def bin_kos_to_file(hmmout_dir: str, bin_id: str) -> None:
     """
-    Builds a 3-col file for a bin and remove the KO-specific output files of hmmsearch
+    Builds a 3-col file for a bin and removes the KO-specific output files of `hmmsearch`
 
-    :param hmmout_dir: Directory to the hmmout files
-    :param ko_tmp:
+    Arguments:
+        hmmout_dir: Directory to the hmmout files
+        bin_id: Name of the sequence id under study
     """
     # Write 3-cols entries in tmp file
     bin_kos_file = os.path.join(hmmout_dir, "".join([bin_id, "_kos.tsv"]))
@@ -300,34 +454,39 @@ def bin_kos_to_file(hmmout_dir, bin_id):
             basename, gene_id, k_number = parse_hmmout(hmmout_file, hmmout_dir)
             with open(bin_kos_file, "a") as fo:
                 fo.write(basename + "\t" + gene_id + "\t" + k_number + "\n")
-        except:
+        except Exception:
             # Ignore non-informative lines
             pass
 
     # Remove .hmmout files
     bin_hmmout = os.path.join(hmmout_dir, ".".join([bin_id, "hmmout.all"]))
-    print(bin_hmmout)
     many_to_one_files(hmmout_dir, bin_hmmout)
     for p in glob.glob(hmmout_dir, recursive=True):
-        print(p)
         if os.path.isfile(p) and p.endswith(".hmmout"):
             os.remove(p)
 
 
-def parse_hmmout(hmmout_file, hmmout_dir):
+def parse_hmmout(hmmout_file: str, hmmout_dir: str) -> tuple[str, str, str]:
     """
-    Parses the output of the hmmsearch
+    Parses the output of the hmmsearch to return the the sequence id along with the
+    a gene and its corresponding KEGG ORTHOLOGY term as mentioned in the `hmmout_file`.
 
-    :param hmmout_file (str): Filename of the .hmmout file
-    :param hmmout_dir (str): Directory where hmmout_file is located
-    :return basename (str): Bin id
-    :return gene_id (str): Gene id
-    :retrun k_number (str): KEGG ORTHOLOGY term found
+    Arguments:
+        hmmout_file: Filename of the .hmmout file
+        hmmout_dir: Directory where hmmout_file is located
+
+    Returns:
+        A tuple consisting of:
+            - basename: Sequence id
+            - gene_id: Gene id
+            - k_number: KEGG ORTHOLOGY term found
     """
     if hmmout_file.endswith(".hmmout"):
-        kobasename = hmmout_file.rsplit(".", 1)[0]
-        basename = kobasename.split(".", 1)[1]
+
+        kobasename       = hmmout_file.rsplit(".", 1)[0]
+        basename         = kobasename.split(".", 1)[1]
         hmmout_file_path = os.path.join(hmmout_dir, hmmout_file)
+
         with open(hmmout_file_path, "r") as fi:
             for line in fi:
                 if not line.startswith("#"):
@@ -340,16 +499,15 @@ def parse_hmmout(hmmout_file, hmmout_dir):
                     return basename, gene_id, k_number
 
 
-def load_merged_ko_file(merged_ko):
+def load_merged_ko_file(merged_ko: str) -> pd.DataFrame:
     """
     Load the 3-columns KEGG annotations file as built from the merge_ko()
 
     Input:
-        merged_ko (str): path to 3-columns output file of the merge_ko()
+        merged_ko: path to 3-columns output file of the merge_ko()
 
     Returns:
-        pivot_df (pd.DataFrame): a presence-absence (1/0) df where KOs are the rows and bin_ids the columns
-
+        pivot_df: a presence-absence (1/0) df where KOs are the rows and bin_ids the columns
     """
     if merged_ko.endswith(".gz"):
         os.system(f"gunzip {merged_ko}")
@@ -372,19 +530,25 @@ def load_merged_ko_file(merged_ko):
     return pivot_df  # keep one | used to alse return the bins_kos
 
 
-def convert_to_json_serializable(obj):
+def convert_to_json_serializable(obj: Any) -> Any:
     """
-    Recursively serializes entries of an object, i.e. a set is converted to a list, a list is split to its items
-    and a dictionary keeps its key and their values get serialized
+    Recursively serializes entries of an object
+    A set is converted to a list, a list is flattened to its items
+    and a dictionary keeps its key and their values get serialized.
+
+    Note:
+        This is essential step both for allowing a jsonified response and to be able
+        to dump a dictionary as a JSON file.
     """
     if isinstance(obj, (int, float, str, bool, type(None))):
         return obj
+
     elif isinstance(obj, set):
         return list(obj)
+
     elif isinstance(obj, list):
         return [convert_to_json_serializable(item) for item in obj]
-    # elif isinstance(obj, dict):
-    #     return {key: convert_to_json_serializable(value) for key, value in obj.items()}
+
     elif isinstance(obj, dict):
         new_dict = {}
         for key, value in obj.items():
@@ -392,6 +556,7 @@ def convert_to_json_serializable(obj):
                 key = str(key)  # or use "|".join(key) if you want to preserve tuple structure better
             new_dict[key] = convert_to_json_serializable(value)
         return new_dict
+
     else:
         try:
             return json.dumps(obj)
@@ -399,9 +564,12 @@ def convert_to_json_serializable(obj):
             return str(obj)
 
 
-def ensure_flashweave_format(conf):
+def ensure_flashweave_format(conf: "Config") -> None:
     """
     Build an OTU table that will be in a FlashWeave-based format.
+
+    Note:
+        Saves abundance data to be used with FlashWeave in the output directory.
     """
 
     flashweave_table = pd.read_csv(
@@ -417,50 +585,59 @@ def ensure_flashweave_format(conf):
 
         flashweave_table.iloc[:, 0] = flashweave_table.iloc[:, 0].astype(str)
         flashweave_table.to_csv(conf.flashweave_abd_table, sep="\t", index=False)
-        return 1
 
     except Exception as e:
-        logger.error(
+        _logger_.error(
             """Error in ensuring FlashWeave format: %s.
             Please check your FlashWeave parameters, especially `n_obs_min` and `k_max`.""",
             e,
         )
-        return 0
+        raise Exception
 
 
-def ensure_same_namespace_after_fw(conf):
+def ensure_same_namespace_after_fw(conf: "Config") -> None:
     """
-    [TODO] can be removed but let's wait
-    Inconsistencies from D300244:bin_000023 in the abundance table to D300244.bin_000023 in FlashWeave.
-    Keep the routine in general along with the find_id_differences().
+    Reads FlashWeave edgelist file and tries to map sequence ids of node columns of the edgelist
+    to their corresponding in the abundance table.
 
-    Apparently, the conf.network is a FlashWeave network file - thus the skip 2 rows
+    Attention:
+        The need of this was first met with a local data set where sequence ids were like:
+        D300244:bin_000023 in the abundance table
+        and then in the edgelist returned by FlashWeave, those idsz to D300244.bin_000023 in FlashWeave.
+
+        # NOTE (Haris Zafeiropoulos, 2025-05-16):
+        After a few changes this behavior changed but I am not sure why.
+        Thus, maybe this step is not necessary anymore and it could be removed.
+        Yet, tests are required.
+
+    Note:
+        Apparently, the conf.network in this case is in the format FlashWeave networks, thus the `skiprows=2`
     """
     import difflib
 
     # Function to find the closest match and its index
-    def find_closest_match_with_index(element, list2, cutoff=0.6):
+    def _find_closest_match_with_index(element, list2, cutoff=0.6):
         matches = difflib.get_close_matches(element, list2, n=1, cutoff=cutoff)
         if matches:
             closest_match = matches[0]
-            index = list2.index(closest_match)
+            index         = list2.index(closest_match)
             return closest_match, index
         return None, None
 
-    abd_df = pd.read_csv(conf.flashweave_abd_table, sep="\t")
+    abd_df        = pd.read_csv(conf.flashweave_abd_table, sep="\t")
     abd_df_seqids = abd_df[abd_df.columns[0]].tolist()
 
-    net_df = pd.read_csv(conf.network, sep="\t", skiprows=2, header=None)
+    net_df         = pd.read_csv(conf.network, sep="\t", skiprows=2, header=None)
     net_df.columns = ["bin_a", "bind_b", "weight"]
 
-    col1 = net_df["bin_a"].tolist()
-    col2 = net_df["bind_b"].tolist()
+    col1   = net_df["bin_a"].tolist()
+    col2   = net_df["bind_b"].tolist()
     weight = net_df["weight"].tolist()
 
     # Replace closest match in both col1 and col2 with the element from abd_df_seqids
     for element in abd_df_seqids:
         for col in [col1, col2]:  # Iterate over both columns
-            closest_match, index = find_closest_match_with_index(element, col)
+            closest_match, index = _find_closest_match_with_index(element, col)
             if closest_match:
                 # Replace the closest match in the current column
                 col[index] = element
@@ -471,17 +648,12 @@ def ensure_same_namespace_after_fw(conf):
 
     net_df.to_csv(conf.network, sep="\t", index=False, header=False)
 
-    return 1
-
 
 def extend_complements(
-    complements_json,
-    descrps_path,
-    max_scratch_alt,
-    pathway_complement_percentage,
-    pathway_complements_dir,
-    on_the_fly=False
-):
+    complements_json: str, descrps_path: str,
+    max_scratch_alt: int, path_compl_perce: int, path_compl_dir: str,
+    # on_the_fly=False
+) -> dict:
     """
     Extends pathway complement annotations based on given settings and descriptions.
 
@@ -489,16 +661,16 @@ def extend_complements(
         - complements_json: Path to the complements JSON file.
         - descrps_path: Path to the KEGG MODULES description file.
         - max_scratch_alt: Maximum number of alternative complements allowed.
-        - pathway_complement_percentage: Maximum allowable percentage of required KOs that must be present.
-        - pathway_complements_dir: Directory to save the extended complements JSON file.
+        - path_compl_perce: Maximum allowable percentage of required KOs that must be present.
+        - path_compl_dir: Directory to save the extended complements JSON file.
         complements_dict (dict): Dictionary of complements loaded from a JSON file.
         descrps_path (str): Path to the module descriptions file (tab-separated file with no header).
 
     Returns:
-        dict: Pathway Complementarities in a dictionary to be assigned in the mgg format
+        A dictionary with pathway complementarities to be assigned in the MGG format
 
-    Builds:
-        pathway_complements_extended: JSON file with the dictionary returned
+    Note:
+        Here we build the `pathway_complements_extended.json` a JSON file with the dictionary returned
     """
     # Load and process module descriptions
     descrps         = pd.read_csv(descrps_path, sep="\t", header=None)
@@ -532,7 +704,7 @@ def extend_complements(
 
                 # Skip if the percentage exceeds the threshold
                 perce = len(kos_to_get) / len(complet_alt)
-                if perce > pathway_complement_percentage:
+                if perce > path_compl_perce:
                     continue
 
                 # Prepare the complement string
@@ -552,7 +724,7 @@ def extend_complements(
 
     # Save extended complements to JSON
     extended_path_compl_json = os.path.join(
-        pathway_complements_dir, "pathway_complements_extended.json"
+        path_compl_dir, "pathway_complements_extended.json"
     )
     with open(extended_path_compl_json, "w") as f:
         json.dump(complements_dict_ext, f)
@@ -560,41 +732,59 @@ def extend_complements(
     return complements_dict_ext
 
 
-def extend_faprotax(conf):
+def extend_faprotax(conf: "Config") -> tuple[dict[str, list], list[str]]:
     """
     Parses the sub tables of the faprotax analysis
     to assign the biological processes related to each sequence id
+
+    Returns:
+        A tuple consisting of:
+        - bin_faprotax_traits: A dictionary with the sequence id as key and a list of FAPROTAX trais a value
+        - faprotax_traits: A list with the unique set of the FAPROTAX traits found across all taxa of the study
     """
     bin_faprotax_traits = {}
+
     fapro_sub_tables = [
         os.path.join(conf.faprotax_sub_tables, file)
         for file in os.listdir(conf.faprotax_sub_tables)
     ]
+
     for file in fapro_sub_tables:
+        # NOTE (Haris Zafeiropoulos, 2025-05-20):
+        # We replace '_' with a space for user's convenience in the MGG
+        # Also, this needs to be synced with the MGG.MUtils code for the grouping in the node panel
         trait_name, _ = os.path.splitext(os.path.basename(file))
-        trait = pd.read_csv(file, sep="\t", skiprows=1)
+        trait         = pd.read_csv(file, sep="\t", skiprows=1)
+
         bins_with_trait = trait[conf.sequence_id_column_name].dropna()
+
         for bin_id in bins_with_trait:
-            bin_faprotax_traits.setdefault(bin_id, []).append(trait_name)
+            bin_faprotax_traits.setdefault(bin_id, []).append(trait_name.replace("_", " "))
 
     faprotax_traits = list(flatten_list(bin_faprotax_traits.values()))
 
     return bin_faprotax_traits, faprotax_traits
 
 
-def load_phenotypic_traits(conf):
+def load_phenotypic_traits(conf: "Config") -> tuple[dict[str, dict[str, str | float]], set[str]]:
     """
-    Load phenotrex-based trait files and assignm them per genome. 
+    Load phenotrex-based trait files and assignm them per genome.
 
+    Returns:
+        A tuple consisting of:
+            - bin_phen_traits: A dictionary with genome id as key and a dictionary as value, 
+                                with each phenotrex-based trait as value and their presence/absence
+                                and scores as value
+        phentraits: A set with the traits presentt
 
-    Returns:                    
-        bin_phen_traits: A dict with genome id as key and a dict as value with each trait as value and their presence/absence
-                        and score as value
-                        bin_phen_traits[bin_id][trait_name] = {
-                                    "presence": case["Trait present"],
-                                    "confidence": case["Confidence"],
-                                }
-        phentraits: A set witt the traits presentt
+    Note:
+        Example of a `bin_phen_traits`:
+        ```
+        bin_phen_traits[bin_id][trait_name] = {
+            "presence": case["Trait present"],
+            "confidence": case["Confidence"],
+        }
+        ```
     """
     bin_phen_traits = {}
     phentraits      = set()
@@ -627,34 +817,39 @@ def load_phenotypic_traits(conf):
     return bin_phen_traits, phentraits
 
 
-def flatten_list(lista, flat_list=[]):
+def is_any_nan(x) -> bool:
     """
-    Recursive function taking as input a nested list and returning a flatten one.
-    E.g. ['GCF_003252755.1', 'GCF_900638025.1', 'GCF_003252725.1', 'GCF_003253005.1', 'GCF_003252795.1', ['GCF_000210895.1'], ['GCF_000191405.1']]
-    becomes ['GCF_003252755.1', 'GCF_900638025.1', 'GCF_003252725.1', 'GCF_003253005.1', 'GCF_003252795.1'].
+    Checks whether the input value is NaN (Not a Number).
+
+    It first tries to use `numpy.isnan()` for numerical or array-like inputs. 
+    If that fails (e.g., for non-numeric types), it falls back to checking if the string
+    representation of `x` is equal to 'nan' (case-insensitive).
+
+    Returns:
+        bool
     """
-    for i in lista:
-        if isinstance(i, list):
-            flatten_list(i, flat_list)
-        else:
-            flat_list.append(i)
-    return set(flat_list)
-
-
-def is_any_nan(x):
     try:
         return np.isnan(x)
     except Exception:
         return str(x).lower() == 'nan'
 
-def remove_nan_from_list(lst):
 
+def remove_nan_from_list(lst: list) -> list:
+    """Removes Nan from a list using the :class:`is_any_nan`."""
     return [x for x in lst if not is_any_nan(x)]
 
 
-def detect_separator(file_path):
+def detect_separator(file_path: str) -> str:
     """
-    Detect the separator used in a text file, i.e `\t`,  `,` , `;` etc.
+    Detects the separator used in a text file, i.e `\t`,  `,` , `;` etc.
+
+    It makes use of the :class:`csv.Sniffer` and gets a sample of the text based on its size.
+
+    Arguments:
+        file_path: Path to the file to be considered
+
+    Returns:
+        A separator, e.g. ","    
     """
     try:
         with open(file_path, "r") as file:
@@ -687,9 +882,11 @@ def detect_separator(file_path):
         raise TypeError(f"Cannot get delimiter for file {file_path}")
 
 
-def find_three_column_format(file_path, delimiter):
+def find_three_column_format(file_path: str, delimiter: str) -> tuple[int, None | int]:
     """
     Checks if a file is in a three-column format and whether the third column is a float.
+    If not, it skips row and goes to the next one checking for the 3-colummn format.
+    Once met, it returns the line number, if that is neve the case raises an Exception.
 
     Args:
         file_path (str): Path to the file to be checked.
@@ -700,35 +897,40 @@ def find_three_column_format(file_path, delimiter):
     """
     with open(file_path, "r") as f:
         for line_num, line in enumerate(f, start=1):
-            # Split by tab and check the number of columns
             columns = line.strip().split(delimiter)
             if len(columns) == 3:
                 try:
-                    float(columns[-1])  # Check if conversion to float is possible
+                    float(columns[-1])
                     return line_num, None
-                except ValueError:
-                    return line_num, 0
-    raise ValueError(
-        f"The network file {file_path} is not in the 3-columns format required."
+                except (ValueError, TypeError):
+                    pass
+    raise TypeError(
+        f"The network file {file_path} is not in the 3-columns format required with a numeric weight column."
     )
 
 
-def get_tool_location(software):
+def get_tool_location(software: str) -> str:
     """
-    Check if a software is available in the system path or in the alternative location.
-    Will return either the sofware name itself which will then be ok to run as is
+    Check if a software program is available in the system path or in the alternative location.
+
+    Will return either the sofware name itself which will then be ok to run as is (globally)
     or the full path to the software if it's found in the alternative location.
     In both cases, the return value will allow running the software.
+
+    If software not available, it will reaise a SystemExit() error with a message about the missing software.
+
+    Arguments:
+        software: Name of the software program to be found
+
     """
 
     # Try running prodigal and check if it exists
     # NOTE: This does not meat that the software is not installed under ~/.microbetag
     # If ~/.microbetag was added in PATH, it's gonna still be in this case
     if shutil.which(software) is not None:
-        print("Case 1")
         return software
     else:
-        print(f"No {software} system-wide installation found.")
+        _logger_.info(f"No {software} system-wide installation found.")
 
     # If software is not found, check the alternative location
     HOME = os.path.expanduser("~")
@@ -737,21 +939,21 @@ def get_tool_location(software):
 
     # Try running prodigal from the alternative location
     if shutil.which(software_path) is not None:
-        print("Case 2")  # e.g. ~/.microbetag/prodigal
+        # e.g. ~/.microbetag/prodigal
         return software_path
 
     elif shutil.which(os.path.join(software_path, software)) is not None:
-        print("Case 3")  # e.g. ~/.microbetag/prodigal/prodigal
+        # e.g. ~/.microbetag/prodigal/prodigal
         return os.path.join(software_path, software)
 
     elif shutil.which(os.path.join(software_path, "bin", software)) is not None:
-        print("Case 4")  # e.g. ~/.microbetag/prodigal/bin/prodigal
+        # e.g. ~/.microbetag/prodigal/bin/prodigal
         return os.path.join(software_path, "bin", software)
 
     else:
         # If neither path works
-        logger.error(f"{software} is not available. Please install it first.")
+        _logger_.error(f"{software} is not available. Please install it first.")
         raise SystemExit(f"{software} is not available. Please install it first.")
 
 
-logger = mtg_logger(__name__)
+_logger_ = mtg_logger(__name__)

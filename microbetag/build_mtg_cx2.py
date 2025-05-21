@@ -1,12 +1,14 @@
 """
-Hint:
-    Builds a microbetag-annotated network in a CX2 format, using the ndex2 (https://ndex2.readthedocs.io/) library.
+Aim:
+    Builds a microbetag-annotated network in a CX2 format, using the `ndex2`
+    (https://ndex2.readthedocs.io/) library.
 
 Note:
     In case of the on-the-fly version, the annotated network is returned as a jsonifi-ed Flask Response.
-    In the stand-alone version, the annotated network is saved (mtg-timestamp.cx2) and the user has to load it 
-    on Cytoscape to be able to visualize it and furthere exploit the MGG Cytoscape App (https://apps.cytoscape.org/apps/mgg) 
-    to parse ana analyze the network.
+    In the stand-alone version, the annotated network is saved (mtg-timestamp.cx2)
+    and the user has to load it on Cytoscape to be able to visualize it
+    and further exploit the MGG Cytoscape App (https://apps.cytoscape.org/apps/mgg)
+    to parse and analyze the network.
 """
 import os
 import pickle
@@ -42,16 +44,18 @@ _COOCCURENCE_DEPLETION_                 = "co-occurrence/co-exclusion"
 
 _logger_ = mtg_logger(__name__)
 __RANKS__ = ["domain", "phylum", "class", "order", "family", "genus", "species"]
+
+
 # -----------------------------
 # NODES
 # -----------------------------
-def taxonomy_levels_sa(node: dict):
+def taxonomy_levels_sa(node: dict) -> None:
     """
-    Given a node with a taxonomy attribute, split to 7 taxonomic levels and gives their values to the corresponding ones
-    For stand-alone version.
+    Updates a node's attributes by splitting taxonomy to the 7-levels scheme (:attr:`__RANKS__`)
+    and giving their values to the corresponding ones. For stand-alone version.
 
     Arguments:
-        node: A
+        node: A ndex2-oriented node's dictionary; keys should be sequence ids
 
     Note:
         Edits the `node` dictionary by adding a new key:value pair for each (of the 7) taxonomic level.
@@ -79,7 +83,6 @@ def taxonomy_levels_sa(node: dict):
         pass
 
 
-# TODO (Haris Zafeiropoulos, 2025-05-07): check the seq_id_to_taxonomy Dict
 def init_nodes_and_edges(
     edgelist: pd.DataFrame, seq_id_to_taxonomy: dict[str, str], config=None
 ) -> tuple[list[dict], list[str], list[dict]]:
@@ -87,8 +90,8 @@ def init_nodes_and_edges(
     Initiates the nodes and edges of the network as dictionaries, in a ndex2-oriented format.
 
     Args:
-        edgelist (pandas.DataFrame): DataFrame containing 'node_A', 'node_B', and 'microbetag::weight'.
-        seq_id_to_taxonomy (dict): Mapping from sequence IDs to taxonomy.
+        edgelist: DataFrame containing 'node_A', 'node_B', and 'microbetag::weight'.
+        seq_id_to_taxonomy: Mapping dictionary for sequence ids: taxonomy.
 
     Returns:
         tuple: A tuple containing:
@@ -108,7 +111,8 @@ def init_nodes_and_edges(
         for node in nodes:
             taxonomy_levels_sa(node)
     else:
-        # NOTE (Haris Zafeiropoulos, 2025-05-04): the otf_seq_tax_df is built on the app.py and not on the config.py
+        # NOTE (Haris Zafeiropoulos, 2025-05-04):
+        # the otf_seq_tax_df is built on the app.py and not on the config.py - onthefly version only
         ncbi_ids_dict = load_otf_seq_map(config.otf_seq_tax_df)
 
         nodes = [
@@ -138,6 +142,14 @@ def get_node_attributes(seq_id: str, seq_id_to_taxonomy: dict, ncbi_ids_dict: di
     """
     Using the sequence mapping to their corresponding taxonomies objects, builds a dictionary with the
     node's taxonomy and mapped genomes (in case of on-the-fly) attributes, in a ndex2 and MGG-oriented way.
+
+    Args:
+        seq_id: Sequence id of the node
+        seq_id_to_taxonomy: Dictionary with sequence ids keys and their corresponding taxonomies as value
+        config: Instance of the :class:`Config` class
+
+    Returns:
+        A dictionary with the a node's attributes regarding the `microbetag` namespace of the MGG
     """
     node_tax = seq_id_to_taxonomy.get(seq_id, "Unknown").rstrip(";")
 
@@ -165,7 +177,7 @@ def get_node_attributes(seq_id: str, seq_id_to_taxonomy: dict, ncbi_ids_dict: di
     return attrs
 
 
-def update_with_phen_traits(config: "Config", nodes: list[dict], node_names: list[str]):
+def update_with_phen_traits(config: "Config", nodes: list[dict], node_names: list[str]) -> None:
     """
     Updates nodes with phenotypic traits.
 
@@ -179,7 +191,7 @@ def update_with_phen_traits(config: "Config", nodes: list[dict], node_names: lis
         it rather updates entries of the `nodes` dictionary.
 
     Note:
-        `node_names` is a mapping object where order is essential. It includes the sequence ids of the nodes 
+        `node_names` is a mapping object where order is essential. It includes the sequence ids of the nodes
         present in the network, in the order they will be introduced in the ndex2 network constructor.
     """
     bin_phen_traits, _ = load_phenotypic_traits(config)
@@ -211,12 +223,13 @@ def update_with_phen_traits(config: "Config", nodes: list[dict], node_names: lis
         node = nodes[node_index]
 
         for trait, values in phen_attributes.items():
-            # NOTE (Haris Zafeiropoulos, 2025-05-05): The phen predictions are YES/NO in their files, we convert those to binary
+            # NOTE (Haris Zafeiropoulos, 2025-05-05):
+            # The phen predictions are YES/NO in their files, we convert those to binary
             node["v"][f"phendb::{trait}"]      = values["presence"].strip().upper() == "YES"
             node["v"][f"phendbScore::{trait}"] = values["confidence"]
 
 
-def update_with_faprotax_traits(config: "Config", nodes: list[dict], node_names: list[str]):
+def update_with_faprotax_traits(config: "Config", nodes: list[dict], node_names: list[str]) -> None:
     """
     Updates nodes with FAPROTAX traits.
 
@@ -233,8 +246,9 @@ def update_with_faprotax_traits(config: "Config", nodes: list[dict], node_names:
             node_index = node_names.index(bin_name)
 
         except ValueError:
-            print(f"Warning: {bin_name} not found in node names.")
-            continue  # Skip if bin_name is not in node_names
+            _logger_.warn(f"Warning: {bin_name} not found in node names.")
+            # Skip if bin_name is not in node_names
+            continue
 
         node = nodes[node_index]
 
@@ -242,7 +256,7 @@ def update_with_faprotax_traits(config: "Config", nodes: list[dict], node_names:
             node["v"][f"faprotax::{trait}"] = True
 
 
-def update_with_manta(config: "Config", nodes: list[dict], node_names: list[str]):
+def update_with_manta(config: "Config", nodes: list[dict], node_names: list[str]) -> dict:
     """
     Updates nodes with MANTA network cluster, assignment, and position data.
 
@@ -251,6 +265,10 @@ def update_with_manta(config: "Config", nodes: list[dict], node_names: list[str]
 
     Note:
         Besides updating the entries of the `nodes` list, it also returns a `ndex2.layout`.
+
+    Attention:
+        Currently, `microbetag` does not apply the `manta` layout returned. We could/should consider doing so
+        by editing the `ndex2` object.
     """
     manta_net = read_cyjson(config.manta_net)
 
@@ -260,14 +278,14 @@ def update_with_manta(config: "Config", nodes: list[dict], node_names: list[str]
         try:
             nodes[node_names.index(bin_name)]["manta::cluster"] = cluster
         except ValueError:
-            print(f"Warning: {bin_name} not found in node names.")
+            _logger_.warning(f"{bin_name} not found in node names.")
 
     for bin_name, assignment in manta_net.nodes(data="assignment"):
 
         try:
             nodes[node_names.index(bin_name)]["manta::assignment"] = assignment
         except ValueError:
-            print(f"Warning: {bin_name} not found in node names.")
+            _logger_.warninig(f"{bin_name} not found in node names.")
 
     # Store MANTA layout (node positions)
     manta_layout = [
@@ -281,17 +299,17 @@ def update_with_manta(config: "Config", nodes: list[dict], node_names: list[str]
 # -----------------------------
 # EDGES - PATHWAY COMPLEMENTARITY
 # -----------------------------
-def _set_none_genome(genome, sequence):
-    return genome or sequence
 
 def pathway_complement_edge(
     edge_id: int, beneficiary: str, donor: str, complement, node_names: list[str],
     beneficiary_genome=None, donor_genome=None, update=False, cx_edges=None
-):
+) -> dict:
     """
-    Creates an edge representing pathway complementarity between a donor and a beneficiary.
+    Creates or updates an edge carrying pathway complementarities between a donor and a beneficiary node.
 
-    Conceptually, the donor is the source, since a compound would be secreted from it and drive to the beneficiary (target)
+    Note:
+        Conceptually, the donor is the `source` of the `edge`, since a compound would be **secreted from** it 
+        and **drive to** the beneficiary (`target`).
 
     Arguments:
         edge_id:
@@ -303,7 +321,7 @@ def pathway_complement_edge(
         interacting (str): Descriptor of the interaction.
 
     Returns:
-        Dict: Edge representation.
+            A dictionary with a pathway complementari edge representation.
     """
     beneficiary_genome = _set_none_genome(beneficiary_genome, beneficiary)
     donor_genome       = _set_none_genome(donor_genome, donor)
@@ -327,35 +345,7 @@ def pathway_complement_edge(
     return edge
 
 
-def _hat_complement(complements):
-    """ """
-    hat_compl = []
-    for compl in complements.values():
-        hat_compl.append("^".join(compl))
-    return hat_compl
-
-
-def _get_edge_id(beneficiary, donor, node_names, edges, interaction_type):
-    """
-    Checks if an edge is already there of a specific source - target -interaction type.
-    If yes, it returns the index of the edge in the edges list.
-    Remember! Source and target are always the sequence identifiers.
-    """
-    target, source = node_names.index(beneficiary), node_names.index(donor)
-    for idx, e in enumerate(edges):
-        if e["s"] == source and e["t"] == target and e["v"]["interaction type"] == interaction_type:
-            return idx, True
-    return -1, False
-
-
-def _update_or_append(lst, index, item, update):
-    if update:
-        lst[index]['v'].update(item['v'])  # 👈 preserves other parts of edge
-    else:
-        lst.append(item)
-
-
-def _get_compl_maps(config, genome_ids_in_nodes: list):
+def get_compl_maps(config, genome_ids_in_nodes: list) -> tuple[pd.DataFrame, dict[str, set]]:
     """
     Builds mapping objects to properly pass pathway/seed complementarities to their corresponding edges.
 
@@ -364,8 +354,11 @@ def _get_compl_maps(config, genome_ids_in_nodes: list):
         genomes_ids_in_nodes:  A list of GC ids found in complementarities (pathCompls.json)
 
     Returns:
-        nodes_in_compls: A pd.Series with gc ids.
-        node_to_gtdb: {seq_id: [gtdb_ids]}
+        A tuple consisting of:
+        - nodes_in_compls: A pd.Series with the sequence ids of the nodes that participate 
+                           in pathway complementarity drive edges.
+        - node_to_gtdb: A dictionary with sequence ids as key and the set of their corresponding
+                        GTDB representative as value{seq_id: {gtdb_ids}}
     """
     df      = config.mspecies_map_df
     gc_list = list(genome_ids_in_nodes.copy())
@@ -380,8 +373,6 @@ def _get_compl_maps(config, genome_ids_in_nodes: list):
 
     # Combine and get unique values if needed
     nodes_in_compls = pd.concat([nodes_from_A, nodes_from_B]).unique()
-
-    # -----
 
     # Initialize a defaultdict of sets (or use list if you prefer duplicates)
     node_to_gtdb = defaultdict(set)
@@ -406,8 +397,8 @@ def pathway_complements(config, edgelist_df, node_names, cx_edges):
         complements_json=config.compl_file,
         descrps_path=config.module_descriptions,
         max_scratch_alt=config.max_scratch_alt,
-        pathway_complements_dir=config.pathway_complements_dir,
-        pathway_complement_percentage=config.pathway_complement_percentage,
+        path_compl_dir=config.path_compl_dir,
+        path_compl_perce=config.path_compl_perce,
     )
 
     nodes_in_compls = set()
@@ -420,7 +411,7 @@ def pathway_complements(config, edgelist_df, node_names, cx_edges):
 
         # NOTE (Haris Zafeiropoulos, 2025-05-07): In this case the nodes_in_compls does not
         # have sequence identifiers, as in the stand-alone version, but GC ids. So we need to map them to seq ids.
-        nodes_in_compls, node_to_gtdb = _get_compl_maps(config, nodes_in_compls)
+        nodes_in_compls, node_to_gtdb = get_compl_maps(config, nodes_in_compls)
 
     for _, link in edgelist_df.iterrows():
         node_a, node_b, _ = link
@@ -456,6 +447,52 @@ def pathway_complements(config, edgelist_df, node_names, cx_edges):
                     )
 
                     _update_or_append(cx_edges, edge_id, pe, update)
+
+
+def _set_none_genome(genome, sequence):
+    return genome or sequence
+
+
+def _hat_complement(complements: dict) -> list:
+    """
+    Joins parts of each complementarity as returned from API in a single string devided by ^,
+    so MGG can get a list of strings.
+    """
+    hat_compl = []
+    for compl in complements.values():
+        hat_compl.append("^".join(compl))
+    return hat_compl
+
+
+def _get_edge_id(
+    beneficiary: str, donor: str, node_names: list, edges: list, interaction_type: str
+) -> tuple[int, bool]:
+    """
+    Checks if an edge is already there of a specific source - target -interaction type.
+    If yes, it returns the index of the edge in the edges list.
+    Remember! Source and target are always the sequence identifiers.
+    """
+    target, source = node_names.index(beneficiary), node_names.index(donor)
+    for idx, e in enumerate(edges):
+        if e["s"] == source and e["t"] == target and e["v"]["interaction type"] == interaction_type:
+            return idx, True
+    return -1, False
+
+
+def _update_or_append(lst: list, index: int, item: dict, update: bool) -> None:
+    """
+    Either adds or updates entries of the list of edges (`lst`) with a new edge or a new set of attributes accordingly.    
+
+    Attention:
+        Essential function for getting edge ids properly.
+
+    Note:
+        Does not return anything but **updates** the `lst`
+    """
+    if update:
+        lst[index]['v'].update(item['v'])  # 👈 preserves other parts of edge
+    else:
+        lst.append(item)
 
 
 # -----------------------------
@@ -592,7 +629,7 @@ def seed_complements(config, edgelist_df, node_names, cx_edges):
     kmap      = load_seed_complement_files(config.kegg_mappings)
 
     seed_scores = pd.read_csv(
-        config.phylomint_scores, sep="\t", header=None, skiprows=1, names=["A", "B", "Competition", "Complementarity"]
+        config.phylomint_scores, sep="\t", header=None, skiprows=1, names=["A", "B", "Competition", "Cooperation"]
     )
     seed_scores['A'] = seed_scores['A'].astype(str)
     seed_scores['B'] = seed_scores['B'].astype(str)
@@ -602,7 +639,7 @@ def seed_complements(config, edgelist_df, node_names, cx_edges):
     with open(config.module_nonseeds, "rb") as f:
         non_seed_sets = pickle.load(f)
 
-    with open(config.seed_complements, "rb") as f:
+    with open(config.seed_compl_pckl, "rb") as f:
         seed_complements = pickle.load(f)
 
     seed_complements_dict = seed_complements.to_dict(orient="index")
@@ -653,7 +690,7 @@ def seed_complements(config, edgelist_df, node_names, cx_edges):
 
                     if not scores.empty:
                         competAB, cooperAB = scores.iloc[0][
-                            ["Competition", "Complementarity"]
+                            ["Competition", "Cooperation"]
                         ]
                     else:
                         competAB, cooperAB = None, None  # or suitable defaults
@@ -703,20 +740,11 @@ def build_cx2(nodes: dict[str, dict], edges: dict[str, dict]) -> ndex2.cx2.CX2Ne
     # Create an empty net cx
     cx2 = ndex2.cx2.CX2Network()
 
+    # Add nodes on the cx2
     node_attributes = [node["v"] for node in nodes]
 
-    # # Sort nodes per complexity ..
-    # # NOTE (Haris Zafeiropoulos, 2025-05-05): ndex2 fixes type of column based on the first attributes to be used
-    # # thus we need to fix that based on the most complicated case
-    # def sort_key(d):
-    #     prefixes = set(k.split("::")[0] for k in d)
-    #     return (len(prefixes), len(d))  # you can reverse both with -len if needed
-    # sorted_node_attributes = sorted(node_attributes, key=sort_key, reverse=True)
-
-    # Add nodes on the cx2
     for node_attributes in node_attributes:
 
-        # Add node
         cx2.add_node(attributes=node_attributes)
 
     # Add edges on the cx2
@@ -811,13 +839,13 @@ def load_otf_seq_map(df: pd.DataFrame) -> dict:
 def mtg_annotate_network(config: "Config") -> ndex2.cx2.CX2Network:
     """
     Wrapper function for getting the various annotations previously made for a microbetag run
-    and building a microbetag annotated network in a CX2 format. 
+    and building a microbetag annotated network in a CX2 format.
 
     Arguments:
-        config: An instance of the microbetag configuration class.
+        config: An instance of the microbetag configuration :class:`Config` class.
 
     Returns:
-        net_cx2: A microbetag annotated network in CX2 format.
+        A :class:`ndex2.cx2.CX2Network()` object for the microbetag-annotated network in CX2 format.
     """
 
     # Get the non-annotated network as dataframe
@@ -832,11 +860,11 @@ def mtg_annotate_network(config: "Config") -> ndex2.cx2.CX2Network:
     nodes, node_names, edges = init_nodes_and_edges(edgelist_df, seq_id_to_taxonomy_dic, config)
 
     # Update nodes and edges with the microbetag annotations
-    if len(os.listdir(config.predictions_path)) > 0:
+    if config.phen_traits and os.listdir(getattr(config, "predictions_path", [])):
         _logger_.info("-- Loading phenotrex-based traits\n")
         update_with_phen_traits(config, nodes, node_names)
 
-    if len(os.listdir(config.faprotax_sub_tables)) > 0:
+    if config.faprotax and os.listdir(getattr(config, "faprotax_sub_tables", [])):
         _logger_.info("-- Loading FAPROTAX traits\n")
         update_with_faprotax_traits(config, nodes, node_names)
 
