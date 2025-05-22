@@ -12,9 +12,6 @@ Output:
     - An annotated network in .cx2 format
 """
 
-__version__ = "1.0.4"
-__author__  = "Haris Zafeiropoulos <haris.zafeiropoulos@kuleuven.be>"
-
 import os
 import sys
 import yaml
@@ -22,25 +19,25 @@ import argparse
 
 from .utils import (
     mtg_logger,
-    merge_ko,
     load_merged_ko_file,
-    bin_kos_to_file,
-    ko_list_parser,
-
 )
 from .tools import (
     run_flashweave,
     run_faprotax,
     phenotrex_genotype,
     phenotrex_predict,
-    run_prodigal,
-    kegg_annotation,
     run_seed_complementarity,
     run_manta,
 )
 
+from .wrappers import (
+    build_genres,
+    run_kegg_annotate,
+    run_otf_prodigal,
+)
+
 from .config import Config
-from .genres import GEMSReconstruction
+
 from .build_mtg_cx2 import mtg_annotate_network
 from .helpers import manta_input_net
 
@@ -48,114 +45,6 @@ from .pathway_complementarity import export_pathway_complementarities
 
 
 logger = mtg_logger(__name__)
-
-
-def _run_orf_prodigal(config: Config):
-    """
-    Wrappper function for running Prodigal.
-    """
-
-    if config.bin_filenames is None:
-        logger.error(
-            "Bin files have not been provided."
-            "Please set the path to the directory with your bins/MAGs to the `bins_fasta` parameter of"
-            "the configuration YAML file."
-        )
-
-    for bin_fa in config.bin_filenames:
-
-        bin_filename = os.path.basename(bin_fa)
-
-        bin_id, _ = os.path.splitext(bin_filename)
-        bin_id = bin_id.split("/")[-1]
-
-        bin_fa = os.path.join(config.bins_path, bin_fa)
-
-        logger.info(f"Running Prodigal for {bin_id}")
-        # TODO: check if bin_id is actually only the basename of the whole path until extension
-
-        run_prodigal(bin_fa, bin_id, config.prodigal)
-
-
-def _run_kegg_annotate(config: Config):
-    """
-    Wrapper for the tools.kegg_annotation() for each genome/MAG and the utils.merge_ko().
-    """
-    ko_list = os.path.join(config.kegg_db_dir, "ko_list")
-    ko_dic = ko_list_parser(ko_list)
-
-    hmmout_dir = config.kegg_pieces_dir
-    config.ko_merged = os.path.join(config.kegg_annotations, "ko_merged.txt")
-
-    for bn in config.bin_filenames:
-        bin_id, _   = os.path.splitext(bn)
-        bin_kos_dir = os.path.join(hmmout_dir, bin_id)
-        os.makedirs(bin_kos_dir, exist_ok=True)
-
-        for afile in os.listdir(bin_kos_dir):
-            if afile.endswith(".hmmout.all"):
-                continue
-
-        for bn in config.bin_filenames:
-
-            faa = os.path.join(config.prodigal, bin_id + ".faa")
-
-            # A folder with KO predictions (a single hmmout file for each KO) per bin
-            check = kegg_annotation(
-                faa, bin_id, config.kegg_pieces_dir, config.kegg_db_dir, ko_dic, config.threads,
-            )
-
-            # Out of the 24K hmmout files, make a single one with the predictions as backup
-            # and one with the 3-columns
-            if check:
-                bin_kos_to_file(hmmout_dir=bin_kos_dir, bin_id=bin_id)
-
-    # Make the 3-columns files with all bins and their KOs
-    merge_ko(config.kegg_pieces_dir, config.ko_merged)
-
-
-def _build_genres(config: Config):
-    """
-    Wrapper function for GENREs in a microbetag pipeline run.
-    """
-    # Init reconstruction class
-    build_genres = GEMSReconstruction(config)
-
-    # Annotate step
-    if config.input_for_recon_type == "bins_fasta":
-
-        if config.genre_reconstruction_with == "modelseedpy":
-            build_genres.rast_annotate_genomes()  # saves under config.reconstructions
-
-        elif config.gene_predictor == "prodigal":
-            logger.info(
-                "DiTing .faa files will be used"
-            )  # go to the .faa case, i.e., the ORFs/
-
-        elif config.gene_predictor == "fragGeneScan":
-            logger.info("Get annotations with FragGeneScan.")
-            build_genres.fgs_annotate_genomes()  # saves under config.reconstructions
-
-    elif config.input_for_recon_type == "coding_regions":
-        logger.info("CarveMe will be used with the users .ffn-like files.")
-
-    else:
-        logger.warning(
-            f"The combination of gene_predictor: {config.gene_predictor} \
-            \nand genre_reconstruction_with: {config.genre_reconstruction_with}, are not supported"
-        )
-
-    # Reconstruct step
-    if config.genre_reconstruction_with == "modelseedpy":
-        logger.info("Build draft reconstructions with ModelSEEDpy")
-        build_genres.modelseed_reconstructions()
-
-    elif config.genre_reconstruction_with == "carveme":
-        logger.info("Build draft reconstructions with carveme")
-        build_genres.carve_reconstructions()
-
-    else:
-        logger.info("User models to be used for the seed complementarity step.")
 
 
 def run_microbetag(config: Config):
@@ -172,22 +61,24 @@ def run_microbetag(config: Config):
     """
 
     if config.onthefly or config.api:
-        from .db import (
-            get_phen_traits,
-            get_path_compls_otf,
-            patric_from_gc_list,
-            update_for_patric
-        )
+
+        from . import db
         from .helpers import otf_seqid_ncbi_gtdb_map
+
+        db.DB_CREDENTIALS = config.db_config
+
+        # onthefly confing brings the db credentials on it
 
     # ----------------
     # Build network if not available
     # ----------------
     if config.precalc_only:
+
         logger.info(
             "microbetag is about to perform the precalculations for your list of bins/MAGs only."
             "No network will be built."
         )
+
     elif not os.path.exists(config.network) or os.path.getsize(config.network) == 0:
 
         logger.info(
@@ -225,8 +116,8 @@ def run_microbetag(config: Config):
 
             try:
 
-                phenotrex_genotype(config=config)
-                phenotrex_predict(config=config)
+                phenotrex_genotype(config)
+                phenotrex_predict(config)
 
             except Exception:
 
@@ -238,7 +129,9 @@ def run_microbetag(config: Config):
 
             try:
 
-                get_phen_traits(config.repr_genomes_present, config.predictions_path)
+                # get_phen_traits(config.repr_genomes_present, config.predictions_path)
+                t = db.GetPhenotrexTraits(config)
+                t.get_phen_traits()
 
             except Exception:
 
@@ -264,7 +157,7 @@ def run_microbetag(config: Config):
 
             try:
 
-                _run_orf_prodigal(config)
+                run_otf_prodigal(config)
 
             except Exception:
 
@@ -303,7 +196,7 @@ def run_microbetag(config: Config):
 
             logger.info("[INTERMEDIATE STEP] KEGG ANNOTATION OF THE ORFs \n")
 
-            _run_kegg_annotate(config)
+            run_kegg_annotate(config)
 
             # NOTE (Haris Zafeiropoulos, 2025-05-20):
             # In the stand-alone version, 'else' suggests a 3-col KEGG annotation file already available
@@ -314,7 +207,7 @@ def run_microbetag(config: Config):
 
         if config.onthefly:
 
-            get_path_compls_otf(config)
+            db.get_path_compls_otf(config)
 
         else:
 
@@ -342,7 +235,7 @@ def run_microbetag(config: Config):
 
             logger.info("[INTERMEDIATE STEP] GENOME-SCALE METABOLIC NETWORK RECONSTRUCTIONS")
 
-            _build_genres(config)
+            build_genres(config)
 
         # ----------------
         # microbetag implementation of Phylomint
@@ -355,8 +248,8 @@ def run_microbetag(config: Config):
             config.get_complements = True
 
             # Get dictionary with GTDB accession ids to their correspoding PATRIC
-            gc_to_patric_ids        = patric_from_gc_list(config.repr_genomes_present)
-            config.gc_to_patric_ids = update_for_patric(config, gc_to_patric_ids)
+            gc_to_patric_ids        = db.patric_from_gc_list(config.repr_genomes_present)
+            config.gc_to_patric_ids = db.update_for_patric(config.module_nonseeds, gc_to_patric_ids)
 
         run_seed_complementarity(config)
 
@@ -410,7 +303,7 @@ def _print_help():
 
 
 def _print_version():
-    print(__version__)
+    print(f"microbetag version: {__version__}")
 
 
 def _print_config_message():
