@@ -15,27 +15,31 @@ import random
 import pandas as pd
 import mysql.connector
 from mysql.connector import pooling
-from typing import Dict, Set, Tuple, List
+from typing import Dict, Set, Tuple, TYPE_CHECKING
 from collections import defaultdict
 
 from .utils import mtg_logger, convert_to_json_serializable
-
+if TYPE_CHECKING:
+    from microbetag.config import Config
 
 _logger_ = mtg_logger(__file__)
 _KEGG_MAPPINGS_ = os.path.join(
     os.path.dirname(__file__), "mtg_maps_models", "kegg_mappings"
 )
 
+DB_CREDENTIALS = {}
+
+
 # -----------
 # Database
 # -----------
 
 
-def execute(phrase: str, db_config: dict) -> List[Tuple]:
+def execute(phrase: str) -> list[tuple]:
     """
     Establish a database connection and perform an action
     """
-    cnx    = mysql.connector.connect(**db_config)
+    cnx    = mysql.connector.connect(**DB_CREDENTIALS)
     cursor = cnx.cursor()
 
     cursor.execute(phrase)
@@ -62,19 +66,19 @@ def execute_in_a_pool(cursor: mysql.connector, query: str):
         print(query)
 
 
-def init_connection_pool(db_config) -> mysql.connector.pooling.MySQLConnectionPool:
+def init_connection_pool() -> mysql.connector.pooling.MySQLConnectionPool:
     """
     Initiates a connection pool.
     A pool opens a number of connections and handles thread safety when providing connections to requesters.
     For more see: https://dev.mysql.com/doc/connector-python/en/connector-python-connection-pooling.html
     """
     connection_pool = pooling.MySQLConnectionPool(  # noqa: E203
-        pool_name="microbetagDB_pool",
-        pool_size=5,
-        user=db_config["user"],
-        password=db_config["password"],
-        host=db_config["host"],
-        database=db_config["database"],
+        pool_name = "microbetagDB_pool",
+        pool_size = 5,
+        user      = DB_CREDENTIALS["user"],
+        password  = DB_CREDENTIALS["password"],
+        host      = DB_CREDENTIALS["host"],
+        database  = DB_CREDENTIALS["database"],
     )
     return connection_pool
 
@@ -102,28 +106,39 @@ def alt_genome_prefix(gc):
     return gc_alt
 
 
-def get_genomes_for_ncbi_tax_id(ncbi_tax_id: int, db_config: dict):
+def get_genomes_for_ncbi_tax_id(ncbi_tax_id: int):
     """
     Get the genome IDs corresponding to a given NCBI Taxonomy ID from the microbetagDB.
 
     Example: 1281578
     """
-    query      = f"SELECT genomeId FROM genome2taxNcbiId WHERE ncbiTaxId = {ncbi_tax_id};"
-    genome_ids = execute(query, db_config)
+
+    query = f"""
+        SELECT genomeId
+        FROM genome2taxNcbiId
+        WHERE ncbiTaxId = {ncbi_tax_id};
+    """.strip()
+
+    genome_ids = execute(query)
 
     return {ncbi_tax_id: gc_unify([x[0] for x in genome_ids])}
 
 
-def get_ncbi_tax_if_for_genome(gc_id: str, db_config: dict):
+def get_ncbi_tax_id_for_genome(gc_id: str):
     # "GCA_018819265.1"
-    #
-    query      = f"SELECT ncbiTaxId FROM genome2taxNcbiId WHERE genomeId = '{gc_id}';"
-    ncbi_tax_ids = execute(query, db_config)
-    #
+
+    query = f"""
+        SELECT ncbiTaxId
+        FROM genome2taxNcbiId
+        WHERE genomeId = '{gc_id}';
+    """.strip()
+
+    ncbi_tax_ids = execute(query)
+
     return {gc_id: list(ncbi_tax_ids)}
 
 
-def patric_from_gc_list(gc_accession_list: list, db_config: dict):
+def patric_from_gc_list(gc_accession_list: list):
     """
     Gets a list of GC accession ids and returns a dictionary where the GC ids are the keys
     and their corresponding PATRIC ids are the values.
@@ -132,17 +147,24 @@ def patric_from_gc_list(gc_accession_list: list, db_config: dict):
     """
     gc_to_patric_dict = {}
     for gc in gc_accession_list:
+
         gc_alt = alt_genome_prefix(gc)
+
         if gc_alt != 0:
-            query = (
-                f"SELECT patricId FROM patricId2genomeId WHERE gtdbGenomeAccession = '{gc}' "
-                f"OR gtdbGenomeAccession = '{gc_alt}';"
-            )
-            patricId = execute(query, db_config)
-            # NOTE (Haris Zafeiropoulos, 2025-05-08): Some PATRIC ids have a different suffix in the metadata file than
-            # in their corresponding assembies used for the seed complementarity step.
-            # Yet, keeping the part before the dot (.) - using int(patricId[0][0]) cannot be a solution since in many cases
-            # we have several strains for the same species, meaning, several after the dot parts.
+
+            query = f"""
+                SELECT patricId
+                FROM patricId2genomeId
+                WHERE gtdbGenomeAccession = '{gc}'
+                OR gtdbGenomeAccession = '{gc_alt}';
+            """.strip()
+
+            patricId = execute(query)
+
+            # NOTE (Haris Zafeiropoulos, 2025-05-08): Some PATRIC ids have a different suffix in the metadata file
+            # than in their corresponding assembies used for the seed complementarity step.
+            # Yet, keeping the part before the dot (.) - using int(patricId[0][0]) cannot be a solution since in
+            # many cases we have several strains for the same species, meaning, several after the dot parts.
             gc_to_patric_dict[gc] = patricId[0][0] if patricId and patricId[0] else None
 
     _logger_.info(gc_to_patric_dict)
@@ -150,14 +172,15 @@ def patric_from_gc_list(gc_accession_list: list, db_config: dict):
     return gc_to_patric_dict
 
 
-def update_for_patric(config, gc_to_patric):
+def update_for_patric(module_nonseeds_pkl, gc_to_patric):
     """
     Arguments:
-        confg: microbetag configuration for the onthefly version 
-        gc_to_patric: a dictionary with GTDB representative genomes as key and their corresponding PATRIC id as value.
+        module_nonseeds_pkl: path to nonseeds KEGG MODULE related pickle file
+        gc_to_patric       : a dictionary with GTDB representative genomes as key
+                        and their corresponding PATRIC id as value.
     """
 
-    with open(config.module_nonseeds, "rb") as f:
+    with open(module_nonseeds_pkl, "rb") as f:
         nonseeds = pickle.load(f)
 
     # Group patric IDs by prefix (before dot)
@@ -188,87 +211,102 @@ def update_for_patric(config, gc_to_patric):
 # --------
 # Phen related
 # --------
-def get_phen_traits(repr_genomes_present, output_dir):
-    """
-    Returns predictions for a list of genomes 
-    """
-    # Get predictions for each trait, for all genomes matched to the taxonomies given from the user.
-    traits_per_genome = {
-        genome: get_phendb_traits(genome)
-        for genome in repr_genomes_present
-    }
 
-    # Build a df from the predictions dictionary
-    df = pd.DataFrame(traits_per_genome)
+class GetPhenotrexTraits:
 
-    # Drop 'gtdbId' only if it exists in the index to avoid errors
-    df = df.drop("gtdbId", errors="ignore")  # drop to make it safe if "gtdbId" isn't present.
+    def __init__(self, config=None):
 
-    # Export predictions per trait to a 3-col file.
-    write_trait_file(df, output_dir)
+        if config is not None:
+            self.config = config
 
+    def get_phen_traits(self):
+        """
+        Returns predictions for a list of genomes
 
-def phen_query(gtdb_id):
-    """  """
-    return "".join([
-        "SELECT * FROM phenDB WHERE SUBSTRING_INDEX(gtdbId, '.', 1) = SUBSTRING_INDEX('",
-        gtdb_id,
-        "', '.', 1);"
-    ])
+        repr_genomes_present, config.predictions_path
+        """
+        # Get predictions for each trait, for all genomes matched to the taxonomies given from the user.
+        traits_per_genome = {
+            genome: self.get_phendb_traits(genome)
+            for genome in self.config.repr_genomes_present
+        }
 
+        # Build a df from the predictions dictionary
+        df = pd.DataFrame(traits_per_genome)
 
-def get_phendb_traits(gtdb_genome_id: str, db_config: dict):
-    """
-    Get phenotypical traits based on phenDB classes based on its GTDB representative genome
-    "GCA_018819265.1"
-    """
-    gtdb_id = gtdb_genome_id.strip()
+        # Drop 'gtdbId' only if it exists in the index to avoid errors
+        df = df.drop("gtdbId", errors="ignore")  # drop to make it safe if "gtdbId" isn't present.
 
-    rows = execute(phen_query(gtdb_id), db_config)
+        # Export predictions per trait to a 3-col file.
+        GetPhenotrexTraits.to_csv(df, self.config.predictions_path)
 
-    if len(rows) == 0:
-        alt_gtdb_id = alt_genome_prefix(gtdb_genome_id)
-        rows = execute(phen_query(alt_gtdb_id), db_config)
+    def get_phendb_traits(self, gtdb_genome_id: str):
+        """
+        Get phenotypical traits based on phenDB classes based on its GTDB representative genome
+        "GCA_018819265.1"
+        """
+        gtdb_id = gtdb_genome_id.strip()
 
-    if len(rows) == 0:
-        _logger_.info(f"Genome {gtdb_genome_id} is not available in microbetagDB.")
-        return 0
+        rows = execute(GetPhenotrexTraits.phen_query(gtdb_id))
 
-    query_colnames = "SHOW COLUMNS FROM phenDB;"
-    colnames = [list(x)[0] for x in execute(query_colnames, db_config)]
-    genomes_traits = {i: j for i, j in zip(colnames, rows[0])}
+        if len(rows) == 0:
+            alt_gtdb_id = alt_genome_prefix(gtdb_genome_id)
+            rows        = execute(GetPhenotrexTraits.phen_query(alt_gtdb_id))
 
-    return genomes_traits  # gtdb_genome_id
+        if len(rows) == 0:
+            _logger_.info(f"Genome {gtdb_genome_id} is not available in microbetagDB.")
+            return 0
 
+        query          = "SHOW COLUMNS FROM phenDB;"
+        colnames       = [list(x)[0] for x in execute(query)]
+        genomes_traits = {i: j for i, j in zip(colnames, rows[0])}
 
-def write_trait_file(df, output_dir=None):
-    """
-    Saves phenotypic trait predictions of a trait for a set of genomes in a file, in a 3-column format.
-    Identifier, Trait present, Confidence
-    The values the 'Trait present' column may get, is 'YES, 'NO', and 'N/A'.
-    """
-    if output_dir is None:
-        output_dir = os.getcwd()
+        return genomes_traits  # gtdb_genome_id
 
-    # Loop through traits (every 2 rows)
-    for i in range(0, df.shape[0], 2):
-        trait    = df.index[i]
-        presence = df.iloc[i]
-        score    = df.iloc[i + 1]
+    @staticmethod
+    def phen_query(gtdb_id):
+        """ Builds query for microbetagDB """
 
-        output = pd.DataFrame({
-            'Identifier': presence.index,
-            'Trait present': presence.values,
-            'Confidence': score.values
-        })
+        query = f"""
+            SELECT * FROM phenDB
+            WHERE SUBSTRING_INDEX(gtdbId, '.', 1) = SUBSTRING_INDEX('{gtdb_id}', '.', 1);
+        """.strip()
 
-        # Write to .tsv
-        trait    = f"{trait}.prediction.tsv"
-        filename = os.path.join(output_dir, trait)
-        with open(filename, "w") as f:
-            f.write(f"# Trait: {trait}\n")
-            f.write("Identifier\tTrait present\tConfidence\n")
-            output.to_csv(f, sep="\t", index=False, header=False)
+        return query
+
+    @staticmethod
+    def to_csv(df, output_dir=None):
+        """
+        Saves phenotypic trait predictions of a trait for a set of genomes in a file, in a 3-column format.
+        Identifier, Trait present, Confidence
+        The values the 'Trait present' column may get, is 'YES, 'NO', and 'N/A'.
+        """
+        if output_dir is None:
+            output_dir = os.getcwd()
+
+        # Loop through traits (every 2 rows)
+        for i in range(0, df.shape[0], 2):
+
+            trait = df.index[i]
+
+            presence, score = df.iloc[i], df.iloc[i + 1]
+
+            output = pd.DataFrame({
+                'Identifier'   : presence.index,
+                'Trait present': presence.values,
+                'Confidence'   : score.values
+            })
+
+            # Write to .tsv
+            trait    = f"{trait}.prediction.tsv"
+
+            with open(os.path.join(output_dir, trait), "w") as f:
+
+                f.write(f"# Trait: {trait}\n")
+
+                f.write("Identifier\tTrait present\tConfidence\n")
+
+                output.to_csv(f, sep="\t", index=False, header=False)
 
 
 # --------
@@ -311,7 +349,7 @@ def get_path_compls_otf(config):
     """
 
     # Ge the complements!
-    compls = get_path_compls_for_ncbi_ids(config.relative_genomes, config.pairs_of_interest, config.db_config)
+    compls = get_path_compls_for_ncbi_ids(config.relative_genomes, config.pairs_of_interest)
 
     # NOTE (Haris Zafeiropoulos, 2025-05-05):
     # Fix complements in the format set for the MGG
@@ -342,10 +380,8 @@ def get_path_compls_otf(config):
 
 
 def get_path_compls_for_ncbi_ids(
-    relative_genomes: Dict[str, Set[str]],
-    pairs_of_interest: Set[Tuple[str, str]],
-    db_config: dict
-):
+    relative_genomes: Dict[str, Set[str]], pairs_of_interest: Set[Tuple[str, str]]
+) -> dict:
     """
 
     Arguments:
@@ -356,17 +392,30 @@ def get_path_compls_for_ncbi_ids(
     """
 
     _logger_.info("===> Building queries for genome pairs...")
-    complements_ids_queries = build_complement_queries(relative_genomes, pairs_of_interest)
+
+    complements_ids_queries = build_complement_queries(
+        relative_genomes,
+        pairs_of_interest
+    )
 
     _logger_.info("===> Executing unique queries...")
-    unique_queries = {q for genome_pairs in complements_ids_queries.values() for q in genome_pairs.values()}
-    unique_queries2comples = get_complement_ids(unique_queries, db_config)
+
+    unique_queries = {
+        q for genome_pairs in complements_ids_queries.values()
+        for q in genome_pairs.values()
+    }
+    unique_queries2comples = get_complement_ids(unique_queries)
 
     _logger_.info("===> Mapping complement IDs to genome pairs...")
-    pairs_to_compl_ids = map_queries_to_pairs(complements_ids_queries, unique_queries2comples)
+
+    pairs_to_compl_ids = map_queries_to_pairs(
+        complements_ids_queries,
+        unique_queries2comples
+    )
 
     _logger_.info("===> Fetching full complement metadata...")
-    all_compl_ids2coloured_compls = get_coloured_complements(pairs_to_compl_ids, db_config)
+
+    all_compl_ids2coloured_compls = get_coloured_complements(pairs_to_compl_ids)
 
     _logger_.info("===> Assembling final result...")
 
@@ -408,9 +457,9 @@ def build_complement_queries(relative_genomes, pairs_of_interest):
     return complements_ids_queries
 
 
-def get_complement_ids(unique_queries, db_config):
+def get_complement_ids(unique_queries):
 
-    cnx_pool      = init_connection_pool(db_config)
+    cnx_pool      = init_connection_pool()
     my_connection = cnx_pool.get_connection()
     cursor        = my_connection.cursor()
 
@@ -432,8 +481,7 @@ def map_queries_to_pairs(complements_ids_queries, unique_queries2comples):
 
 
 def get_coloured_complements(
-    pairs_to_compl_ids: Dict[Tuple[str, str], dict[Tuple[str, str], list[str]]],
-    db_config: dict
+    pairs_to_compl_ids: Dict[Tuple[str, str], dict[Tuple[str, str], list[str]]]
 ):
     """
     Gets thes actual complement using its unique complementId and builds its KEGG url.
@@ -454,16 +502,30 @@ def get_coloured_complements(
         return {}
 
     uqids = "','".join(unique_compl_ids)
-    query = (
-        "SELECT KoModuleId, complement, pathway FROM uniqueComplements"
-        f"WHERE complementId IN ('{uqids}') ORDER BY FIELD(complementId, '{uqids}');"
-    )
+    field_args = ",".join(f"'{id}'" for id in unique_compl_ids)
 
-    cnx_pool                 = init_connection_pool(db_config)
+    _logger_.info("-----------------")
+    _logger_.info(uqids)
+    _logger_.info(field_args)
+    _logger_.info("-----------------")
+
+    query = f"""
+        SELECT KoModuleId, complement, pathway
+        FROM uniqueComplements
+        WHERE complementId IN ('{uqids}')
+        ORDER BY FIELD(complementId, {field_args});
+    """.strip()
+
+    _logger_.info(f"WQUER: {query}")
+
+    cnx_pool                 = init_connection_pool()
     my_connection            = cnx_pool.get_connection()
     cursor                   = my_connection.cursor()
 
     query_result             = execute_in_a_pool(cursor, query)
+
+    _logger_.info(f"QWUERY result: {query_result}")
+
     query_result_list        = [[r] for r in query_result]
 
     colored_complements_list = build_kegg_urls(query_result_list)
@@ -499,11 +561,13 @@ def build_kegg_urls(genome_pair_compls):
     color_map_base_url   = "https://www.kegg.jp/kegg-bin/show_pathway?"
     present_kos_color    = "%09%23EAD1DC/"
     complement_kos_color = "%09%2300A898/"
+
     # Load module-to-map mappings
     module_map_file = os.path.join(_KEGG_MAPPINGS_, "module_map_pairs.tsv")
     df              = pd.read_csv(module_map_file, sep="\t", header=None, names=["module", "map"])
     df["module"]    = df["module"].str.replace("md:", "", regex=False).str.strip()
     df["map"]       = df["map"].str.strip()
+
     #
     module_map = dict(zip(df["module"], df["map"]))
     updated_complements = []
@@ -512,18 +576,21 @@ def build_kegg_urls(genome_pair_compls):
         complement_kos     = []
         complement_kos_set = set(complement_str.split(";"))
         ko_terms           = ko_terms_str.split(";")
+
         #
         for ko in ko_terms:
             if ko in complement_kos_set:
                 complement_kos.append(ko + complement_kos_color)
             else:
                 beneficiary_kos.append(ko + present_kos_color)
+
         # Construct URL or fallback
         url    = "N/A"
         map_id = module_map.get(module_id)
         if map_id:
             url = f"{color_map_base_url}{map_id}/" + "".join(beneficiary_kos + complement_kos)
+
         # Append new colored URL to the record
         updated_complements.append([[module_id, complement_str, ko_terms_str, url]])
-    #
+
     return updated_complements

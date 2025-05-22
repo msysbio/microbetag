@@ -15,6 +15,7 @@ from .helpers import (
 )
 
 from .utils import (
+    mtg_logger,
     ko_list_parser,
     merge_ko,
     extend_complements,
@@ -37,10 +38,10 @@ from .seed_complementarity import (
 )
 
 from .db import (
+    GetPhenotrexTraits,
     get_genomes_for_ncbi_tax_id,
-    get_ncbi_tax_if_for_genome,
+    get_ncbi_tax_id_for_genome,
     patric_from_gc_list,
-    get_phen_traits,
     get_path_compls_for_ncbi_ids
 )
 
@@ -77,3 +78,13 @@ _KEGG_MAPPINGS         = os.path.join(os.path.dirname(__file__), "mtg_maps_model
 _KEGG_TERMS_PER_MODULE = os.path.join(_KEGG_MAPPINGS, "kegg_terms_per_module.tsv")
 _MODULE_DEFINITION_MAP = os.path.join(_KEGG_MAPPINGS, "module_definition_map.json")
 _KEGG_MODULES_TO_MAPS  = os.path.join(_KEGG_MAPPINGS, "module_map_pairs.tsv")
+
+
+__version__ = "1.0.4"
+__license__ = "GNU GPL3"
+__authors__ = ["Haris Zafeiropoulos <haris.zafeiropoulos@kuleuven.be>"]
+__cite__    = (
+    "Zafeiropoulos H, Michail Delopoulos EI, Erega A, Schneider A, Geirnaert A, Morris J, Faust K."
+    "microbetag: simplifying microbial network interpretation through annotation, enrichment tests and metabolic complementarity analysis."
+    "bioRxiv. 2024:2024-10."
+)
