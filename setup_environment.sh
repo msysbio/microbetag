@@ -1,17 +1,103 @@
 #!/bin/bash
 
+# Install microbetag's dependencies 
 
 # emojis -- hehe! :)
 # ------
-SMILE="\U0001F60A"
-TADA="\U0001F389"
-ROCKET="\U0001F680"
-GREEN_TICK="\U00002705"
-RED_CROSS="\U0000274C"
-HOURGLASS="\u23F3"
-WHITE_CIRCLE="\26AA"
+       SMILE="\U0001F60A"
+        TADA="\U0001F389"
+      ROCKET="\U0001F680"
+  GREEN_TICK="\U00002705"
+   RED_CROSS="\U0000274C"
+  RED_CIRCLE="\U0001F534"
+   HOURGLASS="\u23F3"
+WHITE_CIRCLE="\u26AA"
 
-SCRIPT_DIR=$(dirname "$(realpath "$0")")
+# Default values
+VERSION_ARG=false
+   HELP_ARG=false
+  KOFAM_ARG=false
+ SCRIPT_DIR=$(dirname "$(realpath "$0")")
+
+# Parse options using getopt
+PARSED=$(getopt --options kh --long kofam,help -- "$@")
+if [[ $? -ne 0 ]]; then
+  echo "❌ Failed to parse options." >&2
+  exit 1
+fi
+
+# Reorder arguments so they can be processed
+eval set -- "$PARSED"
+
+# Loop through options
+while true; do
+  case "$1" in
+    -k|--kofam)
+      KOFAM_ARG=true
+      shift
+      ;;
+    -h|--help)
+      HELP_ARG=true
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      echo "Unexpected option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# NOTE: in case of paired args, i.e. an arg that gets a non-boolean value
+# you'd have :
+# PARSED=$(getopt --options k:hv --long kofam:,help,version -- "$@")      add a ":" after the var arg expecting value
+#  -k|--kofam)
+#   KOFAM="$2"    "$2" instead of true
+#   shift 2        2 instead of nothing that stands for 1
+#   ;;
+
+
+echo -e "\n Building conda environment and installing required dependencies to enable microbetag ${ROCKET} \n\n"
+
+if $HELP_ARG; then
+  echo "Usage: bash setup_environment.sh [options]"
+  echo "  -h, --help     Show this help message"
+  echo "  -k, --kofam    kofam database will be downloaded and installed in the ext_data/kofam_database folder"
+  echo ""
+  echo -e "${RED_CIRCLE} Either conda or miniconda is considered to be available. If not, setup_environment.sh will fail."
+  echo -e "${RED_CIRCLE} Make sure you run the script from the root folder of the microbetag repository."
+  exit 0
+fi
+
+
+# ====================================
+# Step 0: kofam database
+# Make sure kofam db is there if needed
+# ====================================
+
+if $KOFAM_ARG; then
+
+    cd ext_data/kofam_database &&\
+    wget -c ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz &&\
+    wget -c ftp://ftp.genome.jp/pub/db/kofam/profiles.tar.gz &&\
+    gzip -d ko_list.gz &&\
+    tar zxvf profiles.tar.gz 
+    cd $SCRIPT_DIR
+
+else
+
+  echo -e "${RED_CIRCLE} The kofam database will not be downloaded."
+  echo "Yet, it is required in case you wish to get pathway complementarities using custom genomes."
+  echo -e "Thus, you should have already it on your computing system and provide the path to it on the configuration YAML file.\n"
+  echo -e "${WHITE_CIRCLE} Otherwise, add argument --kofam when running setup_environment.sh"
+  echo ""
+  echo -e "bash setup_environment.sh --kofam\n"
+
+
+fi
 
 # ====================================
 # Step 1: Set up Conda environment
@@ -79,6 +165,8 @@ fi
 
 # Install microbetag python library dependencies
 conda activate microbetag
+
+# TODO: DO WE NEED THIS ? 
 echo -e "$HOURGLASS Install further Python library dependencies"
 pip install -r requirements.txt  > /dev/null 2>&1
 echo -e "$TADA All environments and installations are complete!"
@@ -257,6 +345,7 @@ if [ ! -f "$TAR_FILE" ]; then
 else
     echo "File already exists: $TAR_FILE"
 fi
+
 
 # Good bye! :)
 echo "microbetag is now good to go! $TADA $ROCKET"
