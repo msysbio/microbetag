@@ -1,1 +1,2 @@
 recursive-include microbetag/mtg_maps_models/ *
+recursive-include microbetag *

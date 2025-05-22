@@ -8,10 +8,13 @@
 
 FROM ubuntu:20.04
 
+# On Ubuntu 20.04 (Focal Fossa):
+#     The default python3 version in the official repos is Python 3.8.10.
+
 LABEL maintainer = "Haris Zafeiropoulos" 
 LABEL contact    = "haris.zafeiropoulos@kuleuven.be"
 LABEL build_date = "2025-02"
-LABEL version    = "v.0.0.2"
+LABEL version    = "v0.0.2"
 
 # This mode allows zero interaction while installing or upgrading the system via apt; 
 # it accepts the default answer for all questions.
@@ -190,127 +193,4 @@ RUN pip install scikit-learn==1.3.2
 
 RUN pip install git+https://github.com/hariszaf/manta.git@scipy-version 
 
-
-
-
-
-
-
-
-
-# -------------------------------------GAPSEQ START -----------------------------------------
-
-# # Set R to enable gapseq
-# # Install dependencies and R
-# RUN apt-get update && apt-get install -y \
-#     software-properties-common \
-#     && apt-get install -y gnupg2 \
-#     && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E298A3A825C0D65DFD57CBB651716619E084DAB9 \
-#     && add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/" \
-#     && apt-get update \
-#     && apt-get install -y \
-#     r-base \
-#     r-base-dev \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists/*
-
-# # Install R packages required for gapseq
-# RUN R -e 'install.packages(c("data.table", "stringr", "getopt", "doParallel", "foreach", "R.utils", "stringi", "glpkAPI", "CHNOSZ", "jsonlite", "httr"))' 
-
-# # Install further gapseq requirements
-# RUN wget https://cran.r-project.org/src/contrib/Archive/sybil/sybil_2.2.0.tar.gz && \
-#     wget https://cran.r-project.org/src/contrib/Archive/sybilSBML/sybilSBML_3.1.2.tar.gz
-
-# RUN apt update
-# RUN apt install -y ncbi-blast+ git libglpk-dev r-base-core exonerate bedtools barrnap bc parallel curl libcurl4-openssl-dev libssl-dev  libsbml5-dev bc
-
-# RUN R CMD INSTALL sybil_2.2.0.tar.gz
-# RUN R CMD INSTALL sybilSBML_3.1.2.tar.gz
-
-# # Download latest gapseq version from github and latest reference sequence database
-# RUN git clone https://github.com/jotech/gapseq && cd gapseq && \
-#     bash ./src/update_sequences.sh  
-
-# RUN R -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager"); BiocManager::install("Biostrings")'
-
-# -------------------------------------GAPSEQ END -----------------------------------------
-
-
-
-
-
-
-
-
-
-
-# ==============================================================  to be added
-
-# # Install cmake and then..
-# WORKDIR /usr/lib
-
-# RUN apt update &&\
-#     apt purge --auto-remove cmake &&\
-#     wget https://github.com/Kitware/CMake/releases/download/v3.21.4/cmake-3.21.4.tar.gz &&\
-#     tar -xzvf cmake-3.21.4.tar.gz
-
-# # Get an OpenSSl
-# RUN apt-get install -y libssl-dev 
-
-# WORKDIR /usr/lib/cmake-3.21.4
-# RUN /bin/bash bootstrap
-# RUN make -j$(nproc) 
-# RUN make install
-
-# ==========================================================================================================
-# # Set R
-# # First I need to get some R dependencies 
-# RUN apt-get install -y gfortran && \
-#     apt-get install -y build-essential && \
-#     apt-get install -y fort77 && \
-#     apt-get install -y xorg-dev && \
-#     apt-get install -y libblas-dev &&\
-#     apt-get install -y gcc-multilib && \
-#     apt-get install -y gobjc++ && \
-#     apt-get install -y aptitude && \
-#     aptitude install -y libreadline-dev
-
-# RUN export CC=/usr/bin/gcc && \
-#     export CXX=/usr/bin/g++ && \
-#     export FC=/usr/bin/gfortran && \
-#     export PERL=/usr/bin/perl
-
-# RUN apt-get install -y libpcre3-dev \
-#     libpcre2-dev \
-#     libpcre-ocaml-dev \
-#     libghc-regex-pcre-dev
-
-# # Install R 
-# WORKDIR /usr/local/lib/
-# RUN wget https://ftp.cc.uoc.gr/mirrors/CRAN/src/base/R-3/R-3.6.0.tar.gz
-# RUN tar -xf R-3.6.0.tar.gz
-# WORKDIR /usr/local/lib/R-3.6.0
-# RUN ./configure &&\
-#     make &&\
-#     make install
-
-# ==========================================================================================================
-
-# # Install OpenJDK-11
-# RUN apt-get update && \
-#     apt-get install -y openjdk-11-jdk && \
-#     apt-get install -y ant && \
-#     apt-get clean;
-
-# # Fix certificate issues
-# RUN apt-get update && \
-#     apt-get install ca-certificates-java && \
-#     apt-get clean && \
-#     update-ca-certificates -f;
-
-# # Setup JAVA_HOME -- useful for docker commandline
-# ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
-# RUN export JAVA_HOME
-
-# ==========================================================================================================
 

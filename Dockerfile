@@ -11,8 +11,7 @@ FROM microbetag_base:latest
 LABEL maintainer = "Haris Zafeiropoulos" 
 LABEL contact    = "haris.zafeiropoulos@kuleuven.be"
 LABEL build_date = "2025-02-06"
-LABEL version    = "v1.0.3"
-
+LABEL version    = "v1.0.4"
 
 # Add lib
 RUN pip install pyshorteners ndex2 
@@ -20,14 +19,9 @@ RUN pip install pyshorteners ndex2
 # Copy microbetag utils 
 WORKDIR /microbetag
 ADD ext_data/kofam_database/ko_list ./microbetag/mtg_maps_models/kofam_database/ko_list
-# ADD microbetag/mtg_maps_models/kegg_mappings/*  ./microbetag/mtg_maps_models/kegg_mappings/
-# ADD microbetag/mtg_maps_models/MetaNetX/chem_xref.tar.gz ./microbetag/mtg_maps_models/MetaNetX/chem_xref.tar.gz
-
 
 # Add source code 
 ADD microbetag/ ./microbetag/
-
-COPY microbetag.py  .
 
 # Add addtional 
 ADD tests/ ./tests
