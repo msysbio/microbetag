@@ -105,30 +105,39 @@ def init_nodes_and_edges(
     # Create nodes
     if not config.onthefly:
         nodes = [
-            {"id": i, "v": get_node_attributes(seq_id, seq_id_to_taxonomy)}
+            {
+                "id": i,
+                "v": get_node_attributes(seq_id, seq_id_to_taxonomy)
+            }
             for i, seq_id in enumerate(seq_ids_lst)
         ]
+
         for node in nodes:
             taxonomy_levels_sa(node)
+
     else:
+
         # NOTE (Haris Zafeiropoulos, 2025-05-04):
         # the otf_seq_tax_df is built on the app.py and not on the config.py - onthefly version only
         ncbi_ids_dict = load_otf_seq_map(config.otf_seq_tax_df)
 
         nodes = [
-            {"id": i, "v": get_node_attributes(seq_id, seq_id_to_taxonomy, ncbi_ids_dict)}
+            {
+                "id": i,
+                "v": get_node_attributes(seq_id, seq_id_to_taxonomy, ncbi_ids_dict)
+            }
             for i, seq_id in enumerate(seq_ids_lst)
         ]
     # Create edges
     edges = [
         {
             "id": i,
-            "s": seq_ids_lst.index(node_a),
-            "t": seq_ids_lst.index(node_b),
-            "v": {
-                "interaction type": _COOCCURRENCE_ if weight > 0 else _DEPLETION_,
-                "interaction": _COOCCURENCE_DEPLETION_,
-                "shared name": f"{node_a} {_COOCCURYING_ if weight > 0 else _DEPLETING_} {node_b}",
+            "s" : seq_ids_lst.index(node_a),
+            "t" : seq_ids_lst.index(node_b),
+            "v" : {
+                "interaction type"  : _COOCCURRENCE_ if weight > 0 else _DEPLETION_,
+                "interaction"       : _COOCCURENCE_DEPLETION_,
+                "shared name"       : f"{node_a} {_COOCCURYING_ if weight > 0 else _DEPLETING_} {node_b}",
                 "microbetag::weight": weight,
             },
         }
@@ -154,19 +163,23 @@ def get_node_attributes(seq_id: str, seq_id_to_taxonomy: dict, ncbi_ids_dict: di
     node_tax = seq_id_to_taxonomy.get(seq_id, "Unknown").rstrip(";")
 
     attrs = {
-        "name": seq_id,
+        "name"                : seq_id,
         "microbetag::taxonomy": node_tax,
-        "microbetag::taxon": node_tax.split(";")[-1]
+        "microbetag::taxon"   : node_tax.split(";")[-1]
     }
 
     if ncbi_ids_dict:
+
         ncbi_info = ncbi_ids_dict.get(seq_id, {})
+
         attrs["microbetag::ncbi-tax-id"] = (
             ncbi_info.get("ncbi-tax-id") if ncbi_info.get("ncbi-tax-id") not in [None, "", []] else ["-"]
         )
+
         attrs["microbetag::ncbi-tax-level"] = (
             ncbi_info.get("ncbi-tax-level") if ncbi_info.get("ncbi-tax-level") not in [None, "", []] else ["-"]
         )
+
         attrs["microbetag::gtdb-genomes"] = (
             ncbi_info.get("gtdb-genomes") if ncbi_info.get("gtdb-genomes") not in [None, "", []] else ["-"]
         )
@@ -234,9 +247,9 @@ def update_with_faprotax_traits(config: "Config", nodes: list[dict], node_names:
     Updates nodes with FAPROTAX traits.
 
     Args:
-        config: Configuration for loading FAPROTAX traits.
-        nodes (List[Dict]): List of node dictionaries.
-        node_names (List[str]): List of node names corresponding to node IDs.
+        config    : Configuration for loading FAPROTAX traits.
+        nodes     : List of node dictionaries.
+        node_names: List of node names corresponding to node IDs.
     """
     bin_faprotax_traits, _ = extend_faprotax(config)
 
@@ -258,10 +271,10 @@ def update_with_faprotax_traits(config: "Config", nodes: list[dict], node_names:
 
 def update_with_manta(config: "Config", nodes: list[dict], node_names: list[str]) -> dict:
     """
-    Updates nodes with MANTA network cluster, assignment, and position data.
+    Updates nodes with `manta` network cluster, assignment, and position data.
 
     Returns:
-        List[Dict]: MANTA layout with node positions.
+        A list of dictionaries representing the `manta` layout with node positions.
 
     Note:
         Besides updating the entries of the `nodes` list, it also returns a `ndex2.layout`.
@@ -312,13 +325,13 @@ def pathway_complement_edge(
         and **drive to** the beneficiary (`target`).
 
     Arguments:
-        edge_id:
-        beneficiary (str): The recipient of the complement. It is considered as the target of the edge in microbetag.
-        donor (str): The source of the complement. It is considered as the donor of the edege.
-        complement (any): The complement value.
-        node_names (List[str]): List of node names to determine node indices.
-        interaction_type (str): Type of interaction (e.g., "complementarity").
-        interacting (str): Descriptor of the interaction.
+        edge_id          (int)      : ID of the edge
+        beneficiary      (str)      : The recipient of the complement. It is considered as the target of the edge in microbetag.
+        donor            (str)      : The source of the complement. It is considered as the donor of the edege.
+        complement       (any)      : The complement value.
+        node_names       (list[str]): List of node names to determine node indices.
+        interaction_type (str)      : Type of interaction (e.g., "complementarity").
+        interacting      (str)      : Descriptor of the interaction.
 
     Returns:
             A dictionary with a pathway complementari edge representation.
@@ -394,11 +407,11 @@ def get_compl_maps(config, genome_ids_in_nodes: list) -> tuple[pd.DataFrame, dic
 def pathway_complements(config, edgelist_df, node_names, cx_edges):
 
     complements_dict = extend_complements(
-        complements_json=config.compl_file,
-        descrps_path=config.module_descriptions,
-        max_scratch_alt=config.max_scratch_alt,
-        path_compl_dir=config.path_compl_dir,
-        path_compl_perce=config.path_compl_perce,
+        complements_json = config.compl_file,
+        descrps_path     = config.module_descriptions,
+        max_scratch_alt  = config.max_scratch_alt,
+        path_compl_dir   = config.path_compl_dir,
+        path_compl_perce = config.path_compl_perce,
     )
 
     nodes_in_compls = set()
@@ -435,15 +448,15 @@ def pathway_complements(config, edgelist_df, node_names, cx_edges):
                     )
 
                     pe = pathway_complement_edge(
-                        edge_id=edge_id,
-                        beneficiary=beneficiary,  # target
-                        donor=donor,              # source
-                        complement=complement,
-                        node_names=node_names,
-                        beneficiary_genome=ben_genome if config.onthefly else None,
-                        donor_genome=don_genome if config.onthefly else None,
-                        update=update,
-                        cx_edges=cx_edges,
+                        edge_id            = edge_id,
+                        beneficiary        = beneficiary,                             # target
+                        donor              = donor,                                   # source
+                        complement         = complement,
+                        node_names         = node_names,
+                        beneficiary_genome = ben_genome if config.onthefly else None,
+                        donor_genome       = don_genome if config.onthefly else None,
+                        update             = update,
+                        cx_edges           = cx_edges,
                     )
 
                     _update_or_append(cx_edges, edge_id, pe, update)
@@ -559,10 +572,10 @@ def seed_complement_edge(
     competition,
     cooperation,
     node_names,
-    beneficiary_patric=None,
-    donor_patric=None,
-    update=False,
-    cx_edges=None,
+    beneficiary_patric = None,
+    donor_patric       = None,
+    update             = False,
+    cx_edges           = None,
 ):
     """
     Conceptually, the donor is the source, since a compound would be secreted from it 
@@ -577,12 +590,12 @@ def seed_complement_edge(
         edge = cx_edges[edge_id]
     else:
         edge = {
-            "id": len(cx_edges),  # Always new
-            "s": node_names.index(donor),
-            "t": node_names.index(beneficiary),
-            "v": {
+            "id": len(cx_edges),                 # Always new
+            "s" : node_names.index(donor),
+            "t" : node_names.index(beneficiary),
+            "v" : {
                 "interaction type": _COMPLEMENTARITY_TYPE_,
-                "shared name": f"{beneficiary} {_COMPLEMENTING_} {donor}",
+                "shared name"     : f"{beneficiary} {_COMPLEMENTING_} {donor}",
             },
         }
 
@@ -595,7 +608,7 @@ def seed_complement_edge(
 
     update_dict = {
         k: v for k, v in {
-            complement_column: complement,
+            complement_column : complement,
             competition_column: competition,
             cooperation_column: cooperation,
         }.items() if v is not None
@@ -709,17 +722,17 @@ def seed_complements(config, edgelist_df, node_names, cx_edges):
                     )
 
                     se = seed_complement_edge(
-                        edge_id=edge_id,
-                        beneficiary=beneficiary,
-                        donor=donor,
-                        complement=seed_complementAB,
-                        competition=competAB,
-                        cooperation=cooperAB,
-                        node_names=node_names,
-                        beneficiary_patric=ben_genome,
-                        donor_patric=don_genome,
-                        update=update,
-                        cx_edges=cx_edges,
+                        edge_id            = edge_id,
+                        beneficiary        = beneficiary,
+                        donor              = donor,
+                        complement         = seed_complementAB,
+                        competition        = competAB,
+                        cooperation        = cooperAB,
+                        node_names         = node_names,
+                        beneficiary_patric = ben_genome,
+                        donor_patric       = don_genome,
+                        update             = update,
+                        cx_edges           = cx_edges,
                     )
 
                     _update_or_append(cx_edges, edge_id, se, update)

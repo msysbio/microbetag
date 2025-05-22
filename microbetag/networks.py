@@ -72,7 +72,7 @@ def get_edgelist(network_file: str) -> pd.DataFrame:
     Args:
         network_file: Filepath to the edgelist.
     Returns:
-        A 3-column pandas.DataFrame 
+        A 3-column pandas.DataFrame
     """
 
     delimiter        = detect_separator(network_file)
