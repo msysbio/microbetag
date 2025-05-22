@@ -63,7 +63,6 @@ chem_xref.tsv
 qiime2_consensus_taxonomy_7_levels.tsv
 taxmap_embl_ssu_ref_132.txt
 
-
 __pycache__/
 
 # Ignore NCBI Taxonomy db and mgnify catalogues metadata provided by the MGNify FTP
@@ -79,7 +78,7 @@ diamond/
 # Ignore software
 tools/phenotrex/
 
-
+# Mapping files
 mappings/gtdb_ncbi/gtdb_metadata/gtdb_species2ncbi_ids.tsv
 mappings/gtdb_ncbi/qiime2/qiime2species_ncbi_ids.tsv
 mappings/gtdb_ncbi/dada2/dada2genera.tsv
@@ -107,7 +106,8 @@ microbetag_env
 gtdb_16s.RData
 
 # Ignore the kofam database
-kofam_database/
+ext_data/kofam_database/profiles/
+ext_data/kofam_database/ko_list
 
 # Ignore the output folder of the stand alone tool
 #microbetag_run/
@@ -116,3 +116,10 @@ MetaNetX/
 
 microbetagDB/mappings/gtdb_ncbi/
 .vscode/
+
+# Ignore i/o file for test_data
+test_data/test_modelseed/input_files
+#test_data/test_microbetag/mtg_complete_output/KEGG_annotations/hmmout/
+test_data/test_microbetag/mtg_complete_output
+test_data/test_microbetag/input_files
+
