@@ -69,15 +69,15 @@ class ExportSeedComplementarities:
         self.api      = getattr(config, 'api', False)
         self.onthefly = getattr(config, 'onthefly', False)
 
-        _logger_.info("api: %s", self.api)
-        _logger_.info("onthefly %s", self.onthefly)
-
         self.seed_compls_pckl = getattr(config, 'seed_compl_pckl', None)
 
         self.modules_ms_cpd = get_kegg_module_related(config.seed_ko_mo)
 
-        self.only_module_related = True
-        self.perce_save          = 10
+        self.module_related = True
+        self.perce_save     = 10
+
+        if not self.api:
+            self.scores_outfile   = os.path.join(self.config.seeds_outdir, "phylomint_scores.tsv")
 
         if self.api or self.onthefly:
 
@@ -87,8 +87,6 @@ class ExportSeedComplementarities:
         else:
 
             self.namespace       = "modelseed"
-
-            self.scores_outfile   = os.path.join(self.config.seeds_outdir, "phylomint_scores.tsv")
 
             self.get_scores      = getattr(config, 'get_scores', not os.path.exists(self.scores_outfile))
             self.get_complements = getattr(config, 'get_complements', not os.path.exists(self.seed_compls_pckl))
@@ -349,7 +347,7 @@ class ExportSeedComplementarities:
 
                 B_complements_A = extract_complements(SeedA, nonSeedB)
 
-                if self.only_module_related:
+                if self.module_related:
                     B_complements_A = kegg_module_related_intersect(
                         B_complements_A, self.modules_ms_cpd
                     )
