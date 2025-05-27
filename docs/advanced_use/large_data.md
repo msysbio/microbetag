@@ -116,18 +116,21 @@ which resulted in the `prep_output` folder, in the mounted `/media` folder:
 Make sure that you always use the configuration file version that matches the tool version you are using.
 ```
 
-Thus, `microbetag_prep` returned [GTDB_tax_assigned_abundance_table.tsv](../_static/download/large_dataset/prep_output/GTDB_tax_assigned_abundance_table.tsv) that keeps the same sequence identifiers as the original, but now 
+Thus, `microbetag_prep` returned 
+[GTDB_tax_assigned_abundance_table.tsv](../_static/download/large_dataset/prep_output/GTDB_tax_assigned_abundance_table.tsv) 
+that keeps the same sequence identifiers as the original, but now 
 the taxonomy has been replaced and instead of the Silva one, we have the GTDB. 
 Also, the [network_output.edgelist](../_static/download/large_dataset/prep_output/network_output.edgelist)
-is the result of FlashWeave
+is the result of FlashWeave.
 
 Up to this point, we actually run the [`microbetag_prep` tutorial](prep.md). 
-So now, as in the preparation tutorial, we can use those two files with the on-the-fly version. 
+So now, as in the [preparation tutorial](./prep.md), we can use those two files with the on-the-fly version. 
 
-Only this time, we can combine them with the stand-alone tool and/or the *microbetag* API. 
+Only this time, we can combine them with the stand-alone tool and/or the [*microbetag* API](./python.md). 
 
-So, what we did was to first run the on-the-fly version asking just for the FAPROTAX and/or phenDB-like annotations, 
-i.e. the node-level annotations. 
+
+So next, what we did was to run the on-the-fly version asking **only** 
+for the FAPROTAX and the phenDB-like annotations, i.e. the node-level annotations. 
 
 ```{hint}
 Since we already have a network and our taxonomies in `microbetag`'s prefered scheme, 
@@ -142,7 +145,7 @@ and then, itse phenDB-like traits.
 From `File > Import > Network from file` we loaded the `network_output.edgelist` as it was returned 
 by the `microbetag_prep` tool. 
 
-We then loaded our updated taxonomy table on `MGG` by clicking 
+We then loaded our updated taxonomy table (`GTDB_tax_assigned_abundance_table`) on `MGG` by clicking 
 `Apps > MGG > Import Data > Import Abundance Data`. 
 We also loaded the already displayed on the main panel network of ours, on `MGG`, by clicking 
 `Apps > MGG > Import Data > Import Current Network`.
@@ -202,6 +205,36 @@ You can find the exported table called `manta_annotated.node.csv`
 ```{hint}
 On the exported `.csv` with the cluster column, make sure you convert the column to **integer**.
 `microbetag` expects the `microbetag::cluster` to be integer, and clustering algorithms may return clusters as float!
+
+![](../_static/img/large_data/float_cluster.png)
+
+An easy way to do this is by using the `Function Builder` on the Node table. 
+First, click on the `Create a New Column ..` option and set it as `Integer`.
+
+![](../_static/img/large_data/CreateColumn.png)
+
+Then, **make sure you call the new column** `microbetag::cluster`; this is required for the enrichment analysis to run.
+
+After you create the new column, click on it on the Nodes table, and then click the `Function Builder` buttton.
+
+![](../_static/img/large_data/BuilderButton.png)
+
+Now, you are about to describe how your new column should be filled in. 
+So, we will ask for the **absolute value** of the `cluster` column of ours. 
+In this case, this is the `manta` outcome, but it could be from any network clustering algorithm.
+Also, this column may be called however.
+
+![](../_static/img/large_data/FormulaBuilder.png)
+
+Make sure you apply the function to the whole column! 
+
+In this example, you may see that it seems there are two *cluster* columns, yet they look different! 
+One has the Cytoscape logo on its left, while the other has an **M**.
+This is because the new column we created has a different **namespace** than the rest of the columns on the Node table.
+If it was not for this, Cytoscape would not allow us to have two column with the same name! 
+
+Our new `microbetag::cluster` column is now ready and we are good to go with the next steps! :rocket:
+
 ```
 
 And now, we can load the table with the clusters, by first moving to the network with the FAPROTAX and 
