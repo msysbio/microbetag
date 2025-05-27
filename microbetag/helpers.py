@@ -202,7 +202,8 @@ class NetworkHandler:
             if not bins_in_net.issubset(bins_in_abundance_file):
                 missing_bins = bins_in_net - bins_in_abundance_file
                 _logger_.warn(
-                    f"These bins are nodes on your provided network but not in your provided list of bins: {missing_bins}"
+                    "These bins are nodes on your provided network"
+                    f"but not in your provided list of bins: {missing_bins}"
                 )
 
         elif config.abundance_table is None:

@@ -766,7 +766,7 @@ def extend_faprotax(conf: "Config") -> tuple[dict[str, list], list[str]]:
     return bin_faprotax_traits, faprotax_traits
 
 
-def load_phenotypic_traits(conf: "Config") -> tuple[dict[str, dict[str, str | float]], set[str]]:
+def load_phenotypic_traits(phen_outdir) -> tuple[dict[str, dict[str, str | float]], set[str]]:
     """
     Load phenotrex-based trait files and assignm them per genome.
 
@@ -790,8 +790,8 @@ def load_phenotypic_traits(conf: "Config") -> tuple[dict[str, dict[str, str | fl
     phentraits      = set()
 
     prediction_files = [
-        os.path.join(conf.predictions_path, file)
-        for file in os.listdir(conf.predictions_path)
+        os.path.join(phen_outdir, file)
+        for file in os.listdir(phen_outdir)
     ]
 
     for file in prediction_files:
