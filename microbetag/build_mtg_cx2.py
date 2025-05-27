@@ -204,10 +204,15 @@ def update_with_phen_traits(config: "Config", nodes: list[dict], node_names: lis
         it rather updates entries of the `nodes` dictionary.
 
     Note:
-        `node_names` is a mapping object where order is essential. It includes the sequence ids of the nodes
-        present in the network, in the order they will be introduced in the ndex2 network constructor.
+
+        1. The `node_names` list is a mapping object where order is essential. 
+        It includes the sequence ids of the nodes present in the network, in the order they will be introduced 
+        in the ndex2 network constructor.
+
+        2. Initial `phen_traits` has the genome ids present in the phenotrex prediction files.
     """
-    bin_phen_traits, _ = load_phenotypic_traits(config)
+    # A dictionary with genomes as keys
+    phen_traits, _ = load_phenotypic_traits(config.predictions_path)
 
     if config.onthefly:
 
@@ -215,31 +220,45 @@ def update_with_phen_traits(config: "Config", nodes: list[dict], node_names: lis
         df_exploded = df_exploded[pd.notna(df_exploded['gtdb_gen_repr'])]
 
         # Build mapping from GTDB ID (stripped of version) to seqId
-        gtdb_to_seqid = {
-            str(gtdb_id).split('.')[0]: seq_id
-            for gtdb_id, seq_id in zip(df_exploded['gtdb_gen_repr'], df_exploded['seqId'])
-        }
+        gtdb_to_seqid = defaultdict(set)
+        for gtdb_id, seq_id in zip(df_exploded['gtdb_gen_repr'], df_exploded['seqId']):
+            gtdb_to_seqid[gtdb_id.split(".")[0]].add(seq_id)
 
-        # Rename keys in bin_phen_traits using stripped GTDB IDs
-        bin_phen_traits = {
-            gtdb_to_seqid.get(k.split('.')[0], k): v
-            for k, v in bin_phen_traits.items()
-        }
+    for genome_id, phen_attributes in phen_traits.items():
 
-    for bin_name, phen_attributes in bin_phen_traits.items():
-        try:
-            node_index = node_names.index(bin_name)
-        except ValueError:
-            print(f"Warning: {bin_name} not found in node names.")
-            continue  # Skip if bin_name is not in node_names
+        _logger_.info(f">>> genome id: {genome_id}")
 
-        node = nodes[node_index]
+        if config.onthefly:
 
-        for trait, values in phen_attributes.items():
-            # NOTE (Haris Zafeiropoulos, 2025-05-05):
-            # The phen predictions are YES/NO in their files, we convert those to binary
-            node["v"][f"phendb::{trait}"]      = values["presence"].strip().upper() == "YES"
-            node["v"][f"phendbScore::{trait}"] = values["confidence"]
+            node_indices = []
+            for seq_id in gtdb_to_seqid[genome_id]:
+                try:
+                    s = node_names.index(seq_id)
+                    _logger_.info(f"{seq_id} -> {s}")
+                    node_indices.append(s)
+                except Exception:
+                    _logger_.warning(f"NO MATCH FOR {seq_id}")
+                    continue
+        else:
+            try:
+                node_indices = [node_names.index(genome_id)]
+
+            except ValueError:
+                _logger_.info(f"Warning: {genome_id} not found in node names.")
+                continue  # Skip if genome_id is not in node_names
+
+        for node_index in node_indices:
+
+            node = nodes[node_index]
+
+            for trait, values in phen_attributes.items():
+                # NOTE (Haris Zafeiropoulos, 2025-05-05):
+                # The phen predictions are YES/NO in their files, we convert those to binary
+                if f"phendb::{trait}" in node["v"]:
+                    _logger_.warning(" HAAAA !! DOUBLE GENOMEEE FOR A SPECIESSS!! ")
+
+                node["v"][f"phendb::{trait}"]      = values["presence"].strip().upper() == "YES"
+                node["v"][f"phendbScore::{trait}"] = values["confidence"]
 
 
 def update_with_faprotax_traits(config: "Config", nodes: list[dict], node_names: list[str]) -> None:
@@ -253,14 +272,14 @@ def update_with_faprotax_traits(config: "Config", nodes: list[dict], node_names:
     """
     bin_faprotax_traits, _ = extend_faprotax(config)
 
-    for bin_name, faprotax_attributes in bin_faprotax_traits.items():
+    for seq_id, faprotax_attributes in bin_faprotax_traits.items():
 
         try:
-            node_index = node_names.index(bin_name)
+            node_index = node_names.index(seq_id)
 
         except ValueError:
-            _logger_.warn(f"Warning: {bin_name} not found in node names.")
-            # Skip if bin_name is not in node_names
+            _logger_.warn(f"Warning: {seq_id} not found in node names.")
+            # Skip if seq_id is not in node_names
             continue
 
         node = nodes[node_index]
@@ -286,24 +305,24 @@ def update_with_manta(config: "Config", nodes: list[dict], node_names: list[str]
     manta_net = read_cyjson(config.manta_net)
 
     # Update nodes with cluster and assignment data
-    for bin_name, cluster in manta_net.nodes(data="cluster"):
+    for seq_id, cluster in manta_net.nodes(data="cluster"):
 
         try:
-            nodes[node_names.index(bin_name)]["manta::cluster"] = cluster
+            nodes[node_names.index(seq_id)]["manta::cluster"] = cluster
         except ValueError:
-            _logger_.warning(f"{bin_name} not found in node names.")
+            _logger_.warning(f"{seq_id} not found in node names.")
 
-    for bin_name, assignment in manta_net.nodes(data="assignment"):
+    for seq_id, assignment in manta_net.nodes(data="assignment"):
 
         try:
-            nodes[node_names.index(bin_name)]["manta::assignment"] = assignment
+            nodes[node_names.index(seq_id)]["manta::assignment"] = assignment
         except ValueError:
-            _logger_.warninig(f"{bin_name} not found in node names.")
+            _logger_.warninig(f"{seq_id} not found in node names.")
 
     # Store MANTA layout (node positions)
     manta_layout = [
-        {"node": bin_name, "x": position["x"], "y": position["y"]}
-        for bin_name, position in manta_net.nodes(data="position")
+        {"node": seq_id, "x": position["x"], "y": position["y"]}
+        for seq_id, position in manta_net.nodes(data="position")
     ]
 
     return manta_layout
@@ -754,7 +773,8 @@ def build_cx2(nodes: dict[str, dict], edges: dict[str, dict]) -> ndex2.cx2.CX2Ne
     cx2 = ndex2.cx2.CX2Network()
 
     # Add nodes on the cx2
-    node_attributes = [node["v"] for node in nodes]
+    # -- we sort alphabetically the keys of the attributes so, they are displayed together in the Nodes panel
+    node_attributes = [dict(sorted(node["v"].items())) for node in nodes]  # node["v"]
 
     for node_attributes in node_attributes:
 
@@ -765,7 +785,9 @@ def build_cx2(nodes: dict[str, dict], edges: dict[str, dict]) -> ndex2.cx2.CX2Ne
 
         source = edge["s"]
         target = edge["t"]
-        attributes = edge["v"].copy()
+
+        # Like in the nodes case, we sort keys of the attributes alphabetically
+        attributes = dict(sorted(edge["v"].items())).copy()
 
         if attributes["interaction type"] in ["depletion", "cooccurrence"]:
             attributes["microbetag::weight"] = float(edge["v"]["microbetag::weight"])
@@ -864,12 +886,14 @@ def mtg_annotate_network(config: "Config") -> ndex2.cx2.CX2Network:
     # Get the non-annotated network as dataframe
     edgelist_df = get_edgelist(config.network)
 
-    # e.g.  'bin_31': 'd__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Reyranellales;f__Reyranellaceae;g__Reyranella;s__',
+    # e.g.  'bin_31':
+    # 'd__Bacteria;p__Proteobacteria;c__Alphaproteobacteria;o__Reyranellales;f__Reyranellaceae;g__Reyranella;s__',
     seq_id_to_taxonomy_dic = config.seq_to_taxon_df.set_index(
         config.seq_to_taxon_df.columns[0]
     )[config.seq_to_taxon_df.columns[1]].to_dict()
 
-    # Initialize non-annotated nodes and edges of the network in a format that can be used as input for the ndex2 library
+    # Initialize non-annotated nodes and edges of the network in a format
+    # that can be used as input for the ndex2 library
     nodes, node_names, edges = init_nodes_and_edges(edgelist_df, seq_id_to_taxonomy_dic, config)
 
     # Update nodes and edges with the microbetag annotations
