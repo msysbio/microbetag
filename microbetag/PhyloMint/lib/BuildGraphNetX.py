@@ -1,4 +1,11 @@
-#!/usr/bin/env python3
+"""
+Based on the PhyloMInt implementation, edited by the microbetag team.
+
+DOI: https://doi.org/10.1371/journal.pcbi.1007951 
+
+GitHub: https://github.com/mgtools/PhyloMint
+"""
+
 import networkx as nx
 from libsbml import readSBML
 
@@ -20,8 +27,15 @@ def buildDG(sbml: str) -> nx.DiGraph:
     Returns:
         A `networkx` directed graph (:class:`networkx.DiGraph`)
 
+    Examples:
+
+        >>> # For carveme model
+        >>> c_dg = buildDG(modelfile)
+
+        >>> # modelseedpy
+        >>> m_dg = buildDG(modelfile)
     """
-    # initate empty directed graph
+    # Initate empty directed graph
     DG       = nx.DiGraph()
     document = readSBML(sbml)
     model    = document.getModel()
@@ -39,7 +53,6 @@ def buildDG(sbml: str) -> nx.DiGraph:
 
         for met in all_react_mets:
             if met.rsplit("_", 1)[-1] not in ["c", "c0"]:
-                # print("Skip reaction:", rxn)
                 not_cytosol = True
 
         if not_cytosol:
@@ -60,18 +73,28 @@ def buildDG(sbml: str) -> nx.DiGraph:
     return DG
 
 
-# carveme:     dg = buildDG(modelfile)
-# modelseedpy: mgt_dg  = buildDG(mgt_modelfile)
-
-
 def getSeedSet(DG, maxComponentSize=5):
     """
     Usage: takes input networkX directed graph
-    Returns: SeedSet dictionary{seedset:confidence score}
-    Implementation follows literature description,
-    Improves upon NetCooperate module implementation which erroneously discards certian cases of SCCs (where a smaller potential SCC lies within a larger SCC)
+
+    Returns
+    --------
+        SeedSet dictionary{seedset:confidence score}
+
+        Implementation follows literature description,
+        Improves upon NetCooperate module implementation which erroneously discards certain cases of SCCs
+        (where a smaller potential SCC lies within a larger SCC)
+
+    Examples
+    ---------
+
+        >>> # carveme
+        >>> c_ssc, c_ss, c_nss = getSeedSet(dg)
+        >>> #  modelseedpy
+        >>> p_ssc, p_ss, p_nss = getSeedSet(mgt_dg)
+
     """
-    # get SCC
+    # Get SCC
     SCC = nx.strongly_connected_components(DG)
     SeedSetConfidence = dict()
     for cc in SCC:
@@ -107,7 +130,3 @@ def getSeedSet(DG, maxComponentSize=5):
     SeedSet = set(SeedSetConfidence.keys())
     nonSeedSet = list(set(DG.nodes()) - set(SeedSet))
     return (SeedSetConfidence, SeedSet, nonSeedSet)
-
-
-#  carveme:      ssc, ss, nss = getSeedSet(dg)
-#  modelseedpy:  patric_ssc, patric_ss, patric_nss = getSeedSet(mgt_dg)

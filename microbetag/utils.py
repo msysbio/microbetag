@@ -215,6 +215,7 @@ def get_files_with_suffixes(directory: str, suffixes: list[str]) -> list[str]:
                   Each suffix should include the dot (e.g., '.txt', '.csv').
 
     Returns:
+    ---------
         A list of full paths to files that match any of the specified suffixes.
 
     Example:
@@ -246,12 +247,11 @@ def safe_literal_eval(value: Any):
         it will be parsed. Otherwise, it's returned as is.
 
     Returns
-    -------
-    Any
+    ----------
         The evaluated literal if successful, or the original value if evaluation fails.
 
     Examples
-    --------
+    ----------
     >>> safe_literal_eval("[1, 2, 3]")
     [1, 2, 3]
 
@@ -395,15 +395,19 @@ def ko_list_parser(ko_list: str) -> dict:
     """
     Parses ko_list file into a dict object - based on DiTing
 
-    Arguments:
+    Arguments
+    ----------
         ko_list: path to the `ko_list` file that comes from the kofam database https://www.genome.jp/ftp/db/kofam/
 
-    Returns:
+    Returns
+    ---------
         A dictionary mapping knum to threshold and score_type
     """
-    ko_dic = {}  # { knum : [threshold, score_type] }
+    # { knum : [threshold, score_type] }
+    ko_dic = {}
     with open(ko_list) as fi:
-        next(fi)  # skip the first line (header)
+        # skip the first line (header)
+        next(fi)
         for line in fi:
             knum, threshold, score_type = line.split("\t")[0:3]
             if threshold == "-":
@@ -732,7 +736,7 @@ def extend_complements(
     return complements_dict_ext
 
 
-def extend_faprotax(conf: "Config") -> tuple[dict[str, list], list[str]]:
+def extend_faprotax(faprotax_sub_tables, sequence_id_column_name) -> tuple[dict[str, list], list[str]]:
     """
     Parses the sub tables of the faprotax analysis
     to assign the biological processes related to each sequence id
@@ -745,8 +749,8 @@ def extend_faprotax(conf: "Config") -> tuple[dict[str, list], list[str]]:
     bin_faprotax_traits = {}
 
     fapro_sub_tables = [
-        os.path.join(conf.faprotax_sub_tables, file)
-        for file in os.listdir(conf.faprotax_sub_tables)
+        os.path.join(faprotax_sub_tables, file)
+        for file in os.listdir(faprotax_sub_tables)
     ]
 
     for file in fapro_sub_tables:
@@ -756,7 +760,7 @@ def extend_faprotax(conf: "Config") -> tuple[dict[str, list], list[str]]:
         trait_name, _ = os.path.splitext(os.path.basename(file))
         trait         = pd.read_csv(file, sep="\t", skiprows=1)
 
-        bins_with_trait = trait[conf.sequence_id_column_name].dropna()
+        bins_with_trait = trait[sequence_id_column_name].dropna()
 
         for bin_id in bins_with_trait:
             bin_faprotax_traits.setdefault(bin_id, []).append(trait_name.replace("_", " "))

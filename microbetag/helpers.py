@@ -31,15 +31,16 @@ class Emojis:
 _logger_ = mtg_logger(__name__)
 emojis   = Emojis()
 
+
 class PathwayComplementarity:
     """
     Sets variables regarding pathway complementarity tasks based on user's config (.yml) file
 
     Args:
-        config: An instance of the :class:`Config`.
+        config: An instance of the :class:`.config.Config` class.
     """
 
-    def __init__(self, config):
+    def __init__(self, config: "Config"):
         self.conf       = config
         self.base_dir   = config.base_dir
         self.output_dir = config.output_dir

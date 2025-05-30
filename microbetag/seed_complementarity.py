@@ -246,10 +246,10 @@ class ExportSeedComplementarities:
         seed_scores = [s for s in seed_scores if s is not None]
 
         # Finalize shared dictionary and convert to DataFrame
-        _logger_.info("%%%%%%%%%%%%%%%%%%%%%%%")
-        _logger_.info(seed_complements)
         compls_dict = {
-            k: v for k, v in (seed_complements or {}).items() if isinstance(v, dict)
+            k: v
+            for k, v in (seed_complements or {}).items()
+            if isinstance(v, dict)
         }
 
         # Save the final DataFrame

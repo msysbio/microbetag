@@ -1,3 +1,11 @@
+"""
+Based on the PhyloMInt implementation
+
+DOI: https://doi.org/10.1371/journal.pcbi.1007951 
+
+GitHub: https://github.com/mgtools/PhyloMint
+"""
+
 def calculate_scores(SeedA, SeedSetAConfidence, SeedB, nonSeedB):
 
     # get intersects
@@ -21,7 +29,7 @@ def calculate_scores(SeedA, SeedSetAConfidence, SeedB, nonSeedB):
 
     # Get intersects intersect (A n nonB) &! B
     intersect_seedA_nonseedB = SeedA.intersection(nonSeedB)
-    intersect_seedA_setB = SeedA.intersection(SetB)
+    intersect_seedA_setB     = SeedA.intersection(SetB)
 
     # calculate normalized weighted sum
     MetabolicCooperationIdx = len(intersect_seedA_nonseedB) / len(intersect_seedA_setB)
