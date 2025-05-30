@@ -1,6 +1,9 @@
 import os
 import unittest
 
+import shutil
+from pathlib import Path
+
 from microbetag.helpers import Faprotax
 from microbetag.tools import run_faprotax
 
@@ -10,8 +13,16 @@ input_dir       = os.path.join(test_data, "input_files")
 output_dir      = os.path.join(test_data, "output_files")
 abundance_table = os.path.join(input_dir, "thirty_Samples.tsv")
 
+# Make sure output folder exists
 os.makedirs(output_dir, exist_ok=True)
 
+# Remove previous test outputs if any
+folder = Path(output_dir) / "faprotax"
+if folder.exists():
+    shutil.rmtree(folder)
+
+
+# Psuedo config class
 class Config:
 
     def __init__(self):

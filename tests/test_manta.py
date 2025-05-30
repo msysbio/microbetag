@@ -1,6 +1,8 @@
 import os
 import unittest
 import pandas as pd
+import shutil
+from pathlib import Path
 
 from microbetag.tools import run_manta
 from microbetag.config import load_abundance
@@ -23,6 +25,12 @@ input_net_dir    = os.path.join(test_data, "input_files", "based_on_net")
 edgelist         = os.path.join(input_net_dir, "edgelist.csv")
 seq_tax_map_file = os.path.join(input_net_dir, "seq2taxonomy.tsv")
 outdir_net       = os.path.join(output_dir, "based_on_net")
+
+# Remove previous output folder
+prev_run = Path(output_dir)
+if prev_run.exists():
+    print("Removing output folder from previous run.")
+    shutil.rmtree(prev_run)
 
 class NetConfig:
     """Config-like class for the case a network is being used"""

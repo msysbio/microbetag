@@ -10,6 +10,8 @@ root_dir   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 test_data  = os.path.join(root_dir, "test_data/test_seed_compl")
 models_dir = os.path.join(test_data, "input_files")
 
+# NOTE (Haris Zafeiropoulos, 2025-05-29):
+# Outfiles will be overwritten, so no need to remove previous run outputs in this case.
 out_dir         = os.path.join(test_data, "output_files")
 out_dir_wt_sets = os.path.join(test_data, "output_files_wt_sets")
 out_dir_bigg    = os.path.join(test_data, "output_files_bigg")

@@ -1,5 +1,7 @@
 import os
+import shutil
 import unittest
+from pathlib import Path
 
 from microbetag.utils import ko_list_parser, bin_kos_to_file, merge_ko
 from microbetag.tools import kegg_annotation
@@ -12,8 +14,15 @@ test_data_dir = os.path.join(root, "test_data", "test_kegg_annotation")
 
 # Input files
 input_dir = os.path.join(test_data_dir, "input_files")
-faas      = [os.path.join(input_dir, f) for f in os.listdir(input_dir) if f.endswith(".faa")]
-bin_ids   = [os.path.splitext(os.path.basename(faa))[0] for faa in faas]
+faas      = [
+    os.path.join(input_dir, f)
+    for f in os.listdir(input_dir)
+    if f.endswith(".faa")
+]
+bin_ids   = [
+    os.path.splitext(os.path.basename(faa))[0]
+    for faa in faas
+]
 threads   = 2
 
 # KEGG database paths
@@ -24,6 +33,13 @@ ko_list     = os.path.join(kegg_db_dir, "ko_list_tests")  # Subset used for fast
 output_dir = os.path.join(test_data_dir, "output_files")
 hmmout_dir = os.path.join(output_dir, "hmmout")
 ko_merged  = os.path.join(output_dir, "ko_merged.txt")
+
+# Remove ouput dir from previous run, if any
+prev_run = Path(output_dir)
+if prev_run.exists():
+    print("Removing output folder from previous run.")
+    shutil.rmtree(prev_run)
+
 os.makedirs(output_dir, exist_ok=True)
 os.makedirs(hmmout_dir, exist_ok=True)
 
