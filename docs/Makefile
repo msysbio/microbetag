@@ -8,13 +8,22 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = _build
 
+# Python script for preprocessing MyST links
+PREPROCESS_SCRIPT = replace_myst_links.py
+
+
 # Put it first so that "make" without argument is like "make help".
+.PHONY: help clean html
+
 help:
-	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
 
-.PHONY: help Makefile
+html:
+	@echo "Preprocessing markdown files...\n"
+	@find . -name "*.md" -exec python $(PREPROCESS_SCRIPT) {} \;
+	@echo "\n\nBuild RTD"
+	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS)
 
-# Catch-all target: route all unknown targets to Sphinx using the new
-# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+clean:
+	@echo "Cleaning build directory..."
+	@rm -rf "$(BUILDDIR)"

@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import os
-
+import re
 project = "microbetag"
 copyright = "2025, Lab of Microbial Systems Biology"
 author = "Lab of Microbial Systems Biology"
@@ -66,7 +66,7 @@ def setup(app):
     app.connect("autoapi-skip-member", autoapi_skip_member)
 
 
-autoapi_dirs = ["../microbetag"]
+autoapi_dirs   = ["../microbetag"]
 autoapi_ignore = [
     "*PhyloMint*",
     "*FAPROTAX*",
@@ -74,7 +74,7 @@ autoapi_ignore = [
     "*kegg_ids_to_ncbi*",
 ]  # "*mtg_maps_models*",
 
-templates_path = ["_templates"]
+templates_path   = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
@@ -83,37 +83,18 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "furo"
+html_theme       = "furo"
 html_static_path = ["_static"]
-
-html_css_files = ["custom.css"]
-
-# html_css_files = [
-#     "custom.css",
-#     "lightbox2/dist/css/lightbox.min.css",
-# ]
-
-# html_js_files = [
-#     'lightbox2/dist/js/lightbox.min.js'
-# ]
-
+html_css_files   = ["custom.css"]
 
 html_theme_options = {
     "light_logo": "img/microbetag_logo.png",
-    "dark_logo": "img/microbetag_logo_dark.png",
+    "dark_logo" : "img/microbetag_logo_dark.png",
 }
 
-html_title = "annotating microbial networks"
+html_title       = "annotating microbial networks"
 html_short_title = "microbetag"
-html_favicon = "_static/img/microbetag_logo.ico"
-
-
-# intersphinx_mapping = {
-#     "python": ("https://docs.python.org/3", None),
-#     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
-#     "pandas": ("https://pandas.pydata.org/pandas-docs/stable/", None),
-#     'sklearn': ('http://scikit-learn.org/stable', None)
-# }
+html_favicon     = "_static/img/microbetag_logo.ico"
 
 # No need to manually register .md, as myst_parser handles it
 source_suffix = {

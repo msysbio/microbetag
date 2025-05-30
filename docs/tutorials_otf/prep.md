@@ -88,7 +88,7 @@ A thorough description of each argument can be found below as well as in the `co
 |``output_directory``         | Output folder name; it will be created within the mounted folder |
 
 
-### Docker
+### Docker {#docker}
 
 To run directly 
 

@@ -40,10 +40,10 @@ designed for 16S rRNA amplicon data, which performs taxonomic assignment using a
 
 If you plan to use the on-the-fly version of microbetag, simply follow these steps:
 
-- make sure [Cytoscape](https://cytoscape.org){target="_blank"} is installed on your system; 
-  if not, download and install it from the [Cytoscape Install page](https://cytoscape.org/download.html){target="_blank"}
-
-- launch Cytoscape, then visit the [MGG Cytoscape Appstore page](https://apps.cytoscape.org/apps/mgg){target="_blank"}, 
+- make sure <a href="https://cytoscape.org" target="_blank">Cytoscape</a> is installed on your system; 
+  if not, download and install it from the <a href="https://cytoscape.org/download.html" target="_blank">Cytoscape Install page</a>
+    
+- launch Cytoscape, then visit the <a href="https://apps.cytoscape.org/apps/mgg" target="_blank">MGG Cytoscape Appstore page</a>, 
   then click the `Install` button to add the MGG app to your Cytoscape environment
 
 
@@ -72,9 +72,9 @@ Also, the use of a fixed taxonomy scheme.
 To support large-scale 16S rRNA datasets and ensure compatibility with GTDB 
 (when your taxonomy is not already in Silva or GTDB format),
 we provide a containerized preparation tool: 
-[`microbetag_prep`](https://hub.docker.com/r/hariszaf/microbetag_prep){target="_blank"}.
+<a href="https://hub.docker.com/r/hariszaf/microbetag_prep" target="_blank">`microbetag_prep`</a>.
 Details on how to use this can be found in the [preparation tutorial](./tutorials_otf/prep.md). 
-`microbetag_prep` is also available as a [Docker image](https://hub.docker.com/r/hariszaf/microbetag_prep){target="_blank"}.
+`microbetag_prep` is also available as a <a href="https://hub.docker.com/r/hariszaf/microbetag_prep" target="_blank">Docker image</a>.
 
 
 
@@ -84,7 +84,7 @@ In this mode, you use the `microbetag` Python library directly to annotate your 
 This option allows for complete customization and offline execution.
 See the [local usage tutorial](./tutorials_local/local.md) for instructions.
 
-To simplify the setup, we provide a [containerized version](https://hub.docker.com/r/hariszaf/microbetag){target="_blank"} 
+To simplify the setup, we provide a <a href="https://hub.docker.com/r/hariszaf/microbetag" target="_blank">containerized version</a> 
 that bundles all dependencies.
 For further instructions on how to set `microbeag` locally, have a look at the [installation page](./installation.md).
 
@@ -129,47 +129,17 @@ These tutorials demonstrate how to run `microbetag` on your own system:
 - [Filling in the YAML configuration file](./tutorials_local/config.md) based on your data 
   and the specific tasks you want microbetag to perform.
 - [Running the Python-based annotation pipeline](./tutorials_local/local.md) with custom genome collections
-- Using [API](./tutorials_local/local.md) to get pairwise annotations from `microbetagDB`.
 
 
 
+### 🧑‍💻 Access programmatically and/or contribute
 
-----
+For coding-familiar users, we also provide instructions about:
 
+- how to use `microbetag`'s [API](./tutorials_local/local.md) to get either species specific annotations or 
+  potential complementarities for species pairs from `microbetagDB`
 
-<!-- To use `microbetag` there are two main approaches: 
-
-* ***on-the-fly***: all process is through the Cytoscape environment and the `MGG` Cytoscape App. 
-    You first load your data on Cytoscape, and thanks to `MGG` you can directly submit a `microbetag` job on the web-server.
-    Once your data reach the server, taxa present in your data will be mapped to their closest GTDB representative genome if possible. Their pre-calculations on `microbetagDB` will be then used for the annotation step. 
-    However, if you have an abundance table with more than 1000 sequences, you will have to provide a network. 
-    
-    To enable this and at the same time to support the taxonomy annotation of 16S rRNA sequences directly with GTDB, if that is your case, we provide a containerized image, called [`microbetag_prep`](https://hub.docker.com/r/hariszaf/microbetag_prep), for what the [*preparation step*](./prep.md). This is only required if you have more than 1000 sequences and your taxonomy is neither Silva nor GTDB.
-
-* ***locally***: using the `microbetag` Python library, you may annotate your data using [your own bins/MAGs](./local.md). To facilitate an easy way to get the required environment, we provide `microbetag` along with its complex dependencies as a [Docker/Singularity image](https://hub.docker.com/r/hariszaf/microbetag). Based on the number of genomes/MAGs you have, may take several hours and thus, cannot be performed on-the-fly as a web-service, so you will have to run it locally. Once you get the annotated network, then you can use the Cytoscape App we provide to visualize it. 
- -->
-
-<!-- ## How to 
-
-The simplest case is you are about to use the first approach where your sequences are less than 1_000 (up limit for the server to build a network).
+- the [code base of `microbetag`](./autoapi/index)
 
 
-If you have a more complex data set, then you need to:
-* either perform the `microbetag_prep` step, where you get a network again using FlashWeave and/or a GTDB-based taxonomy assignment of your amplicon sequences (if that is your case), or
-* perform `microbetag` locally, in case you have your own genomes to use instead of the GTDB representative ones
 
-
-> In the *Advanced use*, we provide tutorials addressing common cases where more sophisticated implementations of the `microbetag` features are required to get an annotated network.  -->
-
-
-<!-- If you need to use toctree, remove # -->
-<!-- 
-#```{toctree}
-:maxdepth: 2
-:caption: Tutorials - advanced use
-
-prep
-local
-large_data
-python
- -->

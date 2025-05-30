@@ -4,7 +4,7 @@ title: Input files
 nav_order: 6
 ---
 
-# Input files
+# Input files and mandatory parameters
 
 Here is a list with `microbetag` input files along with typical examples of how they need to be like:
 
@@ -69,8 +69,9 @@ Again, it is always a good practice to use the [`microbetag` preparation step](.
 ### The `phyloseq` case
 
 In case you start from a `phyloseq` object, you may get a `.tsv` file using the 
-[`tax_table`](https://www.rdocumentation.org/packages/phyloseq/versions/1.16.2/topics/tax_table) and the
-[`otu_table`](https://www.rdocumentation.org/packages/phyloseq/versions/1.16.2/topics/otu_table) functions of the `phyloseq` library. 
+[`tax_table`](https://www.rdocumentation.org/packages/phyloseq/versions/1.16.2/topics/tax_table){target="_blank"} and the
+[`otu_table`](https://www.rdocumentation.org/packages/phyloseq/versions/1.16.2/topics/otu_table){target="_blank"} 
+functions of the `phyloseq` library. 
 
 ```R
 # In an R environment, assuming `physeq` is a `phyloseq` object.
@@ -90,7 +91,9 @@ In case you start from a `biom` file, you may get a `.tsv` file using the
 ```bash 
 biom convert -i otu_table.biom -o otu_table.csv --to-tsv --header-key taxonomy
 ```
-Make sure you have the `biom` tools installed; if not, you may follow the instructions you can find [here](https://biom-format.org/index.html) how to get them.
+Make sure you have the `biom` tools installed; if not, you may follow the instructions you can find 
+[here](https://biom-format.org/index.html){target="_blank"}
+how to get them.
 <!-- https://www.metagenomics.wiki/tools/16s/qiime/otu-biom-table -->
 
 
@@ -184,6 +187,50 @@ Cytoscape asks for a `source` and a `target` column in your network.
 Since a co-occurrence network does not have directed edges, you can set any node column as `source` or `target`.
 In our example, `node_a` could be `source` and then, `node_b` would be the `target` or the other way around. 
 ```
+
+
+
+
+
+## Basic parameters
+
+
+You need first to feed the app with your abundance table and, if available, your co-occurrence network.
+In both cases though, the **abundance table** will be **required**. 
+
+Please, make sure your taxonomy fits the criteria for `microbetag` to run. 
+You may find more on that issue on the [*Input files*](../input.md#input-files) section.
+
+Then, as you will see in the following two cases, you will have to set the values to a set of parameters to describe your input data but also what annotation steps you would like `microbetag` to perform.
+
+
+|Parameter | Variable      | Description                       | Value |
+|----------|---------------|-----------------------------------|-------|
+|Choose input type         |`input_type`| In case you already have a network, set it as `network` and load it; otherwise set it as `abundance_table`. In both cases you need to provide the abundance table though| [`abundance_table` \| `network`] |
+|Choose taxonomy database| `taxonomy` | In case a user's taxonomy is to be used, denotes which taxonomy scheme to be used from microbetag | [`GTDB` \| `dada2` \| `qiime2`] |
+|phenDB annotations         | `phen_traits`            | return phenotypic traits based on phen models  | bool |
+|FAPROTAX annotations       | `faprotax`          | return annotations using the FAPROTAX database | bool |
+|Pathway Complementarity    | `pathway_complementarity`| return pathway complementarities between associated nodes | bool |
+|Seed scores and complements| `seed_complementarity`       | return complementarity and cooperation scores based on metabolic reconstructions seed sets | bool |
+|Network clustering         | `network_clustering`             | return clusters of nodes on the network using the manta package | bool | 
+|Consider children taxa     | `get_children`      | use genomes of children taxa of the taxa in the abundance table based on the NCBI Taxonomy scheme, relevant only if you use `Other` taxonomy | bool |
+|heterogeneous              | `heterogeneous`     | (FlashWeave) enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (`FlashWeaveHE`) | bool | 
+|sensitive                  INPUT FILES USED IN THIS TUTORIAL| `sensitive`         | (FlashWeave) enable fine-grained associations (`FlashWeave-S`, `FlashWeaveHE-S`), sensitive=false results in the fast modes `FlashWeave-F` or `FlashWeaveHE-F` | bool | 
+
+
+The column `Variables` in the above table provides the variable names you need to use 
+in case you are about to use `microbetag` from Python (see [tutorial](../tutorials_local/python.md)).
+
+The datasets to be used in all cases except of the [*Using a network*](../tutorials_otf/from_net.md) tutorial, 
+are subsets of abundance tables with no special biological meaning.
+However, in the *Using a network* case, we do use the network of 
+Hessler et *al.* (2023) {cite:p}`hessler2023vitamin` who we would like to thank for sharing their data.
+
+
+
+
+
+
 
 
 
