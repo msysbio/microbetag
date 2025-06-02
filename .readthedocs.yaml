@@ -10,9 +10,6 @@ build:
   os: ubuntu-20.04
   tools:
     python: "3.10"
-  commands:
-    - echo "Preprocessing markdown files..."
-    - find . -name "*.md" -exec python docs/replace_myst_links.py {} \;
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:

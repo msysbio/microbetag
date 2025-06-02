@@ -39,6 +39,22 @@ The source code for the microbetag GUI can be found [here](https://github.com/er
 For hints on how to use `microbetag`, ideas for new features and bug reports find us on out [Matrix space](https://matrix.to/#/#microbetagcommunity:matrix.org).
 If you do not have a Matrix account, it’s only two clicks away! For more, you may check [here](https://matrix.org/docs/chat_basics/matrix-for-im/).
 
+## RTD
+
+`microbetag` uses ReadTheDocs and Sphinx for its documentation (see `docs/`).
+
+> **For contributors**
+>
+> To test changes locally first, run:
+> ```
+> sphinx-build -b html -d _build/doctrees -D language=en . _build/html -v
+> ```
+> from within the `docs/` directory.
+> 
+
+A new RTD is being produced every time a new _microbetag_ `tag` is released automatically.
+
+
 
 ## Cite
 
