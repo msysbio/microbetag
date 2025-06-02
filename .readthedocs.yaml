@@ -11,7 +11,8 @@ build:
   tools:
     python: "3.10"
   commands:
-    - python docs/replace_myst_links.py # run your pre-processing script
+    - echo "Preprocessing markdown files..."
+    - find . -name "*.md" -exec python docs/replace_myst_links.py {} \;
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
