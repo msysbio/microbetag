@@ -74,13 +74,13 @@ pathway_complementarity:
   required: True
   type: bool
 
-max_length_for_complement_from_scratch:
+complement_max_length:
   value: 3
   description: There are cases where a species has no KO related with a module but may get a complete alternative from the donor species. However, there are cases where a KEGG module consists of just 1-2 terms and other where dozins of KOs are required. Set the max length of a module that can be exchanged when no module related KO is present in the beneficiary in the first place.
   required: False
   type: integer
 
-pathway_complement_percentage:
+pc_percentage:
   value: 0.35
   description: Per centage of the module (i.e., number of KO terms) up to which a potential donor may provide a beneficiary with. For example, if a module consists of 5 KOs and the beneficiary can share 4 missing from the donor, this is rather unlikely to happen. If no value is given all complementes will be returned.
   required: False
@@ -110,7 +110,7 @@ seed_complementarity:
   required: True
   type: bool
 
-input_type_for_seed_complementarities:
+sc_input_type:
   value: bins_fasta
   value_from: 
     - bins_fasta
@@ -119,7 +119,7 @@ input_type_for_seed_complementarities:
     - models
   description: "Clarifies what is the information the input files to be used for the GEMs reconstruction include. \
     This parameter is strongly related to the `sequence_files_for_reconstructions` as it is the last that specifies the path to the files described here. \
-    If GEMs are already available, then you may set the `input_type_for_seed_complementarities` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. \
+    If GEMs are already available, then you may set the `sc_input_type` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. \
     If you intend to use ModelSEEDpy to reconstruct GEMs but you have already RAST annotated your genomes, i.e. gto, gto_2 and their corresponding .faa files are available, then you may set this parameter as `proteins_faa` and \
     give the directory path to the .faa files in the `sequence_files_for_reconstructions`. \
     If none of the above is available, then set this parameter as bins_fasta and leave the sequence_files_for_reconstructions blank."
@@ -134,7 +134,7 @@ sequence_files_for_reconstructions:
   folderName: 
   required: 
     value: True
-    when: if input_type_for_seed_complementarities != "bins_fasta". Could be either .fna or .faa files.
+    when: if sc_input_type != "bins_fasta". Could be either .fna or .faa files.
   description: 
   type: string
 

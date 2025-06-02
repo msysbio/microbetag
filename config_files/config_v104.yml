@@ -162,7 +162,7 @@ pathway_complementarity:
   type: bool
 
 
-max_length_for_complement_from_scratch:
+complement_max_length:
   value: 3
   description: >
     In some cases, a species may lack KOs related to a module but can acquire a complete alternative from a donor species.
@@ -172,7 +172,7 @@ max_length_for_complement_from_scratch:
   type: integer
 
 
-pathway_complement_percentage:
+pc_percentage:
   value: 0.35
   description: >
     The percentage of a module (i.e., the number of KO terms) that a potential donor can provide to a beneficiary.
@@ -207,7 +207,7 @@ kofam_database:
   required: 
     value: false
     when: >
-      pathway_complement_percentage is true and ko_merged_file is null
+      pc_percentage is true and ko_merged_file is null
   type: Path
 
 
@@ -223,8 +223,9 @@ prev_calc_path_compl:
 
 
 # -----
-# Seed complementarity
+# Seed complementarity 
 # -----
+
 seed_complementarity:
   value: true
   description: >
@@ -236,8 +237,11 @@ seed_complementarity:
     when: microbetag is to run partially to build GEMs (e.g. test_modelseed.py under `tests/`)
   type: bool
 
+# ~~~~
+# Seed complementarity I: GENREs 
+# ~~~~
 
-input_type_for_seed_complementarities:
+sc_input_type:
   value:
   value_from: 
     - bins_fasta
@@ -245,10 +249,11 @@ input_type_for_seed_complementarities:
     - proteins_faa
     - models
   description: >
-    Specifies the type of information included in the input files for GEM reconstruction.
+    Specifies the type of information included in the input type for seed compplementarity 
+    files for GEM reconstruction.
     This parameter is closely related to `sequence_files_for_reconstructions`, which defines the path to the files described here.
 
-    - If GEMs are already available, set `input_type_for_seed_complementarities` to models 
+    - If GEMs are already available, set `sc_input_type` to models 
     and provide the path to the .xml models via `sequence_files_for_reconstructions`.
     - If you plan to use ModelSEEDpy for GEM reconstruction and have already annotated your genomes with RAST (i.e., gto, gto_2, 
     and their corresponding .faa files are available), set this parameter to `proteins_faa` and specify the directory containing 
@@ -258,6 +263,58 @@ input_type_for_seed_complementarities:
   required: true
 
 
+sequence_files_for_reconstructions:
+  dir_path: 
+  required: 
+    value: true
+    when: if sc_input_type != "bins_fasta". Could be either .fna or .faa files.
+  description: 
+  type: string
+
+
+gene_predictor:
+  value: fragGeneScan
+  value_from: 
+    - fragGeneScan
+    - prodigal
+    - RAST
+  required: 
+    value: false
+    when: >
+      orfs_per_bin is None or genre_reconstruction_with is carveme
+  description: "RAST annotation is required/strongly suggested* if modelseedpy is going to be used as genre_reconstruction_with.
+  Otherwise, the user may choose among fragGeneScan or prodigal; in the latter, the .faa returned by DiTing will be used."
+  type: string
+
+
+genre_reconstruction_with:
+  value: carveme
+  value_from: 
+    - modelseedpy
+    - carveme
+  required: 
+    value: true
+    when: seed_complementarity == true
+
+gapfill_model:
+  value: true
+  description: "If true, modelseedpy will gapfill the reconstruction."
+  type: bool
+
+
+gapfill_media:
+  file_path: 
+  description: >
+      Tab separated file with the media that will be used to gapfill the model, 
+      If non provided, and `gapfill_model` is true, the model will be gapfilled using a complete medium,
+      meaning all exchange reactions of the draft reconstruction will be considered free to get a high uptake.
+  type: Path
+
+
+# -----
+# Metabolic network reconstruction: there parameters should be considered only in case seed complementarity 
+# is about to be performed and metabolic networks are not already available
+# -----
 prev_calc_seed_sets:
   dir_path: 
   required: false 
@@ -283,63 +340,6 @@ prev_nonseeds:
     
   required:
   type:
-
-
-
-
-
-
-
-
-# -----
-# Metabolic network reconstruction: there parameters should be considered only in case seed complementarity 
-# is about to be performed and metabolic networks are not already available
-# -----
-sequence_files_for_reconstructions:
-  dir_path: 
-  required: 
-    value: true
-    when: if input_type_for_seed_complementarities != "bins_fasta". Could be either .fna or .faa files.
-  description: 
-  type: string
-
-gene_predictor:
-  value: fragGeneScan
-  value_from: 
-    - fragGeneScan
-    - prodigal
-    - RAST
-  required: 
-    value: false
-    when: >
-      orfs_per_bin is None or genre_reconstruction_with is carveme
-  description: "RAST annotation is required/strongly suggested* if modelseedpy is going to be used as genre_reconstruction_with.
-  Otherwise, the user may choose among fragGeneScan or prodigal; in the latter, the .faa returned by DiTing will be used."
-  type: string
-
-genre_reconstruction_with:
-  value: carveme
-  value_from: 
-    - modelseedpy
-    - carveme
-  required: 
-    value: true
-    when: seed_complementarity == true
-
-gapfill_model:
-  value: true
-  description: "If true, modelseedpy will gapfill the reconstruction."
-  type: bool
-
-
-gapfill_media:
-  file_path: 
-  description: >
-      Tab separated file with the media that will be used to gapfill the model, 
-      If non provided, and `gapfill_model` is true, the model will be gapfilled using a complete medium,
-      meaning all exchange reactions of the draft reconstruction will be considered free to get a high uptake.
-  type: Path
-
 
 
 # -----
