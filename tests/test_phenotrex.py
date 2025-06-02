@@ -1,6 +1,8 @@
 import os
 import unittest
 import subprocess
+from pathlib import Path
+
 from microbetag.tools import phenotrex_genotype, phenotrex_predict
 
 cwd          = os.getcwd()
@@ -11,6 +13,12 @@ test_data  = os.path.join(root_dir, "test_data", "test_phenotrex")
 output_dir = os.path.join(test_data, "output_files")
 bins       = os.path.join(test_data, "input_files")
 
+
+def remove_files_with_suffix(directory: str, suffix: str):
+    path = Path(directory)
+    for file in path.glob(f'*{suffix}'):
+        if file.is_file():
+            file.unlink()
 
 class Config:
 
@@ -27,6 +35,9 @@ class Config:
         self.threads          = 2
         self.min_proba        = 0.6
         self.cwd              = cwd
+
+
+remove_files_with_suffix(output_dir, suffix=".prediction.tsv")
 
 
 class TestPhenotrex(unittest.TestCase):

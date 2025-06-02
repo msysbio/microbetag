@@ -70,7 +70,7 @@ class testPathCompl(unittest.TestCase):
 
         bin_kos_per_module = taxon_kos_per_module(
             bins_kos_df                    = self.pivot_df,
-            ko_terms_per_module_definition = self.map_paths.ko_terms_per_module_definition,  # microbetag.KEGG_TERMS_PER_MODULE
+            ref_ko_per_module = self.map_paths.ref_ko_per_module,  # microbetag.KEGG_TERMS_PER_MODULE
         )
 
         self.assertTrue(len(bin_kos_per_module.keys()) == 7)

@@ -34,7 +34,7 @@ seed_complementarity:
   type: bool
 
 
-input_type_for_seed_complementarities:
+sc_input_type:
   value: proteins_faa
   value_from: 
     - bins_fasta
@@ -45,7 +45,7 @@ input_type_for_seed_complementarities:
     Specifies the type of information included in the input files for GEM reconstruction.
     This parameter is closely related to `sequence_files_for_reconstructions`, which defines the path to the files described here.
 
-    - If GEMs are already available, set `input_type_for_seed_complementarities` to models 
+    - If GEMs are already available, set `sc_input_type` to models 
     and provide the path to the .xml models via `sequence_files_for_reconstructions`.
     - If you plan to use ModelSEEDpy for GEM reconstruction and have already annotated your genomes with RAST (i.e., gto, gto_2, 
     and their corresponding .faa files are available), set this parameter to `proteins_faa` and specify the directory containing 
@@ -62,7 +62,7 @@ sequence_files_for_reconstructions:
   dir_path: input_files/faa
   required: 
     value: true
-    when: if input_type_for_seed_complementarities != "bins_fasta". Could be either .fna or .faa files.
+    when: if sc_input_type != "bins_fasta". Could be either .fna or .faa files.
   description: 
   type: string
 

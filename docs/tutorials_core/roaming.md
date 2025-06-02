@@ -19,23 +19,52 @@ description: "tutorial on how to parse the annotated network using the MGG app"
 We will use the `microbetag`-annogated network of the [network-based example-case](from_net); you can get directly its corresponding `microbetag` - annotated network from [here][1].
 ```
 
-Once an annotated network is returned (or 
 <!-- [loaded](../basic_usage/load) -->
-loaded
-) on your Cytoscape main panel, you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App facilitating a user-friendly way to go through the annotations returned.
+Once an annotated network is returned (or [loaded](../tutorials_core/load.md)) on your Cytoscape main panel, 
+you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App 
+facilitating a user-friendly way to go through the annotations returned.
 
+
+### Nodes
 
 Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequence was able to be mapped on *microbetag*.
 
-- <p style="color : Green">green</p> node was mapped to a genome (i.e. species/strain) and annotations are available for it 
-- <p style="color : Magenta">pink</p> node was mapped to the genus level; annotations limited to literature-oriented (FAPROTAX) 
-- <p style="color : Purple">purple</p> node was mapped to the family level; likewise, only FAPROTAX annotations occasionaly
-- <p style="color : Red">red</p> node was mapped to higher taxonomic level and no annotations were returned
+- 🟩 node was mapped to a genome (i.e. species/strain) and annotations are available for it
+- <img src="https://cdn3.emoji.gg/emojis/4300_pink_square.png" alt="pink_square" style="width:1.1em; height:1.1em;"></a> 
+  node was mapped to the genus level; annotations limited to literature-oriented (FAPROTAX) 
+- 🟪 node was mapped to the family level; likewise, only FAPROTAX annotations occasionaly
+- 🟥 node was mapped to higher taxonomic level and no annotations were returned
+ 
+
+Also, in case you have metadata in you analysis, those would be shown as hexagons having a 
+`microbetag::ncbi-tax-level` column on the _Nodes_ table as `[metavar]`.
+
+![ph](../_static/img/app/ph.png)
+
+
+### Edges
+
+
+- 🟦 undirected co-occurrence edge with positive score $\ge 0.1$
+- 🟥 undirected co-occurrence edge with negative score $\ge 0.1$
+- ⬛ undirected co-occurrence edge with $0.1\ge$ score $\ge 0.1$
+- → directed complementarity edge; source being the potential donor and target the beneficiary
+- 🟨 selected edge 
+
 
 
 If you edit the style of your *microbetag*-annotated network, you can always bring back its original style through the MGG main menu.
 
 ![style](../_static/img/app/visualStyle.png)
+
+
+
+
+
+
+
+
+
 
 
 Now, if already opened, you need to open the MGG results panel; just click 
@@ -71,11 +100,12 @@ or several at the same time
 ![selcted_nodes](../_static/img/app/nodePanelMultiNodes.png)
 
 
-For more about how the PhenDB-like traits are assigned in each node you may have a look [here](../modules/modules.md#based-on-phendb) and for a thorough list of all the traits supported, 
-
+For more about how the `phenotrex`-oriented traits are assigned in each node you may have a look 
+[here](../modules/modules.md#based-on-phendb) and for a thorough list of all the traits supported, 
 you may check the corresponding [table](../modules/phen-traits).
 
-In addition, for the FAPROTAX-based annotations, you may have a look [here](../modules/modules.md#based-on-faprotax) for how it works, and you can go through the whole list of potential traits supported in this [table](../modules/faprotax-functions).
+In addition, for the FAPROTAX-based annotations, you may have a look [here](../modules/modules.md#based-on-faprotax) for how it works, 
+and you can go through the whole list of potential traits supported in this [table](../modules/faprotax-functions).
 
 
 ### Filter for traits
@@ -100,13 +130,54 @@ Edges are either
 
 Now, you can click on the **Edges** button on the bottom of the MGG panel to *jump* to the Edges annotations.
 
+### Potential seed complementarities
+
+Like in the case of the pathway complementarities, a new panel is displayed when seed complements are available for an edge.
+Here is an example:
+
+![kegg_seed_map](../_static/img/app/seedComplPanel.png)
+
+
+[*Seed scores*](../modules/modules_background.md#seed-scores-and-complements-based-on-genome-scale-draft-reconstructions-gems) 
+between the two genomes are also shown here. 
+Remember that like the edge under study, seed scores have also *directionality*; 
+
+```{important}
+Seed score for competition between $genome_A$ and $genome_B$ is not necessarily the same with the one between $genome_B$ and $genome_A$.
+Those scores are only indicative, and they should not be considered as fact of observed cooperation/competition. 
+```
+
+In cases where more than one GTDB genomes were mapped to a node, then `microbetag` ends up with several seed scores on an edge. 
+Thus, on the Edge panel we display their average and their corresponding standard deviation:
+
+![std](../_static/img/app/seed_std.png)
+
+
+**Seed complements** are then shown on a collapsible table, where each row corresponds to the seeds related to a KEGG MAP (column 2).
+Each KEGG map belongs to a metabolism category in KEGG's hierarchy, with apparently, several maps to belong to the same category.
+_microbetag_ returns all seed compounds related to such a map that the beneficiary could potentially get from the donor. 
+Since metabolic models used in _microbetag_ have been reconstructed with ModelSEEDpy, it's the ModelSEED namespace in which 
+the seeds complements are predicted, which are then mapped to their corresponding KEGG COMPOUND ids.
+
+```{important}
+The returned complements in the seed complementarity module of `microbetag` are KEGG COMPOUNDs, 
+each of which may participate in multiple metabolic pathways and thus, appear in more than one KEGG MAP. 
+As a result, a single seed complement may be listed in multiple rows within the collapsible table — one for each KEGG map it is involved in.
+
+```
+
+![kegg_seed_map](../_static/img/app/seedKeggMap.png)
+
+
+
+
 ### Potential pathway complementarities
 
 By clicking on a potential metabolic interaction edge, the donor and the beneficiary species, along with their corresponding sequence identifiers will be displayed.
 
 Then, for cases where pathway complementarities have been returned for this association, a panel will be available for each pair of genomes that were mapped to those two taxa. 
 For each pair of genomes, a list with the potential metabolic complementarities is then returned. 
-In the first column the KEGG MODULE id of the corresponding complementarity is provided, and in the second and third column their description and metabolism category. 
+In the first column the KEGG MODULE ID of the corresponding complementarity is provided, and in the second and third column their description and metabolism category. 
 In the fourth column, called *"Complement"* the KO that need to be provided to the beneficiary species to support the module are given and in the next column, the complete alternative that would then facilitate the module is shown; i.e., assuming the complement is provided.
 
 ![pathway_compl](../_static/img/app/pathwayCompl.png)
@@ -116,23 +187,6 @@ The screenshot below illustrates the highlighted complementarity in the biosynth
 
 ![methionine_kegg_map](../_static/img/app/keggMap.png)
 
-
-### Potential seed complementarities
-
-Like in the case of the pathway complementarities, a new panel is displayed when seed complements are available for an edge.
-Here is an example:
-
-![kegg_seed_map](../_static/img/app/seedComplPanel.png)
-
-
-[*Seed scores*](../modules/modules_background.md#seed-scores-and-complements-based-on-genome-scale-draft-reconstructions-gems) between the two genomes are also shown here. 
-Remember that like the edge under study, seed scores have also *directionality*; seed score for competition between $genome_A$ and $genome_B$ is not necessarily the same with the one between $genome_B$ and $genome_A$.
-Those scores are only indicative, and they should not be considered as fact of observed cooperation/competition. 
-Seed complements are then recorded in the same way as pathway complementarities.
-However, there is no *Complement* column as this time it is not a specific KEGG MODULE that is supported, rather a potential range of functions that can be viewer through the colored url. 
-Also, a new column provides the ModelSEED compound id that was actually found as a complement and was then mapped to their KEGG corresponding one. 
-
-![kegg_seed_map](../_static/img/app/seedKeggMap.png)
 
 
 

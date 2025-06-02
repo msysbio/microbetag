@@ -71,6 +71,26 @@ In the initial run, there are only 3 input files:
  Always keep those (and the edge list if available) in the root of your input/output folder; i.e. in the path you set as your `io_path` in the `config.yml` file.
 ```
 
+
+## Install 
+
+
+```{python}
+>>> (microbetag) u0156635@gbw-l-l0074:~$ microbetag --help
+usage: microbetag [-h] [--config CONFIG] [-v]
+
+Microbetag CLI
+
+options:
+  -h, --help            show this help message and exit
+  --config CONFIG, -c CONFIG
+                        Path to the configuration yaml file.
+  -v, --version         Show Microbetag version
+```
+
+
+
+
 ## Input and `config.yml` files
 
 The `config.yml` file is rather important as it is the one that allows you to set your `microbetag` run.
@@ -81,8 +101,8 @@ Here, we highlight some of them.
 
 - `abundance_table_file`: path to your abundance table; the abundance table needs to follow the instructions for any abundance table to be used with `microbetag`, i.e., sequence identifier in the first column, sample names in the first row and a 7-level taxonomy in the last column; of course, you may provide the output of the[ `microbetag` preprocessing step](./prep.md) as an abundance table. 
 
-- `input_type_for_seed_complementarities`: This is a **key parameter** for running `microbetag` locally; based on whether you already have annotated your genomes (either using other software or from previous runs of `microbetag`) you can use different input files as the starting point for getting the seed complementarities. The `sequence_files_for_reconstructions` parameter is strongly related to this. 
-For example, if you have already GEMs reconstructed based on your genomes, you may set this to `input_type_for_seed_complementarities` to `models` and then, provide the folder name with your GEMs in the `sequence_files_for_reconstructions` parameter (e.g. `my_xmls`). Likewise, if you do not have GEMs, but you already have RAST annotations, you may set `input_type_for_seed_complementarities` to `proteins_faa` and give the path to those in the `sequence_files_for_reconstructions` parameter.
+- `sc_input_type`: This is a **key parameter** for running `microbetag` locally; based on whether you already have annotated your genomes (either using other software or from previous runs of `microbetag`) you can use different input files as the starting point for getting the seed complementarities. The `sequence_files_for_reconstructions` parameter is strongly related to this. 
+For example, if you have already GEMs reconstructed based on your genomes, you may set this to `sc_input_type` to `models` and then, provide the folder name with your GEMs in the `sequence_files_for_reconstructions` parameter (e.g. `my_xmls`). Likewise, if you do not have GEMs, but you already have RAST annotations, you may set `sc_input_type` to `proteins_faa` and give the path to those in the `sequence_files_for_reconstructions` parameter.
 
 - `seed_complementarity`: since this is the most time and resource consuming step, the user may choose not to go for it. By setting this to `Fasle`, none of the steps for GEMs reconstruction or seed complementarity inference will be performed.
 
@@ -242,7 +262,7 @@ In this case, `microbetag` will exit and force a restart of its running on its o
 Yet, it is a good practice to also check its status when the `modelseed` reconstruction step is running.
 ```
 In the following paragraphs, we highlight how to go for different scenarios of GEMs reconstruction using different file types as initial starting points. 
-One need to combine 2 parameters of the `config.yml` file to specify those scenarios: the `input_type_for_seed_complementarities` where one specifies the file type and the `sequence_files_for_reconstructions` that points to the directory where the files to be used are located.
+One need to combine 2 parameters of the `config.yml` file to specify those scenarios: the `sc_input_type` where one specifies the file type and the `sequence_files_for_reconstructions` that points to the directory where the files to be used are located.
 
 
 
@@ -250,7 +270,7 @@ One need to combine 2 parameters of the `config.yml` file to specify those scena
 
 in this case, you have set 
 
-- `input_type_for_seed_complementarities` as `bins_fasta`, and 
+- `sc_input_type` as `bins_fasta`, and 
 - `sequence_files_for_reconstructions` is blank
 - `genre_reconstruction_with` as `modelseedpy`
 
@@ -270,7 +290,7 @@ For our 7 genomes/bins this step may take about 1 hour depending on your computi
 
 Assuming you already have the `.faa` files coming from the `rast-tk` package, you may use them directly by setting 
 
-- `input_type_for_seed_complementarities` as `proteins_faa`, and 
+- `sc_input_type` as `proteins_faa`, and 
 - `sequence_files_for_reconstructions` as the path to the folder with your `.faa` files
 - `genre_reconstruction_with` as `modelseedpy`
 
@@ -278,13 +298,13 @@ In this case, `microbetag` will have to establish connections with the RAST clie
 
 ```{note}
 If your annotated genomes include the DNA sequences instead of the protein ones (`.fna` files) you may use them by setting the 
-`input_type_for_seed_complementarities` as `coding_regions`.
+`sc_input_type` as `coding_regions`.
 ```
 
 
 ### using `carveme`
 
-- `input_type_for_seed_complementarities` as `bins_fasta`
+- `sc_input_type` as `bins_fasta`
 - `sequence_files_for_reconstructions` is blank
 - `genre_reconstruction_with` as `carveme`
 
@@ -304,7 +324,7 @@ For a thorough description of each column, you may check this [here](https://git
 
 In this case, you may use your GEMs directly for the seed complementarities inference by setting:
 
-- `input_type_for_seed_complementarities` as `models`
+- `sc_input_type` as `models`
 - `sequence_files_for_reconstructions` pointing to directory with the `.xml` files
 - `genre_reconstruction_with` can be left blank or any value; it will not be considered
 

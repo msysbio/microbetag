@@ -227,7 +227,7 @@ kofam_database:
   required: 
     value: false
     when: >
-      pathway_complement_percentage is true and ko_merged_file is null
+      pc_percentage is true and ko_merged_file is null
   type: Path
 ```
 

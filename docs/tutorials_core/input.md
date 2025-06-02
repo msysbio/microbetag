@@ -69,8 +69,8 @@ Again, it is always a good practice to use the [`microbetag` preparation step](.
 ### The `phyloseq` case
 
 In case you start from a `phyloseq` object, you may get a `.tsv` file using the 
-[`tax_table`](https://www.rdocumentation.org/packages/phyloseq/versions/1.16.2/topics/tax_table){target="_blank"} and the
-[`otu_table`](https://www.rdocumentation.org/packages/phyloseq/versions/1.16.2/topics/otu_table){target="_blank"} 
+<a href="https://www.rdocumentation.org/packages/phyloseq/versions/1.16.2/topics/tax_table" target="_blank">`tax_table`</a> and the
+<a href="https://www.rdocumentation.org/packages/phyloseq/versions/1.16.2/topics/otu_table" target="_blank">`otu_table`</a> 
 functions of the `phyloseq` library. 
 
 ```R
@@ -92,7 +92,7 @@ In case you start from a `biom` file, you may get a `.tsv` file using the
 biom convert -i otu_table.biom -o otu_table.csv --to-tsv --header-key taxonomy
 ```
 Make sure you have the `biom` tools installed; if not, you may follow the instructions you can find 
-[here](https://biom-format.org/index.html){target="_blank"}
+<a href="https://biom-format.org/index.html" target="_blank">here</a>
 how to get them.
 <!-- https://www.metagenomics.wiki/tools/16s/qiime/otu-biom-table -->
 

@@ -36,8 +36,6 @@ We provide a series of tutorials to guide users through different scenarios and 
 ![microbetagDB content stats](_static/img/content-stats.png)
 
 
-## Attributes
-
 
 ### Contact
 

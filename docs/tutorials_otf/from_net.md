@@ -17,7 +17,8 @@ In this tutorial, we show how to run `microbetag` using a network of your own.
 ```{note}
 **INPUT FILES USED IN THIS TUTORIAL**
 
-The network we will use ([`edgelist.tsv`][2]) comes from the study of [Hessler et *al.* (2023)](https://doi.org/10.1038/s41467-023-40360-4).
+The network we will use ([`edgelist.tsv`][2]) comes from the study of 
+[Hessler et *al.* (2023)](https://doi.org/10.1038/s41467-023-40360-4) {cite:p}`hessler2023vitamin`.
 We would like to thank the authors for sharing their data.
 The abundance table ([`vitAbund.tsv`][1]) however does not represent the one of the actual study.
 It is a pseudo abundance table that only includes the **bin names, exactly as they are called in the network file**, to *highlight* that **it is not the abundance data** that are of interest now.
@@ -29,9 +30,9 @@ meaning that the *node ids of the network are present in the abundance table in 
 
 For example, a toy model of a network file would be: 
 
-| node_A | node_B | weight  | 
-|:-------:|:-----:|:-------:|
-| bin_1 | bin_2 | 0.84 |
+| node_A  | node_B | weight  | 
+|:-------:|:------:|:-------:|
+| bin_1   | bin_2  |  0.84   |
 
 then, the corresponding abundance table would have, among other records, to have the following two lines:
 

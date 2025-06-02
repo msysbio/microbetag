@@ -94,7 +94,7 @@ prev_calc_path_compl:
 # Seed complementarity
 # -----
 
-input_type_for_seed_complementarities:
+sc_input_type:
   value: bins_fasta
   value_from: 
     - bins_fasta
@@ -103,7 +103,7 @@ input_type_for_seed_complementarities:
     - models
   description: "Clarifies what is the information the input files to be used for the GEMs reconstruction include. \
     This parameter is strongly related to the `sequence_files_for_reconstructions` as it is the last that specifies the path to the files described here. \
-    If GEMs are already available, then you may set the `input_type_for_seed_complementarities` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. \
+    If GEMs are already available, then you may set the `sc_input_type` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. \
     If you intend to use ModelSEEDpy to reconstruct GEMs but you have already RAST annotated your genomes, i.e. gto, gto_2 and their corresponding .faa files are available, then you may set this parameter as `proteins_faa` and \
     give the directory path to the .faa files in the `sequence_files_for_reconstructions`. \
     If none of the above is available, then set this parameter as bins_fasta and leave the sequence_files_for_reconstructions blank."

@@ -67,7 +67,7 @@ Below, you will find further background and examples of each annotation type.
 ## Functional annotations
 
 
-### Based on FAPROTAX
+### 📚 Based on literature
 
 
 <a href="https://pages.uoregon.edu/slouca/LoucaLab/archive/FAPROTAX/lib/php/index.php" target="_blank">**FAPROTAX**</a> 
@@ -97,14 +97,12 @@ In case the user provides as input a co-occurrence network, `microbetag` runs FA
 
 
 
-### Based on phenDB 
-
-
+### 🧬 Based on genome-derived predictions
 
 <a href="https://phenotrex.readthedocs.io/en/latest/usage.html" target="_blank">`phenotrex`</a>
 enables phenotypic trait prediction on user's metagenomic genomes/bins.
 
-*Phenotrex* classifiers were re-trained using the genomes provided by phenDB for each model. 
+`phenotrex` classifiers were re-trained using the genomes provided by phenDB for each model. 
 For example, for the acetic acid production case, 
 the <a href="https://phendb.org/reports/modeldetails?model_id=16" target="_blank">corresponding webpage of phenDB</a> 
 pointed to the set of genomes that had been originally used. 
@@ -117,7 +115,7 @@ based on those from the <a href="https://phendb.org/reports/modeloverview" targe
 
 
 The annotation is referring to the species under study. 
-Each trait gets a "Yes" or "No" decision along with an accurracy score. 
+Each trait gets a "Yes" or "No" decision along with an accuracy score. 
 For example `NOB` : *species under study is part of the clade of NOB*. 
 
 Here is an example of how two GTDB genomes look like: 
@@ -131,8 +129,18 @@ mapped to a representative GTDB genome with these functional traits and scores.
 
 
 
+## Metabolic complementarities
 
-## Pathway complementarity
+_microbetag_ supports two main approaches for predicting potential metabolic interactions between two taxa, both based on the concept of complementarity. In this context, a potential beneficiary species receives a metabolite from a potential donor—a compound it cannot produce on its own but can utilize to support downstream metabolic pathways.
+
+_microbetag_ supports two main approaches for predicting **potential** metabolic interactions between two taxa, 
+both based on the concept of _complementarity_.  
+In this context, a potential **beneficiary** species receives a metabolite from a potential **donor**,
+a compound it cannot produce on its own but can utilize to support downstream metabolic pathways.
+
+
+
+## 🧩 Pathway complementarity
 
 
 As defined by the <a href="https://www.genome.jp/kegg/module.html" target="_blank">KEGG resource</a>, 
@@ -159,8 +167,8 @@ _microbetag_ returns all possible complementarities between all the donor's and 
 *microbetag* annotates all **edges** where **both nodes represent species/strain level taxonomies** with such complementarities.
 
 
-
-## Seeds complementarity
+ <!-- style="width: 20px; height: 20px;" -->
+## <img src="../_static/img/app/seed.jpg" style="width: 1em; height: 1em; vertical-align: text-bottom;"> Seeds complementarity
 
 **Seed scores and complements based on genome-scale draft reconstructions (GEMs)**
 

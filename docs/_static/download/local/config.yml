@@ -13,20 +13,20 @@ io_path:
   required: True
   type: Path
 
-output_directory: 
+output_directory:
   folderName: microbetag_run
   description: Name of the output folder that will be built inside the io_path directory.
   required: True
   type: string
 
-abundance_table_file: 
+abundance_table_file:
   fileName: thirty_Samples.tsv
   description: Filename of the abundance table file. \
     The taxonomy scheme in this case is irrelevant. \
     However, you need to make sure that the sequence identifiers used in this table, are the same \
     with those in your network (if one provided) as well as with those in your bins/faa/xml files, again if such provdied.
   required: True
-  examples: 
+  examples:
     - thirty_Samples.tsv
     - counts_genomes_taxonomies.tsv
   type: string
@@ -41,20 +41,21 @@ edge_list:
   value: edgelist.csv
   description: If co-occurrence network already available, please provide its edge list; a 2 column tab separated file
   required: False
-  examples: 
+  examples:
     - edgelist.csv
   type: string
 
-input_type_for_seed_complementarities:
+sc_input_type:
   value: bins_fasta
-  value_from: 
+  value_from:
     - bins_fasta
     - coding_regions
     - proteins_faa
     - models
-  description: "Clarifies what is the information the input files to be used for the GEMs reconstruction include. \
+  description:
+    "Clarifies what is the information the input files to be used for the GEMs reconstruction include. \
     This parameter is strongly related to the `sequence_files_for_reconstructions` as it is the last that specifies the path to the files described here. \
-    If GEMs are already available, then you may set the `input_type_for_seed_complementarities` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. \
+    If GEMs are already available, then you may set the `sc_input_type` as `models` and provide the path to the .xml models through the `sequence_files_for_reconstructions` parameter. \
     If you intend to use ModelSEEDpy to reconstruct GEMs but you have already RAST annotated your genomes, i.e. gto, gto_2 and their corresponding .faa files are available, then you may set this parameter as `proteins_faa` and \
     give the directory path to the .faa files in the `sequence_files_for_reconstructions`. \
     If none of the above is available, then set this parameter as bins_fasta and leave the sequence_files_for_reconstructions blank."
@@ -62,74 +63,75 @@ input_type_for_seed_complementarities:
   required: True
 
 sequence_files_for_reconstructions:
-  folderName: 
-  required: 
+  folderName:
+  required:
     value: True
-    when: if input_type_for_seed_complementarities != "bins_fasta". Could be either .fna or .faa files.
-  description: 
+    when: if sc_input_type != "bins_fasta". Could be either .fna or .faa files.
+  description:
   type: string
-
 
 # -----
 # Computing
 # -----
 threads:
   value: 2
-  description: Number of CPUs to be used 
+  description: Number of CPUs to be used
   type: integer
 
 # -----
-# Metabolic network reconstruction 
+# Metabolic network reconstruction
 # -----
 seed_complementarity:
   value: True
-  description: This is the most time-consuming and challengint step of the workflow. You may perform microbetag with or without it by setting \
-                this argument as True or False correspondinly.
+  description:
+    This is the most time-consuming and challengint step of the workflow. You may perform microbetag with or without it by setting \
+    this argument as True or False correspondinly.
   required: True
   type: bool
 
 gene_predictor:
   value: fragGeneScan
-  value_from: 
+  value_from:
     - fragGeneScan
     - prodigal
     - RAST
-  required: 
+  required:
     value: False
     when: orfs_per_bin is None
-  description: RAST annotation is required/strongly suggested* if modelseedpy is going to be used as genre_reconstruction_with. \
-              Otherwise, the user may choose among fragGeneScan or prodigal; in the latter, the .faa returned by DiTing will be used. 
+  description:
+    RAST annotation is required/strongly suggested* if modelseedpy is going to be used as genre_reconstruction_with. \
+    Otherwise, the user may choose among fragGeneScan or prodigal; in the latter, the .faa returned by DiTing will be used.
   type: string
 
 genre_reconstruction_with:
   value: carveme
-  value_from: 
+  value_from:
     - modelseedpy
     - carveme
-  required: 
+  required:
     value: True
     when: seed_complementarity == True
 
 gapfill_model:
   value: True
-  description: If True, modelseedpy will gapfill the reconstruction. 
+  description: If True, modelseedpy will gapfill the reconstruction.
   type: bool
 
-gapfill_media: 
+gapfill_media:
   value: True
-  description: If True, modelseedpy will 
+  description: If True, modelseedpy will
   type: bool
 
 # -----
 # Pathway complementarity
 # -----
-max_length_for_complement_from_scratch:
+complement_max_length:
   value: 3
   description: There are cases where a species has no KO related with a module but may get a complete alternative from the donor species. However, there are cases where a KEGG module consists of just 1-2 terms and other where dozins of KOs are required. Set the max length of a module that can be exchanged when no module related KO is present in the beneficiary in the first place.
   required: False
   type: integer
 
-pathway_complement_percentage:
+pc_percentage:
   value: 0.35
   description: Per centage of the module (i.e., number of KO terms) up to which a potential donor may provide a beneficiary with. For example, if a module consists of 5 KOs and the beneficiary can share 4 missing from the donor, this is rather unlikely to happen. If no value is given all complementes will be returned.
   required: False
@@ -144,7 +146,7 @@ min_proba:
   type: float
 
 # -----
-# manta 
+# manta
 # -----
 network_clustering:
   value: False
@@ -156,93 +158,92 @@ network_clustering:
 # Flashweave
 # -----
 metadata_file:
-  fileName: 
-  description: 
+  fileName:
+  description:
   type:
   required: False
 
 flashweave_args:
-    
-    heterogeneous:
-      value: False
-      description: enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (FlashWeaveHE)
-      required: True
-      type: bool
-    
-    sensitive:
-      value: True
-      description: enable fine-grained associations (FlashWeave-S, FlashWeaveHE-S), sensitive=false results in the fast modes FlashWeave-F or FlashWeaveHE-F
-      required: True
-      type: bool
+  heterogeneous:
+    value: False
+    description: enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (FlashWeaveHE)
+    required: True
+    type: bool
 
-    max_k:
-      value:
-      description: maximum size of conditioning sets, high values can strongly increase runtime. max_k=0 results in no conditioning (univariate mode)
-      required: False
-      type: integer
+  sensitive:
+    value: True
+    description: enable fine-grained associations (FlashWeave-S, FlashWeaveHE-S), sensitive=false results in the fast modes FlashWeave-F or FlashWeaveHE-F
+    required: True
+    type: bool
 
-    alpha:
-      value:
-      description:  threshold used to determine statistical significance
-      required: False
-      type: 
+  max_k:
+    value:
+    description: maximum size of conditioning sets, high values can strongly increase runtime. max_k=0 results in no conditioning (univariate mode)
+    required: False
+    type: integer
 
-    conv:
-      value:
-      description: convergence threshold, i.e. if conv=0.01 assume convergence if the number of edges increased by only 1% after 100% more runtime (checked in intervals)
-      required: False
-      type: 
+  alpha:
+    value:
+    description: threshold used to determine statistical significance
+    required: False
+    type:
 
-    feed_forward:
-      value:
-      description: enable feed-forward heuristic
-      required:
-      type:
+  conv:
+    value:
+    description: convergence threshold, i.e. if conv=0.01 assume convergence if the number of edges increased by only 1% after 100% more runtime (checked in intervals)
+    required: False
+    type:
 
-    max_tests: 
-      value:
-      description: maximum number of conditional tests that should be performed on a variable pair before association is assumed
-      required: False
-      type:
+  feed_forward:
+    value:
+    description: enable feed-forward heuristic
+    required:
+    type:
 
-    hps:
-      value:
-      description: reliability criterion for statistical tests when sensitive=false
-      required: False
-      type:
+  max_tests:
+    value:
+    description: maximum number of conditional tests that should be performed on a variable pair before association is assumed
+    required: False
+    type:
 
-    FDR:
-      value:
-      description: perform False Discovery Rate correction (Benjamini-Hochberg method) on pairwise associations 
-      required: False
-      type:
+  hps:
+    value:
+    description: reliability criterion for statistical tests when sensitive=false
+    required: False
+    type:
 
-    n_obs_min:
-      value: 
-      desription: don't compute associations between variables having less reliable samples (i.e. non-zero if heterogeneous=True) than this number. -1  automatically choose a threshold.
-      required: False
-      type: integer
+  FDR:
+    value:
+    description: perform False Discovery Rate correction (Benjamini-Hochberg method) on pairwise associations
+    required: False
+    type:
 
-    time_limit:
-      value: 
-      description: if feed-forward heuristic is active, determines the interval (seconds) at which neighborhood information is updated
-      required: False
-      type: 
+  n_obs_min:
+    value:
+    desription: don't compute associations between variables having less reliable samples (i.e. non-zero if heterogeneous=True) than this number. -1  automatically choose a threshold.
+    required: False
+    type: integer
 
-    normalize:
-      value: 
-      description: automatically choose and perform data normalization (based on sensitive and heterogeneous)
-      required: False
-      type: bool
+  time_limit:
+    value:
+    description: if feed-forward heuristic is active, determines the interval (seconds) at which neighborhood information is updated
+    required: False
+    type:
 
-    track_rejections:
-      value: 
-      description: store for each discarded edge, which variable set lead to its exclusion (can be memory intense for large networks)
-      required: False
-      type:
+  normalize:
+    value:
+    description: automatically choose and perform data normalization (based on sensitive and heterogeneous)
+    required: False
+    type: bool
 
-    verbose:
-      value:
-      description: print progress information
-      required: False
-      type: bool
+  track_rejections:
+    value:
+    description: store for each discarded edge, which variable set lead to its exclusion (can be memory intense for large networks)
+    required: False
+    type:
+
+  verbose:
+    value:
+    description: print progress information
+    required: False
+    type: bool

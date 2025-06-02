@@ -15,10 +15,10 @@ since it's being used by the gapfilling algorithm to fill the gaps in the networ
 """
 
 import os
-import yaml
+import shutil
 import unittest
+from pathlib import Path
 
-from microbetag.config import Config
 from microbetag.genres import GEMSReconstruction
 
 root      = os.path.dirname(os.path.dirname(__file__))
@@ -27,41 +27,61 @@ test_data = os.path.join(root, "test_data", "test_modelseed")
 input_dir  = os.path.join(test_data, "input_files")
 output_dir = os.path.join(test_data, "output_files")
 
-if not os.path.exists(input_dir):
-    import tarfile
-    from pathlib import Path
-    tar_gz = ".".join([input_dir, "tar.gz"])
-    file_path = Path(tar_gz)
-    output_dir = file_path.parent
-    with tarfile.open(file_path, "r:gz") as tar:
-        # tar.extractall(path=output_dir, filter="data")
-        tar.extractall(output_dir)
+input_fasta, input_faa = os.path.join(input_dir, "fasta"), os.path.join(input_dir, "faa")
 
-config_file = os.path.join(test_data, "config_modelseed.yml")
-with open(config_file, "r") as yaml_file:
-    config = Config(yaml.safe_load(yaml_file), config_file)
+output_faa = os.path.join(output_dir, "faa")
+os.makedirs(output_faa, exist_ok=True)
+faa_genres = os.path.join(output_faa, "GENREs")
+os.makedirs(faa_genres, exist_ok=True)
 
+output_fasta = os.path.join(output_dir, "fasta")
+os.makedirs(output_fasta, exist_ok=True)
+fasta_genres = os.path.join(output_fasta, "GENREs")
+# shutil.rmtree(fasta_genres)
+os.makedirs(fasta_genres, exist_ok=True)
+
+
+bin_filenames = [f.name for f in Path(input_fasta).iterdir() if f.is_file()]
+
+
+class ConfigFasta:
+    threads             = 2
+    bin_filenames       = bin_filenames
+    bins_path           = input_fasta
+    reconstructions     = output_fasta     # main output directory for all GENRE-related files built ("reconstructions")
+    sc_input_type       = "bins_fasta"
+    genres              = os.path.join(output_fasta, "GENREs")       # output dir for GENREs (.xml files) built to be saved ("GENREs")
+    gapfill_model       = True           # bool
+    gapfill_media       = None           # file or noen
+    # for_reconstructions =    # dir to input files to be used for GENREs
+
+class ConfigFaa:
+    # dir to input files to be used for GENREs
+    for_reconstructions = output_dir
+    # output dir for GENREs (.xml files) built to be saved ("GENREs")
+    genres        = os.path.join(output_dir, "GENREs")
+    gapfill_model = True           # bool
+    gapfill_media = None           # file or noen
+    threads       = 2
+    sc_input_type = "proteins_faa"
 
 class TestGEMSReconstruction(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.builder = None
 
-    def test1_set_builder(self):
+    def testFromFaa(self):
 
         # Test the GEMSReconstruction class
-        TestGEMSReconstruction.builder = GEMSReconstruction(config)
+        builder = GEMSReconstruction(ConfigFaa())
+        builder.modelseed_reconstructions()
+
         print("Test 1 passed")
 
-    def test2_rast_annotate(self):
+    def testFromFasta(self):
 
-        self.builder.rast_annotate_genomes()
+        builder = GEMSReconstruction(ConfigFasta())
+        builder.rast_annotate_genomes()
+        builder.modelseed_reconstructions()
+
         print("Test 2 passed")
-
-    def test3_build_modelseed(self):
-
-        self.builder.modelseed_reconstructions()
-        print("Test 3 passed")
 
 
 if __name__ == "__main__":

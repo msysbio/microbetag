@@ -39,12 +39,11 @@ as they can lead either to non-optimal annotations or even errors, exiting `micr
 If something is not covered acrross the tutorials, you may check the [FAQs](../faq.md) section.
 Rules of thumb on how to set your parameters are also described there. 
 
+<img src="../_static/img/app/matrix.png" style="width: 1em; height: 1em; vertical-align: text-bottom;">
 If you still don't find an answer to your question, feel free to
 <a href="https://matrix.to/#/#microbetagcommunity:matrix.org" target="_blank">join us on Matrix</a>.
 You can ask about unresolved _how-to_ topics, suggest new features, or simply reach out for support.
-<img src="../_static/img/app/matrix.png" style="width: 30px; height: 30px;">
 ```
-
 
 In addition, you will always need an abundance table, having or not already a co-occurrence network, 
 and to provide a set of mandatory parameters. 

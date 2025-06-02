@@ -16,14 +16,15 @@ In this example, we will use the [`testAbund.tsv`][3] file to showcase how to us
 ```
 
 
-In this case a co-occurrence network is **not** available so, *microbetag* will come up with one using [FlashWeave](https://doi.org/10.1016/j.cels.2019.08.002).
+In this case a co-occurrence network is **not** available so, *microbetag* will come up with one using 
+<a href="https://doi.org/10.1016/j.cels.2019.08.002" target="_blank">FlashWeave</a>.
 In case you already have a network, and you would like `microbetag` to use it, please check on the [Using a network](./from_net.md) tutorial.
 
 ```{danger}
 **UPPER LIMIT FOR ABUNDANCE TABLE RECORDS**
  
 When using the online *microbetag* version, it will build a co-occurrence network only for abundance tables with less than 1000 of records.
-In case your abundance table is larger, you will have to run the [`microbetag` preprocess](../advanced_use/prep.md) step locally.
+In case your abundance table is larger, you will have to run the [`microbetag` preprocess](./prep.md) step locally.
 Otherwise, you can always run any algorithm for network inference locally and use their findings with microbetag.
 ```
 
@@ -56,9 +57,11 @@ Once clicking on that, a parameter-setting box will pop up, asking for values on
 
 ![settings](../_static/img/app/parameters_no_net.png)
 
-For a thorough description of these parameters, please check the table on the [Run microbetag Cytoscape app](mgg_totorials.md) tutorial as well as the relative [FAQs](../faq.md#setting-the-parameters-right).
+For a thorough description of these parameters, 
+please check the table on the [Input files and mandatory parameters](../tutorials_core/input.md) tutorial, 
+as well as the relative [FAQs](../faq.md#setting-the-parameters-right).
 
-Please make sure you set the input type as `abundance_table` and you select the correct [taxonomy scheme](input.md#input-files).
+Please make sure you set the input type as `abundance_table` and you select the correct [taxonomy scheme](../tutorials_core/input.md#basic-parameters).
 It is crucial to also set the [FlashWeave related parameters](../faq.md#when-to-enable-the-sensitive-and-heterogeneous-arguments) in a way they address your abundance table idiosyncrasy.
 <!-- In this case, we need `microbetag` to come up with a network as we only provide an abundance table; thus, we set the `Choose input type` to `abundance_table`.  -->
 In our tutorial example, since the taxonomy scheme was Silva we choose this to map our taxa against.
@@ -72,7 +75,10 @@ See [FAQ](../faq.md) for more.
 
 
 ```{important}
-We suggest you do the network inference step as well as the mapping to the GTDB taxonomy before using *microbetag* through the Cytoscape App as this would provide you extra freedom on they network inference and gain dramatically in computing time on the server.
+We suggest you do the network inference step as well as the mapping to the GTDB taxonomy before using _microbetag_ 
+through the Cytoscape App, as this would provide you extra freedom on they network inference 
+and gain dramatically in computing time on the server.
+To this end, you may foloow the instructions on the [pre-processing tutorial](prep.md).
 ```
 
 Once you set the parameters of your choice, you are ready to sent your query to the server by clicking *ok*.
@@ -81,7 +87,7 @@ Once you set the parameters of your choice, you are ready to sent your query to 
 
 
 
-After a few minutes (based on your data and the steps you have asked for) a *microbetag-*annotated network will pop up automatically on your Cytoscape instance.
+After a few minutes (based on your data and the steps you have asked for) a _microbetag -_ annotated network will pop up automatically on your Cytoscape instance.
 
 ![annotated_net](../_static/img/app/annotated_net_no_net.png)
 
@@ -94,8 +100,10 @@ To explore the annotated network continue with [*Investigating the annotations* 
 
 There are several reasons you may either get a network with only a few nodes/edges annotated or get an error message from the server. 
 Both scenarios are related to either the format of your input data or the parameters you have selected. 
-Please, follow the guidelines you can find in the [*Input files*](input.md) tab and check our [*FAQ*](../faq.md) for common errors. 
-If you still need some help, please go ahead and ask the `microbetag` community on our [Matrix community](https://matrix.to/#/#microbetagcommunity:matrix.org).
+Please, follow the guidelines you can find in the [*Input files*](../tutorials_core/input.md) tab 
+and check our [*FAQ*](../faq.md) for common errors. 
+If you still need some help, please go ahead and ask the _microbetag_ community on our 
+<a href="https://matrix.to/#/#microbetagcommunity:matrix.org" target="_blank">Matrix community</a>.
 ```
 
 
