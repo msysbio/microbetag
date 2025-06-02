@@ -12,7 +12,7 @@ import multiprocessing
 from tqdm import tqdm
 
 from julia.api import Julia
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from .utils import (
     get_files_with_suffixes,
@@ -45,7 +45,7 @@ def run_seed_complementarity(config: "Config") -> None:
 
     if config.prev_conf is None or os.path.exists(config.prev_conf) is False:
         config.skip_sets = False
-        if config.users_models:
+        if config.user_models:
             genre_files = [
                 os.path.join(config.for_reconstructions, file)
                 for file in os.listdir(config.for_reconstructions)
@@ -77,7 +77,7 @@ def run_seed_complementarity(config: "Config") -> None:
         seeds.get_scores_and_compls()
 
 
-def hmmsearch(params: list) -> None:
+def hmmsearch(params: List) -> None:
     """
     Function to invoke hmmsearch software.
 
@@ -505,6 +505,8 @@ def run_faprotax(config: "Config") -> None:
     ]
     faprotax_command = " ".join(faprotax_params)
 
+    _logger_.info(faprotax_command)
+    _logger_.info(os.system("which python"))
     try:
         os.system(faprotax_command)
     except Exception:

@@ -1,3 +1,4 @@
+import os
 from typing import TYPE_CHECKING
 
 from .tools import (
@@ -92,7 +93,7 @@ def build_genres(config: "Config"):
     build_genres = GEMSReconstruction(config)
 
     # Annotate step
-    if config.input_for_recon_type == "bins_fasta":
+    if config.sc_input_type == "bins_fasta":
 
         if config.genre_reconstruction_with == "modelseedpy":
             build_genres.rast_annotate_genomes()  # saves under config.reconstructions
@@ -106,7 +107,7 @@ def build_genres(config: "Config"):
             _logger_.info("Get annotations with FragGeneScan.")
             build_genres.fgs_annotate_genomes()  # saves under config.reconstructions
 
-    elif config.input_for_recon_type == "coding_regions":
+    elif config.sc_input_type == "coding_regions":
         _logger_.info("CarveMe will be used with the users .ffn-like files.")
 
     else:

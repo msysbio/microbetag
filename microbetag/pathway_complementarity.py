@@ -234,7 +234,7 @@ def a_modules_maps(kegg_modules_to_maps):
     return module_to_map
 
 
-def taxon_kos_per_module(bins_kos_df, ko_terms_per_module_definition):
+def taxon_kos_per_module(bins_kos_df, ref_ko_per_module):
     """Keep track of the KOs related to a module present on each bin
     Input:
         bins_kos_df (pd.DataFrame):
@@ -242,7 +242,7 @@ def taxon_kos_per_module(bins_kos_df, ko_terms_per_module_definition):
     Returns:
         bin_kos_per_module (Dict):
     """
-    d = pd.read_csv(ko_terms_per_module_definition, sep="\t")
+    d = pd.read_csv(ref_ko_per_module, sep="\t")
     d.columns = ["module_id", "ko_term"]
     d.loc[:, "presence"] = 1
     definitions_df = d.pivot_table(
@@ -283,7 +283,7 @@ def export_pathway_complementarities(config, bins_kos_df):
 
     # Keep track of the KOs related to a module present on each bin
     bin_kos_per_module = taxon_kos_per_module(
-        bins_kos_df, config.ko_terms_per_module_definition
+        bins_kos_df, config.ref_ko_per_module
     )
 
     # If alts.json not available

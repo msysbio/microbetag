@@ -4,7 +4,7 @@ import json
 import gzip
 import pickle
 import tarfile
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Dict, Tuple, Union
 
 # Data
 import pandas as pd
@@ -25,9 +25,10 @@ if TYPE_CHECKING:
 _logger_ = mtg_logger(__name__)
 
 
-def _generate_fixed_pairwise_comparisons(fixed_item, patric_ids_of_interest):
+def _generate_fixed_pairwise_comparisons(fixed_item: str, patric_ids_of_interest: List):
     """Generate and return two lists: one with the fixed item in the first position and one with it in the second."""
-    fixed_seedset_as_A = set()
+
+    fixed_seedset_as_A    = set()
     fixed_nonseedset_as_A = set()
 
     # Generate pairs where fixed_item is in the first position
@@ -86,16 +87,18 @@ class ExportSeedComplementarities:
 
         else:
 
-            self.namespace       = "modelseed"
+            self.user_models = getattr(config, 'user_models', False)
+            self.namespace   = getattr(config, 'namespace', "modelseed")
+            self.switch      = False if self.namespace == "modelseed" else True
 
             self.get_scores      = getattr(config, 'get_scores', not os.path.exists(self.scores_outfile))
             self.get_complements = getattr(config, 'get_complements', not os.path.exists(self.seed_compls_pckl))
 
             if getattr(config, 'genre_reconstruction_with', None) == "carveme":
 
-                self.namespace           = "BiGG"
-                self.bigg2seed           = bigg_to_seed_mapping_df(config.metanetx_compounds)
-                self.switch_to_modelseed = getattr(config, 'switch_namespace', True)
+                self.namespace = "BiGG"
+                self.bigg2seed = bigg_to_seed_mapping_df(config.metanetx_compounds)
+                self.switch    = getattr(config, 'switch_namespace', True)
 
             self.compound_prefix = "M"
             self.ex_suffix  = "e" if self.namespace == "BiGG" else "e0"
@@ -203,13 +206,13 @@ class ExportSeedComplementarities:
 
         # NOTE (Haris Zafeiropoulos, 2025-03-26):
         # In the pickle conversion we keep only the KEGG MODULE related - does not make sense to have that with BiGG
-        if not self.switch_to_modelseed:
+        if not self.switch:
             self._dict_to_pickle(SeedSetDic_serial, self.config.module_seeds)
             self._dict_to_pickle(nonSeedSetDic_serial, self.config.module_nonseeds)
 
         _logger_.info("Seed and non seed sets have been exported.")
 
-    def get_scores_and_compls(self) -> tuple[pd.DataFrame, dict] | None:
+    def get_scores_and_compls(self) -> Union[Tuple[pd.DataFrame, dict], None]:
         """
         Based on the seed and non-seed sets calculated, get all pairwise competition 
         and cooperation scores, and the seed complementarities between the models under study.
@@ -286,10 +289,12 @@ class ExportSeedComplementarities:
             # Replace NaNs with [] only in those columns
             df[float_cols] = df[float_cols].where(df[float_cols].notna(), [[]])
 
+            # NOTE (Haris Zafeiropoulos, 2025-06-02): Attention! We need to get df.T.
+            # Otherwise we get the source as target and the other way around !
             with open(self.seed_compls_pckl, "wb") as f:
-                pickle.dump(df, f)
+                pickle.dump(df.T, f)
 
-    def species_scores_compls(self, species: str) -> tuple[set, dict] | dict:
+    def species_scores_compls(self, species: str) -> Union[Tuple[set, dict], Dict]:
         """
         Get scores and complements for a specific model (species).
         In the stand-alone version, it writes the seed scores file.
@@ -315,6 +320,7 @@ class ExportSeedComplementarities:
 
         # Get seed set of the other species
         for partner in [pair[1] for pair in as_beneficiary if pair[1] != species]:
+
             if (conf := self.ConfidenceDic.get(partner)) is not None and (
                 non_seed := self.nonSeedSetDic.get(partner)
             ) is not None:
@@ -355,6 +361,7 @@ class ExportSeedComplementarities:
                 compls[partner] = B_complements_A
 
         if self.api:
+
             return scores, compls
 
         else:
@@ -399,7 +406,7 @@ class ExportSeedComplementarities:
             nonSeedSetBigg        = nonSeedSet.copy()
             SeedSetConfidenceBigg = SeedSetConfidence.copy()
 
-            if self.switch_to_modelseed:
+            if self.switch:
 
                 SeedSet           = _bigg_to_modelseed(seedSetBigg, self.bigg2seed)
                 nonSeedSet        = _bigg_to_modelseed(nonSeedSetBigg, self.bigg2seed)

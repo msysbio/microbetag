@@ -38,6 +38,16 @@ class PathwayComplementarity:
 
     Args:
         config: An instance of the :class:`.config.Config` class.
+
+    Note:
+        From the :class:`.config.Config` class, the following attributes are being used:
+            - `base_dir`
+            - `ouput_dir`
+            - `prev_path_compl`
+            - `kofam_database`
+            - `complement_max_length`
+            - `ko_merged_file`
+            - `pc_percentage`
     """
 
     def __init__(self, config: "Config"):
@@ -84,9 +94,6 @@ class PathwayComplementarity:
         # Get pathways
         self.output_dirs()
 
-        # Maximum length of compl
-        self.max_scratch_alt = conf.yaml.get("max_length_for_complement_from_scratch",{}).get("value", 1)
-
         # Set up KEGG annotations 3-column file
         self.ko_merged = None
         if not self.prev_path_compl:
@@ -109,7 +116,7 @@ class PathwayComplementarity:
 
         compl_file            = self.conf.yaml.get("prev_calc_path_compl", {}).get("file_path")
         self.path_compl_dir   = os.path.join(self.output_dir, "pathway_complementarity")
-        self.path_compl_perce = self.conf.yaml.get("pathway_complement_percentage", {}).get("value", 0)
+        self.path_compl_perce = self.conf.yaml.get("pc_percentage", {}).get("value", 1)
 
         os.makedirs(self.path_compl_dir, exist_ok=True)
 
@@ -134,10 +141,9 @@ class MappingPaths:
         mtg                     = os.path.dirname(__file__)
         kegg_mappings           = os.path.join(mtg, "mtg_maps_models/kegg_mappings/")
         self.kegg_mappings      = kegg_mappings
-        self.metanetx_compounds = os.path.join(
-            mtg, "mtg_maps_models/MetaNetX/chem_xref.tar.gz"
-        )
-        self.ko_terms_per_module_definition = os.path.join(
+        self.metanetx_compounds = os.path.join(mtg, "mtg_maps_models/MetaNetX/chem_xref.tar.gz")
+
+        self.ref_ko_per_module = os.path.join(
             kegg_mappings, "kegg_terms_per_module.tsv"
         )
         self.modules_definitions_json_map = os.path.join(
@@ -346,38 +352,39 @@ class SeedComplementarityHandler:
             self._validate_input_type(config)
             self._set_reconstruction_files(config)
             self.reconstrucion_paths(config)
-            self._validate_model_namespace(config)
+            self._validate_model_namespace()
 
         self.seeds_paths(config)
 
     def _validate_input_type(self, config):
         """Validates and sets the input type for seed complementarity reconstructions."""
-        input_value = config.yaml.get("input_type_for_seed_complementarities", {}).get(
+
+        sc_input_type = config.yaml.get("sc_input_type", {}).get(
             "value"
         )
 
-        if not input_value:
+        if not sc_input_type:
             _logger_.error(
-                "Please select an input type for 'input_type_for_seed_complementarities'."
+                "Please select an input type for 'sc_input_type'."
             )
             sys.exit(1)
 
         allowed_values = config.yaml.get(
-            "input_type_for_seed_complementarities", {}
+            "sc_input_type", {}
         ).get("value_from", [])
 
-        if input_value not in allowed_values:
+        if sc_input_type not in allowed_values:
             _logger_.error(
-                f"Error: Input value '{input_value}' is not among the allowed values: {allowed_values}"
+                f"Error: Input value '{sc_input_type}' is not among the allowed values: {allowed_values}"
             )
             sys.exit(1)
 
-        self.input_for_recon_type = input_value
-        self.users_models         = input_value == "models"
+        self.sc_input_type = sc_input_type
+        self.user_models   = sc_input_type == "models"
 
     def _set_reconstruction_files(self, config):
         """Determines the correct path for sequence files needed for reconstructions."""
-        if self.input_for_recon_type == "bins_fasta":
+        if self.sc_input_type == "bins_fasta":
             self.for_reconstructions = self.bins_path
         else:
             reconstr_files = config.yaml.get(
@@ -389,11 +396,11 @@ class SeedComplementarityHandler:
                 )
             self.for_reconstructions = os.path.join(self.base_dir, reconstr_files)
 
-    def _validate_model_namespace(self, config):
+    def _validate_model_namespace(self):
         """Validates whether the model namespace matches the selected reconstruction tool."""
         import cobra
 
-        if not self.users_models:
+        if not self.user_models:
             return  # No user models provided, no need to check
 
         # Select a random model file from the directory
@@ -417,6 +424,7 @@ class SeedComplementarityHandler:
 
         # Check namespace compatibility
         if first_metabolite_id == "cpd":
+            self.namespace = "modelseed"
             if self.genre_reconstruction_with == "carveme":
                 raise ValueError(
                     "Your models appear to use the ModelSEED namespace (prefix 'cpd'), "
@@ -429,6 +437,7 @@ class SeedComplementarityHandler:
                 self.genre_reconstruction_with = "modelseedpy"
 
         else:  # Models are expected to use BiGG namespace
+            self.namespace = "BiGG"
             if self.genre_reconstruction_with == "modelseedpy":
                 raise ValueError(
                     "Your models appear to use the BiGG namespace, but 'modelseedpy' "
@@ -457,7 +466,7 @@ class SeedComplementarityHandler:
                 gf = pd.read_csv(gapfill_media, sep=delimiter)
                 # NOTE (Haris Zafeiropoulos, 2025-05-20):  NOT DONE !!
 
-        if self.users_models is False:
+        if self.user_models is False:
 
             # Directory for tmp reconstruction files
             self.reconstructions = os.path.join(config.output_dir, "reconstructions")

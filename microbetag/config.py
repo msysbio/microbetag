@@ -164,9 +164,9 @@ class Config:
 
         elif self.abundance_table is None and self.network:
 
-            seq_to_taxon_df = pd.read_csv(
-                self.sequence_taxonomy_map, sep=self.delimiter
-            )
+            self.delimiter = detect_separator(self.sequence_taxonomy_map)
+
+            seq_to_taxon_df         = pd.read_csv(self.sequence_taxonomy_map, sep=self.delimiter)
             seq_to_taxon_df.columns = ["sequence_id", "taxonomy"]
             self.seq_to_taxon_df    = seq_to_taxon_df
             self.seq_ids            = self.seq_to_taxon_df["sequence_id"].unique().tolist()
@@ -326,15 +326,16 @@ def load_abundance(abd_file: str) -> tuple[pd.DataFrame, str, str, str]:
 
     Returns:
         A tuple including:
-            - seq_id_to_taxonomy: A :class:`pandas.DataFrame` with the sequence id and their corresponding taxonomy
-            - sequence_id_column_name: The name of the column with the sequence identifier (e.g. ``seqId``)
-            - taxonomy_column_name: The name of the column with the taxonomy
+            - seq_id2tax: A :class:`pandas.DataFrame` with the sequence id and their corresponding taxonomy
+            - seq_id_col: The name of the column with the sequence identifier (e.g. ``seqId``)
+            - tax_col: The name of the column with the taxonomy
     """
 
-    delimiter                  = detect_separator(abd_file)
-    abd_tab_df                 = pd.read_csv(abd_file, sep=delimiter)
-    sequence_id_column_name    = abd_tab_df.columns[0]
-    taxonomy_column_name       = abd_tab_df.columns[-1]
-    seq_id_to_taxonomy         = abd_tab_df[[sequence_id_column_name, taxonomy_column_name]]
-    seq_id_to_taxonomy.columns = ["sequence_id", "taxonomy"]
-    return seq_id_to_taxonomy, sequence_id_column_name, taxonomy_column_name, delimiter
+    delimiter          = detect_separator(abd_file)
+    abd_tab_df         = pd.read_csv(abd_file, sep=delimiter)
+    seq_id_col         = abd_tab_df.columns[0]
+    tax_col            = abd_tab_df.columns[-1]
+    seq_id2tax         = abd_tab_df[[seq_id_col, tax_col]]
+    seq_id2tax.columns = ["sequence_id", "taxonomy"]
+
+    return seq_id2tax, seq_id_col, tax_col, delimiter

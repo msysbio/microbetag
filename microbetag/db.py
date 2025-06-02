@@ -167,8 +167,6 @@ def patric_from_gc_list(gc_accession_list: list):
             # many cases we have several strains for the same species, meaning, several after the dot parts.
             gc_to_patric_dict[gc] = patricId[0][0] if patricId and patricId[0] else None
 
-    _logger_.info(gc_to_patric_dict)
-
     return gc_to_patric_dict
 
 
@@ -254,7 +252,7 @@ class GetPhenotrexTraits:
             rows        = execute(GetPhenotrexTraits.phen_query(alt_gtdb_id))
 
         if len(rows) == 0:
-            _logger_.info(f"Genome {gtdb_genome_id} is not available in microbetagDB.")
+            # _logger_.info(f"Genome {gtdb_genome_id} is not available in microbetagDB.")
             return 0
 
         query          = "SHOW COLUMNS FROM phenDB;"

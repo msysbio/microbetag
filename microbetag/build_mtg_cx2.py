@@ -18,9 +18,10 @@ import datetime
 import pyshorteners
 
 import statistics
+import numpy as np
 import pandas as pd
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Tuple
 from collections import defaultdict
 
 from .networks import get_edgelist, read_cyjson
@@ -78,7 +79,7 @@ __RANKS__ = ["domain", "phylum", "class", "order", "family", "genus", "species"]
 # -----------------------------
 # NODES
 # -----------------------------
-def taxonomy_levels_sa(node: dict) -> None:
+def taxonomy_levels_sa(node: Dict) -> None:
     """
     Updates a node's attributes by splitting taxonomy to the 7-levels scheme (:attr:`__RANKS__`)
     and giving their values to the corresponding ones. For stand-alone version.
@@ -113,8 +114,8 @@ def taxonomy_levels_sa(node: dict) -> None:
 
 
 def init_nodes_and_edges(
-    edgelist: pd.DataFrame, seq_id_to_taxonomy: dict[str, str], config=None
-) -> tuple[list[dict], list[str], list[dict]]:
+    edgelist: pd.DataFrame, seq_id_to_taxonomy: Dict[str, str], config=None
+) -> Tuple[List[dict], List[str], List[dict]]:
     """
     Initiates the nodes and edges of the network as dictionaries, in a ndex2-oriented format.
 
@@ -176,7 +177,7 @@ def init_nodes_and_edges(
     return nodes, seq_ids_lst, edges
 
 
-def get_node_attributes(seq_id: str, seq_id_to_taxonomy: dict, ncbi_ids_dict: dict = None) -> dict:
+def get_node_attributes(seq_id: str, seq_id_to_taxonomy: Dict, ncbi_ids_dict: Dict = None) -> Dict:
     """
     Using the sequence mapping to their corresponding taxonomies objects, builds a dictionary with the
     node's taxonomy and mapped genomes (in case of on-the-fly) attributes, in a ndex2 and MGG-oriented way.
@@ -225,7 +226,7 @@ def get_node_attributes(seq_id: str, seq_id_to_taxonomy: dict, ncbi_ids_dict: di
     return attrs
 
 
-def update_with_phen_traits(nodes: list[dict], node_names: list[str], predictions_path: str, onthefly: bool) -> None:
+def update_with_phen_traits(nodes: List[dict], node_names: List[str], predictions_path: str, onthefly: bool) -> None:
     """
     Updates nodes with phenotypic traits.
 
@@ -273,7 +274,7 @@ def update_with_phen_traits(nodes: list[dict], node_names: list[str], prediction
             try:
                 node_indices = [node_names.index(genome_id)]
             except ValueError:
-                _logger_.info(f"Warning: {genome_id} not found in node names.")
+                # genome_id is not among the in node names
                 continue
 
         for node_index in node_indices:
@@ -317,7 +318,7 @@ def update_with_phen_traits(nodes: list[dict], node_names: list[str], prediction
                     node["v"][key] /= len(genomes)
 
 
-def update_with_faprotax_traits(nodes: list[dict], node_names: list[str], fapr_tables, seq_col) -> None:
+def update_with_faprotax_traits(nodes: List[dict], node_names: List[str], fapr_tables, seq_col) -> None:
     """
     Updates nodes with FAPROTAX traits.
 
@@ -344,7 +345,7 @@ def update_with_faprotax_traits(nodes: list[dict], node_names: list[str], fapr_t
             node["v"][f"{_FAPROTAX_NAMESPACE}::{trait}"] = True
 
 
-def update_with_manta(nodes: list[dict], node_names: list[str], manta_net) -> dict:
+def update_with_manta(nodes: List[dict], node_names: List[str], manta_net) -> Dict:
     """
     Updates nodes with `manta` network cluster, assignment, and position data.
 
@@ -387,9 +388,9 @@ def update_with_manta(nodes: list[dict], node_names: list[str], manta_net) -> di
 # -----------------------------
 
 def pathway_complement_edge(
-    edge_id: int, beneficiary: str, donor: str, complement, node_names: list[str],
+    edge_id: int, beneficiary: str, donor: str, complement: Dict, node_names: List[str],
     beneficiary_genome=None, donor_genome=None, update=False, cx_edges=None
-) -> dict:
+) -> Dict:
     """
     Creates or updates an edge carrying pathway complementarities between a donor and a beneficiary node.
 
@@ -433,7 +434,7 @@ def pathway_complement_edge(
     return edge
 
 
-def get_compl_maps(config, genome_ids_in_nodes: list) -> tuple[pd.DataFrame, dict[str, set]]:
+def get_compl_maps(config: "Config", genome_ids_in_nodes: List) -> Tuple[pd.DataFrame, Dict[str, set]]:
     """
     Builds mapping objects to properly pass pathway/seed complementarities to their corresponding edges.
 
@@ -479,12 +480,12 @@ def get_compl_maps(config, genome_ids_in_nodes: list) -> tuple[pd.DataFrame, dic
     return nodes_in_compls, node_to_gtdb
 
 
-def pathway_complements(config, edgelist_df, node_names, cx_edges):
+def pathway_complements(config: "Config", edgelist_df: pd.DataFrame, node_names: List, cx_edges: Dict):
 
     complements_dict = extend_complements(
         complements_json = config.compl_file,
         descrps_path     = config.module_descriptions,
-        max_scratch_alt  = config.max_scratch_alt,
+        # max_scratch_alt  = config.max_scratch_alt,
         path_compl_dir   = config.path_compl_dir,
         path_compl_perce = config.path_compl_perce,
     )
@@ -541,7 +542,7 @@ def _set_none_genome(genome, sequence):
     return genome or sequence
 
 
-def _hat_complement(complements: dict) -> list:
+def _hat_complement(complements: Dict) -> list:
     """
     Joins parts of each complementarity as returned from API in a single string devided by ^,
     so MGG can get a list of strings.
@@ -553,8 +554,8 @@ def _hat_complement(complements: dict) -> list:
 
 
 def _get_edge_id(
-    beneficiary: str, donor: str, node_names: list, edges: list, interaction_type: str
-) -> tuple[int, bool]:
+    beneficiary: str, donor: str, node_names: List, edges: List, interaction_type: str
+) -> Tuple[int, bool]:
     """
     Checks if an edge is already there of a specific source - target -interaction type.
     If yes, it returns the index of the edge in the edges list.
@@ -567,7 +568,7 @@ def _get_edge_id(
     return -1, False
 
 
-def _update_or_append(lst: list, index: int, item: dict, update: bool) -> None:
+def _update_or_append(lst: List, index: int, item: Dict, update: bool) -> None:
     """
     Either adds or updates entries of the list of edges (`lst`) with a new edge or a new set of attributes accordingly.
 
@@ -586,14 +587,14 @@ def _update_or_append(lst: list, index: int, item: dict, update: bool) -> None:
 # -----------------------------
 # EDGES - SEED COMPLEMENTARITY
 # -----------------------------
-def _verbose_seed_complement(complements, beneficiarys_nonseed, kmap, shortener) -> list[list[str]]:
+def _verbose_seed_complement(complements, beneficiarys_nonseed, kmap, shortener) -> List[list[str]]:
     """
     Appends the seed complementarities between two taxa as attributes to their corresponding edge
     id_x:
     id_y:
     """
-    maps_in = list(kmap[kmap["modelseed"].isin(complements)]["map"].unique())
-    complements_map = kmap[kmap["modelseed"].isin(complements)]
+    maps_in                   = list(kmap[kmap["modelseed"].isin(complements)]["map"].unique())
+    complements_map           = kmap[kmap["modelseed"].isin(complements)]
     beneficiarys_nonseeds_map = kmap[kmap["modelseed"].isin(beneficiarys_nonseed)]
 
     complements_verbose = [
@@ -819,7 +820,17 @@ def seed_complements(config, edgelist_df, node_names, cx_edges):
                     else:
                         competAB, cooperAB = None, None  # or suitable defaults
 
+                    # Get complement for pair under study from the pickle-derived dictionary
                     seed_complementAB = seed_complements_dict.get(ben_genome, {}).get(don_genome, None)
+
+                    if seed_complementAB is None or (
+                        hasattr(seed_complementAB, '__len__') and not len(seed_complementAB)
+                    ) or (
+                        isinstance(seed_complementAB, (list, np.ndarray)) and pd.isna(seed_complementAB).all()
+                    ):
+                        # if seed_complementAB is None or pd.isna(seed_complementAB):
+                        _logger_.warning(f"None complement for beneficiary: {beneficiary} and donor {donor}")
+                        continue
 
                     if ben_genome in non_seed_sets.index:
                         beneficiarys_nonseed = non_seed_sets.loc[ben_genome].to_list()[0]
@@ -828,15 +839,19 @@ def seed_complements(config, edgelist_df, node_names, cx_edges):
                         _logger_.info(f"Skip beneficiary {ben_genome} for {beneficiary} since no nonseed set.")
                         continue
 
-                    seed_complementAB = (
-                        _verbose_seed_complement(
-                            seed_complementAB,
-                            beneficiarys_nonseed,
-                            kmap,
-                            shortener
+                    try:
+                        seed_complementAB = (
+                            _verbose_seed_complement(
+                                seed_complementAB,
+                                beneficiarys_nonseed,
+                                kmap,
+                                shortener
+                            )
+                            if seed_complementAB is not None else []
                         )
-                        if seed_complementAB is not None else []
-                    )
+                    except Exception:
+                        # This probably will never happen
+                        continue
 
                     se = seed_complement_edge(
                         edge_id      = edge_id,
@@ -863,7 +878,7 @@ def seed_complements(config, edgelist_df, node_names, cx_edges):
 # -----------------------------
 # NETWORK
 # -----------------------------
-def build_cx2(nodes: dict[str, dict], edges: dict[str, dict]) -> ndex2.cx2.CX2Network:
+def build_cx2(nodes: Dict[str, dict], edges: Dict[str, dict]) -> ndex2.cx2.CX2Network:
     """
     Builds the microbetag annotated network in a CX2 format (https://cytoscape.org/cx/).
 
@@ -910,7 +925,7 @@ def build_cx2(nodes: dict[str, dict], edges: dict[str, dict]) -> ndex2.cx2.CX2Ne
     return cx2
 
 
-def load_otf_seq_map(df: pd.DataFrame) -> dict:
+def load_otf_seq_map(df: pd.DataFrame) -> Dict:
     """
     Gets the df from the taxonomy.py returned when ran through the app.py and returns the equivalent
     seqId_taxonomy of the stand-alone case.

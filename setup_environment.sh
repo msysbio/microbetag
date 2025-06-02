@@ -51,15 +51,7 @@ while true; do
   esac
 done
 
-# NOTE: in case of paired args, i.e. an arg that gets a non-boolean value
-# you'd have :
-# PARSED=$(getopt --options k:hv --long kofam:,help,version -- "$@")      add a ":" after the var arg expecting value
-#  -k|--kofam)
-#   KOFAM="$2"    "$2" instead of true
-#   shift 2        2 instead of nothing that stands for 1
-#   ;;
-
-
+# 
 echo -e "\n Building conda environment and installing required dependencies to enable microbetag ${ROCKET} \n\n"
 
 if $HELP_ARG; then
@@ -149,6 +141,43 @@ conda deactivate
 
 # -----------------------------------------------------------------------------
 
+ENV_NAME="mtg-modelseed"
+
+# Check if the environment already exists
+if conda info --envs | grep -q "$ENV_NAME"; then
+    echo -e "$GREEN_TICK Environment '$ENV_NAME' already exists. Skipping creation."
+else
+    conda create -n $ENV_NAME python=3.9 -y
+    echo -e "$GREEN_TICK A conda environment, named "$ENV_NAME" was built. "
+fi
+
+# Install ModelSEEDpy
+conda activate $ENV_NAME
+
+
+pip install -r requirements/modelseedpy.txt
+
+# -----------------------------------------------------------------------------
+
+
+ENV_NAME="mtg-dnngior"
+
+# Check if the environment already exists
+if conda info --envs | grep -q "$ENV_NAME"; then
+    echo -e "$GREEN_TICK Environment '$ENV_NAME' already exists. Skipping creation."
+else
+    conda create -n $ENV_NAME python=3.9 -y
+    echo -e "$GREEN_TICK A conda environment, named "$ENV_NAME" was built. "
+fi
+
+# Install ModelSEEDpy
+conda activate $ENV_NAME
+
+pip install -r requirements/dnngior.txt
+
+
+# -----------------------------------------------------------------------------
+
 ENV_NAME="microbetag"
 
 if conda info --envs | grep -q "$ENV_NAME"; then
@@ -156,9 +185,11 @@ if conda info --envs | grep -q "$ENV_NAME"; then
 else
 
     # Create the microbetag environment and install dependencies
-    echo -e "$HOURGLASS The primary Conda environment for running microbetag, which shares the same name, is currently under constructio.."
-    # conda create -n microbetag python=3.10 -y
+    echo -e "$HOURGLASS The primary conda environment for running microbetag, " 
+    echo -e "which shares the same name, is currently under constructio.."
+
     conda env create -f environment.yml
+
     echo -e "$TADA microbetag conda environent was built successfully"
 fi
 

@@ -37,13 +37,21 @@ from .seed_complementarity import (
     kegg_module_related_intersect,
 )
 
-from .db import (
-    GetPhenotrexTraits,
-    get_genomes_for_ncbi_tax_id,
-    get_ncbi_tax_id_for_genome,
-    patric_from_gc_list,
-    get_path_compls_for_ncbi_ids
-)
+try:
+    from .db import (
+        GetPhenotrexTraits,
+        get_genomes_for_ncbi_tax_id,
+        get_ncbi_tax_id_for_genome,
+        patric_from_gc_list,
+        get_path_compls_for_ncbi_ids
+    )
+except Exception:
+    print(
+        "mysql-connector-python is not installed in the running environment."
+        "Dependency and microbetag features required only for on-the-fly version."
+    )
+    pass
+
 
 from .genres import (
     GEMSReconstruction

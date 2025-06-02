@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-#
 # Please read the copyright notice and license agreement below before using or sharing this script.
 #
 # This python script collapses a data table's rows or columns, down to a custom set of row-groups.
@@ -48,7 +46,8 @@
 # DEPENDENCIES
 import string
 import time
-import sys, os
+import sys
+import os
 import argparse
 import numpy
 import shutil
@@ -288,7 +287,8 @@ def split_at_first_whitespace(line):
 # return a list of indices corresponding to items to keep
 def filter_name_list(
     names,
-    items_to_keep,  # starting pool to further filter. This will typically be range(len(names)), but can also be a subset thereof in case of iterative filtering. Can also be None (equivalent to range(len(names)))
+    # starting pool to further filter. This will typically be range(len(names)), but can also be a subset thereof in case of iterative filtering. Can also be None (equivalent to range(len(names)))
+    items_to_keep,
     only_items_with_name,  # list or set of strings, can be None. Name wildcards to keep.
     omit_items_with_name,  # list or set of strings, can be None. Name wildcards to exclude.
     case_sensitive,

@@ -35,7 +35,7 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install
 
 # Read the requirements.txt file
-with open("requirements.txt") as f:
+with open("requirements/requirements.txt") as f:
     requirements = f.read().splitlines()
 
 
@@ -106,3 +106,9 @@ setup(
         'install': CustomInstallCommand,
     },
 )
+
+
+# NOTE (Haris Zafeiropoulos, 2025-06-01):
+# Python 3.9.19 does support dict[str, str] and other generic built-ins, yet it does not support the | (union) operator for types — that was only introduced in Python 3.10.
+# phenotrex runs in Python 3.8
+# Consider Python 3.8 as basis

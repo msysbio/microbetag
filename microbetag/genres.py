@@ -1,22 +1,22 @@
 import os
-import time
 import cobra
-import random
 
 import subprocess
 import multiprocessing
+from pathlib import Path
+
 
 from .utils import (
     split_list,
     run_until_done,
     file_exists_and_nonzero,
-    get_library_version,
     get_tool_location,
     mtg_logger,
 )
 
 _logger_ = mtg_logger(__name__)
 
+_MSGENRE_SCRIPT_ = Path(os.path.abspath(__file__)).parent.joinpath("msgenre.py")
 
 class GEMSReconstruction:
     """
@@ -25,6 +25,16 @@ class GEMSReconstruction:
 
     Args:
         config: Instance of the :class:`Config` class.
+
+    - `threads`
+    - `bin_filenames`
+    - `bins_path`
+    - `reconstructions`
+    - `sc_input_type`
+    - `for_reconstructions`
+    - `genres`
+    - `gapfill_model`
+    - `gapfill_media`
 
     Note:
        CarveMe:
@@ -153,84 +163,39 @@ class GEMSReconstruction:
             Currently is not being as the RAST server seems not that stable to have several queries.
         """
         # Make sure of the scikit version being used
-        if self.config.input_for_recon_type == "proteins_faa":
+        if self.config.sc_input_type == "proteins_faa":
             faa_files = [
                 os.path.join(self.config.for_reconstructions, file)
                 for file in os.listdir(self.config.for_reconstructions)
+                if file.endswith(".faa")
             ]
         else:
             faa_files = [
-                file
+                os.path.join(self.config.reconstructions, file)
                 for file in os.listdir(self.config.reconstructions)
                 if file.endswith(".faa")
             ]
 
+        _logger_.info(faa_files)
+
         for faa_file in faa_files:
-            self.build_mseed_model(faa_file)
 
-    def build_mseed_model(self, annotation_faa):
-        """
-        Build a Genome Scale reconstruction using ModelSEEDpy and the BIN annotations
-        """
-        # ModelSEED using the default b.f and complete medium, gapfill with the default algo
-        model_id, _         = os.path.splitext(annotation_faa.split("/")[-1])
-        annotation_faa_path = os.path.join(self.config.reconstructions, annotation_faa)
-        model_filename      = os.path.join(self.config.genres, "".join([model_id, ".xml"]))
+            draft_genre = ms_reconstruct(faa_file, self.config.genres)
 
-        if os.path.exists(model_filename):
-            return 1
+            if self.config.gapfill_model:
 
-        _logger_.info("Model to be reconstructed: %s", model_id)
-
-        model = self.recursive_build(model_id, annotation_faa_path)
-
-        cobra.io.write_sbml_model(cobra_model=model, filename=model_filename)
-
-    def recursive_build(self, model_id, annotation_faa_path, counter=0):
-        """
-        RAST server usually has issues that lead to fail attempts.
-        This recursive function allows the build_metabolic_model() to be performed until the server responses.
-
-        [NOTE] We have observed that when MSGenome is initiated in the same function with the MSBuilder, they behave much better!
-        """
-
-        from modelseedpy import MSBuilder, MSGenome
-
-        if counter >= 20:
-
-            # Run the script again with the given arguments   -- TODO:   THIS IS A BIT EXTREME...
-            fire_microbetag(yaml_file=self.config.yaml_file)
-
-        counter += 1
-        try:
-
-            msgenome = MSGenome.from_fasta(annotation_faa_path, split=" ")
-
-            model = MSBuilder.build_metabolic_model(
-                model_id                    = model_id,
-                genome                      = msgenome,
-                index                       = "0",
-                gapfill_model               = self.config.gapfill_model,
-                gapfill_media               = self.config.gapfill_media,
-                annotate_with_rast          = True,
-                allow_all_non_grp_reactions = True,
-            )
-
-            return model
-
-        except Exception as e:
-
-            time.sleep(random.randint(1, 20))
-            _logger_.info(f"Recursive run for model_id: {model_id}. Error message: {e}")
-
-            return self.recursive_build(model_id, annotation_faa_path, counter)
+                dnngior_gapfill(
+                    draft_genre,
+                    outdir = self.config.genres,
+                    medium = self.config.gapfill_media
+                )
 
     def carve_reconstructions(self):
         """
         Reconstruct a GENRE using CarveMe and a .faa as input.
         You can get such a file after running RAST annotation or after any gene prediction tool such as Prodigal, FragenScan etc.
         """
-        if self.config.input_for_recon_type == "bins_fasta":
+        if self.config.sc_input_type == "bins_fasta":
 
             gene_predictor_path = (
                 self.config.prodigal
@@ -244,36 +209,23 @@ class GEMSReconstruction:
                 if tfile.endswith(".faa")
             ]
 
-            self.run_carve(faa_files)
+            run_carve(
+                faa_files,
+                output_dir=self.config.genres
+            )
 
-        elif self.config.input_for_recon_type in ["coding_regions", "proteins_faa"]:
+        elif self.config.sc_input_type in ["coding_regions", "proteins_faa"]:
+
             faa_files = [
                 os.path.join(self.config.for_reconstructions, file)
                 for file in os.listdir(self.config.for_reconstructions)
             ]
-            self.run_carve(
-                faa_files, dna=self.config.input_for_recon_type == "coding_regions"
+
+            run_carve(
+                faa_files,
+                output_dir=self.config.genres,
+                dna=self.config.sc_input_type == "coding_regions"
             )
-
-    def run_carve(self, faa_files, dna=False):
-        """
-        Build a GEM using carveme for a list of
-        """
-        for faa in faa_files:
-            bin_id = os.path.splitext(os.path.basename(faa))[0]
-            xml = os.path.join(self.config.genres, f"{bin_id}.xml")
-            carve_params = ["carve", "--solver", "gurobi", "-o", xml]
-            if os.path.exists(xml) and os.path.getsize(xml) > 0:
-                _logger_.info(
-                    f"""A GEM (.xml) based on {faa} is already available to be used for seed complementarities; carve step will be skiped."""
-                )
-                continue
-            if dna:
-                carve_params.append("--dna")
-            carve_params.append(faa)
-            carve_command = " ".join(carve_params)
-
-            os.system(carve_command)
 
     def fgs_annotate_genomes(self):
         """
@@ -316,19 +268,72 @@ class GEMSReconstruction:
         os.chdir(cwd)
 
 
-def fire_microbetag(yaml_file):
-    import sys
+def ms_reconstruct(faa, outdir = None):
+    """
+    Running ModelSEEDpy on its own conda environment
+    """
+    faa_path  = Path(faa)
+    outdir    = Path(outdir) if outdir else faa_path.parent
+    modelId   = faa_path.stem
+    modelname = ".".join([modelId, "draft.xml"])
+    modelfile = os.path.join(outdir, modelname)
 
-    _logger_.warning(
-        """
-        \n\n******
-        microbetag kept calling the recursive function for building modelseedpy GEM.
-        This function tries to establish a connection with the RAST server that at the moment does not allow it.
-        microbetag will exit and restart its execution with the exact same settings.
-        Since previous steps are alredy complete, they will be skipped.
-        ******\n\n
-        """
-    )
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    script_path = os.path.join(root_dir, "microbetag.py")
-    subprocess.run([sys.executable, script_path, yaml_file])
+    if not os.path.exists(modelfile):
+
+        subprocess.run([
+            "conda",
+            "run",
+            "-n", "mtg-modelseed",
+            "python", _MSGENRE_SCRIPT_,
+            "--reconstruct",
+            "--faa", faa,
+            "--outdir", outdir
+        ])
+
+    return modelfile
+
+
+def dnngior_gapfill(draft_model, medium=None, outdir=None):
+    """
+    draft_model: Path to draft .xml
+    medium: path to tab-separated file .tsv
+    """
+
+    if not os.path.exists(str(draft_model).replace(".draft", "")):
+
+        # _MSGENRE_SCRIPT_ is a Path object; this would
+        command = [
+            "conda",
+            "run",
+            "-n", "mtg-dnngior",
+            "python", str(_MSGENRE_SCRIPT_),
+            "--gapfill",
+            "--draft-model", draft_model,
+            "--outdir", outdir,
+        ]
+
+        if medium is not None:
+            command += ["--medium", medium]
+
+        subprocess.run(command)
+
+
+def run_carve(faa_files, output_dir, dna=False):
+    """
+    Build a GEM using carveme for a list of
+    """
+    for faa in faa_files:
+        bin_id = os.path.splitext(os.path.basename(faa))[0]
+        xml = os.path.join(output_dir, f"{bin_id}.xml")
+        carve_params = ["carve", "--solver", "gurobi", "-o", xml]
+        if os.path.exists(xml) and os.path.getsize(xml) > 0:
+            _logger_.info(
+                f"""A GEM (.xml) based on {faa} is already available to be used for seed complementarities; carve step will be skiped."""
+            )
+            continue
+        if dna:
+            carve_params.append("--dna")
+        carve_params.append(faa)
+        carve_command = " ".join(carve_params)
+
+        os.system(carve_command)

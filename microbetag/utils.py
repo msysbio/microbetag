@@ -26,7 +26,7 @@ import numpy as np
 import pandas as pd
 import pkg_resources
 from pathlib import Path
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Set, Union
 
 if TYPE_CHECKING:
     from .config import Config
@@ -204,7 +204,7 @@ def mtg_logger(filename: str) -> logging.getLogger:
     return logger
 
 
-def get_files_with_suffixes(directory: str, suffixes: list[str]) -> list[str]:
+def get_files_with_suffixes(directory: str, suffixes: List[str]) -> list[str]:
     """
     Recursively retrieves files from a specified directory and its subdirectories
     that have extensions matching a given list of suffixes.
@@ -270,7 +270,7 @@ def safe_literal_eval(value: Any):
         return value
 
 
-def flatten(list_of_lists: list) -> list:
+def flatten(list_of_lists: List) -> List:
     """
     Recursively flattens a nested list into a single-level list.
 
@@ -296,7 +296,7 @@ def flatten(list_of_lists: list) -> list:
     return list_of_lists[:1] + flatten(list_of_lists[1:])
 
 
-def flatten_list(lst: list, flat_list: list = None) -> set:
+def flatten_list(lst: List, flat_list: List = None) -> set:
     """
     Recursively flattens a nested list and returns a set of unique elements.
 
@@ -391,7 +391,7 @@ def many_to_one_files(dir_with_files: str, merged_file: str) -> None:
     os.system(command)
 
 
-def ko_list_parser(ko_list: str) -> dict:
+def ko_list_parser(ko_list: str) -> Dict:
     """
     Parses ko_list file into a dict object - based on DiTing
 
@@ -470,7 +470,7 @@ def bin_kos_to_file(hmmout_dir: str, bin_id: str) -> None:
             os.remove(p)
 
 
-def parse_hmmout(hmmout_file: str, hmmout_dir: str) -> tuple[str, str, str]:
+def parse_hmmout(hmmout_file: str, hmmout_dir: str) -> Tuple[str, str, str]:
     """
     Parses the output of the hmmsearch to return the the sequence id along with the
     a gene and its corresponding KEGG ORTHOLOGY term as mentioned in the `hmmout_file`.
@@ -655,16 +655,14 @@ def ensure_same_namespace_after_fw(conf: "Config") -> None:
 
 def extend_complements(
     complements_json: str, descrps_path: str,
-    max_scratch_alt: int, path_compl_perce: int, path_compl_dir: str,
-    # on_the_fly=False
-) -> dict:
+    path_compl_perce: int, path_compl_dir: str
+) -> Dict:
     """
     Extends pathway complement annotations based on given settings and descriptions.
 
     Parameters:
         - complements_json: Path to the complements JSON file.
         - descrps_path: Path to the KEGG MODULES description file.
-        - max_scratch_alt: Maximum number of alternative complements allowed.
         - path_compl_perce: Maximum allowable percentage of required KOs that must be present.
         - path_compl_dir: Directory to save the extended complements JSON file.
         complements_dict (dict): Dictionary of complements loaded from a JSON file.
@@ -676,6 +674,11 @@ def extend_complements(
     Note:
         Here we build the `pathway_complements_extended.json` a JSON file with the dictionary returned
     """
+
+    _logger_.info(
+        f"complements_json: {complements_json}, descrps_path: {descrps_path}, path_compl_dir: {path_compl_dir}"
+    )
+
     # Load and process module descriptions
     descrps         = pd.read_csv(descrps_path, sep="\t", header=None)
     descrps.columns = ["category", "moduleId", "description"]
@@ -690,9 +693,13 @@ def extend_complements(
 
     # Process complements
     for beneficiary_bin, potential_donors in complements_dict.items():
+
         for potential_donor, compls in potential_donors.items():
+
             if not compls:
                 continue
+
+            _logger_.info(f".. compls: {compls}")
 
             complements_dict_ext[beneficiary_bin][potential_donor] = {}
 
@@ -700,15 +707,11 @@ def extend_complements(
 
                 module_id   = compl[0][3:] if compl[0].startswith("md") else compl[0]  # Extract module ID
                 kos_to_get  = compl[1]  # KOs required to complete the pathway
-                complet_alt = compl[2]  # Alternative complements
+                complet_alt = compl[2]  # Alternative complete
 
-                # Skip if the complement is too complex based on settings
-                if len(complet_alt) == len(kos_to_get) > max_scratch_alt:
-                    continue
-
-                # Skip if the percentage exceeds the threshold
-                perce = len(kos_to_get) / len(complet_alt)
-                if perce > path_compl_perce:
+                # Skip if long number of required KOs
+                if len(kos_to_get) / len(complet_alt) > path_compl_perce:
+                    _logger_.info(f"High number of required terms to complete alternative. {len(kos_to_get)} out of {len(complet_alt)}")
                     continue
 
                 # Prepare the complement string
@@ -726,6 +729,10 @@ def extend_complements(
                     len(complements_dict_ext[beneficiary_bin][potential_donor])
                 ] = (triplet + compl_str)
 
+                _logger_.info("hello friend")
+
+    _logger_.info(complements_dict_ext)
+
     # Save extended complements to JSON
     extended_path_compl_json = os.path.join(
         path_compl_dir, "pathway_complements_extended.json"
@@ -736,7 +743,7 @@ def extend_complements(
     return complements_dict_ext
 
 
-def extend_faprotax(faprotax_sub_tables, sequence_id_column_name) -> tuple[dict[str, list], list[str]]:
+def extend_faprotax(faprotax_sub_tables, sequence_id_column_name) -> Tuple[dict[str, list], list[str]]:
     """
     Parses the sub tables of the faprotax analysis
     to assign the biological processes related to each sequence id
@@ -770,7 +777,7 @@ def extend_faprotax(faprotax_sub_tables, sequence_id_column_name) -> tuple[dict[
     return bin_faprotax_traits, faprotax_traits
 
 
-def load_phenotypic_traits(phen_outdir) -> tuple[dict[str, dict[str, str | float]], set[str]]:
+def load_phenotypic_traits(phen_outdir) -> Tuple[Dict[str, Dict[str, Union[str, float]]], Set[str]]:
     """
     Load phenotrex-based trait files and assignm them per genome.
 
@@ -838,7 +845,7 @@ def is_any_nan(x) -> bool:
         return str(x).lower() == 'nan'
 
 
-def remove_nan_from_list(lst: list) -> list:
+def remove_nan_from_list(lst: List) -> List:
     """Removes Nan from a list using the :class:`is_any_nan`."""
     return [x for x in lst if not is_any_nan(x)]
 
@@ -886,7 +893,7 @@ def detect_separator(file_path: str) -> str:
         raise TypeError(f"Cannot get delimiter for file {file_path}")
 
 
-def find_three_column_format(file_path: str, delimiter: str) -> tuple[int, None | int]:
+def find_three_column_format(file_path: str, delimiter: str) -> tuple[int, Union[None, int]]:
     """
     Checks if a file is in a three-column format and whether the third column is a float.
     If not, it skips row and goes to the next one checking for the 3-colummn format.

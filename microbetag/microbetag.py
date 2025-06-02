@@ -231,7 +231,7 @@ def run_microbetag(config: Config):
         # ----------------
         # Build GENREs
         # ----------------
-        if not config.onthefly and not config.users_models:
+        if not config.onthefly and not config.user_models:
 
             logger.info("[INTERMEDIATE STEP] GENOME-SCALE METABOLIC NETWORK RECONSTRUCTIONS")
 
@@ -303,6 +303,9 @@ def _print_help():
 
 
 def _print_version():
+
+    from . import __version__
+
     print(f"microbetag version: {__version__}")
 
 
