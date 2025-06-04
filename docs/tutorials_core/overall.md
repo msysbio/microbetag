@@ -50,3 +50,11 @@ and to provide a set of mandatory parameters.
 We cover those topics [in the following tutorial](./input.md).
 
 
+## `MGG` and `microbetag` versioning map
+
+
+| `MGG`                                                     | `microbetag` |
+|:---------------------------------------------------------:|:------------:|
+| [`v1.0.0`](https://apps.cytoscape.org/download/mgg/1.0.0) |   `v1.0.3`   |
+| [`v1.0.2`](https://apps.cytoscape.org/download/mgg/1.0.2) |   `v1.0.4`   |
+
