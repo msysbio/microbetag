@@ -88,6 +88,9 @@ To install the `microbetag` stand-alone tool locally, you need first to make sur
 If not already available, you may follow instructions [here](https://docs.anaconda.com/miniconda/).
 
 
+Then, you need to clone or download _microbetag_'s source code locally and fire a bash script 
+that will build the required environments for the different _microbetag_ modules: 
+
 ```bash
     git clone https://github.com/hariszaf/microbetag.git
 
@@ -96,9 +99,22 @@ If not already available, you may follow instructions [here](https://docs.anacon
     bash setup_environment.sh
 ```
 
-`microbetag` and the tools it invokes require a set of dependencies, most of which can be installed at the user level.
 
-However, to enable the [RASTtk](https://www.bv-brc.org/docs///cli_tutorial/rasttk_getting_started.html), there are some Perl requirements that if not already available, they do require to be installed by your admin, i.e. requiring sudo rights.
+_microbetag_ depends on several software packages that often have co-exclusive depdencies. 
+To address this challenge, _microbetag_ makes use of different `conda` environmets for each of these packages. 
+Therefore, once the `setup_environment.sh` script is complete, you should have the folllowing list of `conda envs`:
+
+* `microbetag`       : a Python 3.10 based environment; the basic environment for the _microbetag_ pipeline 
+* `mtg-phenotrex`    : for predicting genome-based phenotypic traits with [`phenotrex`](https://phenotrex.readthedocs.io/en/latest/usage.html)
+* `mtg-modelseedpy`  : for genome-scale metabolic network reconstruction with [ModelSEEDpy] (https://modelseedpy.readthedocs.io/en/latest/)
+* `mtg-dnngior`      : for gap-filling draft reconstructions with [DNNGIOR](https://github.com/MGXlab/DNNGIOR/)
+
+
+
+Even most of the dependencies can be installed at the user level, 
+to enable the [RASTtk](https://www.bv-brc.org/docs///cli_tutorial/rasttk_getting_started.html), 
+there are some Perl requirements that if not already available, they do require to be installed by your admin, 
+i.e. requiring sudo rights.
 Also, [gdebi](https://itsfoss.com/gdebi-default-ubuntu-software-center/) is required for installing `RASTtk`.
 
 ```{note}

@@ -24,7 +24,6 @@ from .utils import (
 )
 from .seed_complementarity import ExportSeedComplementarities
 
-
 if TYPE_CHECKING:
     from .config import Config
 
@@ -237,6 +236,8 @@ def phenotrex_genotype(config: "Config") -> None:
         BMC bioinformatics. 2015 Dec;16:1-8.
         https://phenotrex.readthedocs.io
     """
+    from . import _MTG_PHEN_ENV
+
     if not os.path.exists(config.genotypes_file):
 
         _logger_.info("Get phenotrex predictions")
@@ -247,7 +248,7 @@ def phenotrex_genotype(config: "Config") -> None:
         # Build genotypes
         compute_genotype_params = []
         if not config.cwd.startswith("/microbetag"):
-            compute_genotype_params += ["conda run -n phendb"]
+            compute_genotype_params += ["conda run -n", _MTG_PHEN_ENV]
 
         compute_genotype_params += [
             "phenotrex",
@@ -301,6 +302,9 @@ def phenotrex_predict(config: "Config") -> None:
         BMC bioinformatics. 2015 Dec;16:1-8.
         https://phenotrex.readthedocs.io
     """
+
+    from . import _MTG_PHEN_ENV
+
     # Get predictions
     phen_models = [
         os.path.join(config.phen_classes, model)
@@ -323,7 +327,7 @@ def phenotrex_predict(config: "Config") -> None:
             predict_traits_params = []
             # Local case
             if not config.cwd.startswith("/microbetag"):
-                predict_traits_params = ["conda run -n phendb"]
+                predict_traits_params = ["conda run -n", _MTG_PHEN_ENV]
             # All cases: local and container
             predict_traits_params += [
                 "phenotrex",

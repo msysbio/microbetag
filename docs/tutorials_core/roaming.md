@@ -13,21 +13,41 @@ description: "tutorial on how to parse the annotated network using the MGG app"
 ## Exploring annotated nodes and edges
 
 
-```{important}
+```{note}
 **INPUT FILES USED IN THIS TUTORIAL**
 
-We will use the `microbetag`-annogated network of the [network-based example-case](from_net); you can get directly its corresponding `microbetag` - annotated network from [here][1].
+We will use the _microbetag_-annogated network of the [network-based example-case](from_net); 
+you can get directly its corresponding `microbetag` - annotated network from [here][1].
 ```
 
 <!-- [loaded](../basic_usage/load) -->
 Once an annotated network is returned (or [loaded](../tutorials_core/load.md)) on your Cytoscape main panel, 
-you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the microbetag App 
+you have all Cytoscape features (e.g., annotation, filtering, selecting etc.) plus those coming from the _MGG_ App 
 facilitating a user-friendly way to go through the annotations returned.
+
+```{important}
+Remember that to access the _MGG_ panels, you need to click 
+`Apps > MGG > Show Results panel > Show results panel`
+```
+<!-- (see also [Loading models](../basic_usage/load#load-already-microbetag-annotated-networks) tutorial). -->
+
+
+Remember that you can always use the Cytoscape core features on a _microbetag_-annotated network.
+That means for example, in case you would prefer a different style than the one provided, 
+you can always change node and edges colors and shapes etc. 
+You can do this always for groups of nodes/edges. 
+Anything you could do with a network on Cytoscape is still an option for a _microbetag_-annotated network.
+
+
+
+
+## Visual style
+
 
 
 ### Nodes
 
-Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequence was able to be mapped on *microbetag*.
+The color-coding of the nodes (taxa) indicate the taxonomic level to which each sequence was assigned by _microbetag_.
 
 - 🟩 node was mapped to a genome (i.e. species/strain) and annotations are available for it
 - <img src="https://cdn3.emoji.gg/emojis/4300_pink_square.png" alt="pink_square" style="width:1.1em; height:1.1em;"></a> 
@@ -36,13 +56,29 @@ Color-coding of the nodes (taxa) denoted the taxonomic level that a certain sequ
 - 🟥 node was mapped to higher taxonomic level and no annotations were returned
  
 
-Also, in case you have metadata in you analysis, those would be shown as hexagons having a 
+
+_MGG_ uses the `microbetag::ncbi-tax-level` column of the _microbetag_-annotated network returned to apply its visual style
+one the network's edges. 
+This column indicates the lowest taxonomic level (e.g., species, genus, family, etc.) at which the taxonomy of the sequence 
+could be matched to the reference taxonomy scheme. 
+The assigned NCBI Taxonomy ID corresponds to this matched level.
+
+```{important}
+We introduce the term "mspecies" to refer to the taxonomic level at which a node is directly mapped to a genome.
+```
+
+In case you have metadata variables in you analysis, those would be shown as **hexagons** having a 
 `microbetag::ncbi-tax-level` column on the _Nodes_ table as `[metavar]`.
 
 ![ph](../_static/img/app/ph.png)
 
 
+
 ### Edges
+
+Color-coding of the edges (taxa relationships) indicate the edge type, where **undirected** edges represent the co-occurrence score 
+of the network and its color whether the two taxa cooccur or exclude one another, 
+while **directed** edges represent potential metabolic complementarities.
 
 
 - 🟦 undirected co-occurrence edge with positive score $\ge 0.1$
@@ -52,45 +88,32 @@ Also, in case you have metadata in you analysis, those would be shown as hexagon
 - 🟨 selected edge 
 
 
-
-If you edit the style of your *microbetag*-annotated network, you can always bring back its original style through the MGG main menu.
+If you edit the style of your _microbetag_-annotated network, you can always bring back its original style through the MGG main menu.
 
 ![style](../_static/img/app/visualStyle.png)
 
 
 
 
+## Investigating nodes' annotations
 
+Once your _microbetag_-annotated model is imported and the _MGG_ results panel opened, 
+you can now browse the network along with its annotations using both Cytoscape core features and those of _MGG_. 
 
-
-
-
-
-
-Now, if already opened, you need to open the MGG results panel; just click 
-`Apps > MGG > Show Results panel > Show results panel`
-<!-- (see also [Loading models](../basic_usage/load#load-already-microbetag-annotated-networks) tutorial). -->
-
-Once your *microbetag*-annotated model is imported and the MGG results panel opened, you can now browse the network along with its annotations using both Cytoscape core features and those of MGG. 
 
 Notice that the MGG results panel on its bottom has two options: 
 the **Nodes** and the **Edges** panels. 
 By default, the **Nodes** panel is selected. 
 Let's start with that then!
 
-```{note}
-Remember that you can always use the Cytoscape core features on a `microbetag`-annotated network.
-That means for example, in case you would prefer a different style than the one provided, you can always change node and edges colors and shapes etc. You can do this always for groups of nodes/edges. Anything you could do with a network on Cytoscape is still an option for a `microbetag`-annotated network.
-```
 
-## Investigating nodes' annotations
-
-By clicking on the *Show Species* button, all nodes that were not mapped to a genome will be masked. 
+By clicking on the *Show Species* button, all nodes that were not mapped to a genome will be masked, 
+i.e. only nodes with a `microbetag::ncbi-tax-level` equal to `mspecies` will be shown. 
 
 ![show_species](../_static/img/app/showSpecies.png)
 
 
-Or you can choose/click directly any node on the network and check the `Nodes` Panel 
+You can choose/click directly any node on the network and check the `Nodes` Panel 
 
 ![selcted_node](../_static/img/app/nodePanel.png)
 
@@ -123,6 +146,7 @@ Edges are either
  - <p style="color : Green">green</p> mentioning co-occurrences
  - <p style="color : Red">red</p> suggesting mutual exclusion of the two taxa
  - <p style="color : Black">black</p> representing ***directed*** potential metabolic interactions. 
+
 
 
 

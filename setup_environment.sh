@@ -115,18 +115,18 @@ echo -e "$WHITE_CIRCLE conda is available and ready to go!"
 # -----------------------------------------------------------------------------
 
 # Create and activate the phendb environment
-ENV_NAME="phendb"
+ENV_NAME="mtg-phenotrex"
 
 # Check if the environment already exists
 if conda info --envs | grep -q "$ENV_NAME"; then
     echo -e "$GREEN_TICK Environment '$ENV_NAME' already exists. Skipping creation."
 else
-    conda create -n phendb python=3.8 -y
+    conda create -n $ENV_NAME python=3.8 -y
     echo -e "$GREEN_TICK A conda environment, named phendb, solely for phenotrex has been built. "
 fi
 
 # Install phenotrex
-conda activate phendb
+conda activate $ENV_NAME
 
 echo -e "$HOURGLASS Install numpy phenotrex required version...."
 pip install --upgrade pip setuptools wheel
