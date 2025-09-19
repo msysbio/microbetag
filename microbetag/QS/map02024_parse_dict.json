@@ -1,0 +1,1096 @@
+{
+    "1": [
+        {
+            "Mode species": "Vibrio harveyi, Vibrio fischeri, Vibrio cholerae"
+        },
+        {
+            "Signal Compound": "C16421"
+        },
+        {
+            "Signal Type": "AI-2"
+        },
+        {
+            "Biosysthesis": [
+                "K07173"
+            ]
+        },
+        {
+            "Transporter": [
+                "K10910",
+                "K10909"
+            ]
+        },
+        {
+            "Sensing": [
+                "K10911",
+                "K10912"
+            ]
+        }
+    ],
+    "2": [
+        {
+            "Mode species": "Vibrio harveyi, Vibrio fischeri, Vibrio cholerae"
+        },
+        {
+            "Signal Compound": "C21195"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K13062"
+            ]
+        },
+        {
+            "Transporter": [
+                "K15850"
+            ]
+        },
+        {
+            "Sensing": [
+                "K10911",
+                "K10912"
+            ]
+        }
+    ],
+    "3": [
+        {
+            "Mode species": "Vibrio harveyi, Vibrio fischeri, Vibrio cholerae"
+        },
+        {
+            "Signal Compound": "C16640"
+        },
+        {
+            "Signal Type": "CAI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K10915"
+            ]
+        },
+        {
+            "Transporter": [
+                "K10916"
+            ]
+        },
+        {
+            "Sensing": [
+                "K10911",
+                "K10912"
+            ]
+        }
+    ],
+    "4": [
+        {
+            "Mode species": "Vibrio harveyi, Vibrio fischeri, Vibrio cholerae"
+        },
+        {
+            "Signal Compound": "C18049"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K22954"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K15852"
+            ]
+        }
+    ],
+    "5": [
+        {
+            "Mode species": "Pseudomonas aeruginosa"
+        },
+        {
+            "Signal Compound": "C21201"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K13060"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K18304"
+            ]
+        }
+    ],
+    "6": [
+        {
+            "Mode species": "Pseudomonas aeruginosa"
+        },
+        {
+            "Signal Compound": "C20643,C11848"
+        },
+        {
+            "Signal Type": "HHQ/PQS"
+        },
+        {
+            "Biosysthesis": [
+                "K01657",
+                "K01658",
+                "K18000",
+                "K18001",
+                "K18002",
+                "K18003",
+                "K20257",
+                "K17940"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K19735"
+            ]
+        }
+    ],
+    "7": [
+        {
+            "Mode species": "Pseudomonas aeruginosa"
+        },
+        {
+            "Signal Compound": "C11837"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K13061"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K18099"
+            ]
+        }
+    ],
+    "8": [
+        {
+            "Mode species": "Pseudomonas"
+        },
+        {
+            "Signal Compound": "C21197"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K13061"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K18099"
+            ]
+        }
+    ],
+    "9": [
+        {
+            "Mode species": "Enterohemorrhagic Escherichia coli [EHEC]"
+        },
+        {
+            "Signal Compound": "C00788,C00547"
+        },
+        {
+            "Signal Type": "Adrenaline/Noradrenaline"
+        },
+        {
+            "Biosysthesis": []
+        },
+        {
+            "Transporter": [
+                "K07645"
+            ]
+        },
+        {
+            "Sensing": [
+                "K07666"
+            ]
+        }
+    ],
+    "10": [
+        {
+            "Mode species": "Enterohemorrhagic Escherichia coli [EHEC]"
+        },
+        {
+            "Signal Compound": "C00788,C00547"
+        },
+        {
+            "Signal Type": "Adrenaline/Noradrenaline"
+        },
+        {
+            "Biosysthesis": []
+        },
+        {
+            "Transporter": [
+                "K07645"
+            ]
+        },
+        {
+            "Sensing": [
+                "K07667"
+            ]
+        }
+    ],
+    "11": [
+        {
+            "Mode species": "Enterohemorrhagic Escherichia coli [EHEC]"
+        },
+        {
+            "Signal Compound": "C00788,C00547"
+        },
+        {
+            "Signal Type": "Adrenaline/Noradrenaline"
+        },
+        {
+            "Biosysthesis": []
+        },
+        {
+            "Transporter": [
+                "K07645"
+            ]
+        },
+        {
+            "Sensing": [
+                "K07715"
+            ]
+        }
+    ],
+    "12": [
+        {
+            "Mode species": "Enterohemorrhagic Escherichia coli [EHEC]"
+        },
+        {
+            "Signal Compound": "C00788,C00547"
+        },
+        {
+            "Signal Type": "Adrenaline/Noradrenaline"
+        },
+        {
+            "Biosysthesis": []
+        },
+        {
+            "Transporter": [
+                "K07711"
+            ]
+        },
+        {
+            "Sensing": [
+                "K07715"
+            ]
+        }
+    ],
+    "13": [
+        {
+            "Mode species": "Enterohemorrhagic Escherichia coli [EHEC]"
+        },
+        {
+            "Signal Compound": "C00059,C00009"
+        },
+        {
+            "Signal Type": "Sulfate/Phosphate"
+        },
+        {
+            "Biosysthesis": []
+        },
+        {
+            "Transporter": [
+                "K07711"
+            ]
+        },
+        {
+            "Sensing": [
+                "K07715"
+            ]
+        }
+    ],
+    "14": [
+        {
+            "Mode species": "Enterohemorrhagic Escherichia coli [EHEC]"
+        },
+        {
+            "Signal Compound": "C01019"
+        },
+        {
+            "Signal Type": "Fucose"
+        },
+        {
+            "Biosysthesis": []
+        },
+        {
+            "Transporter": [
+                "K20263"
+            ]
+        },
+        {
+            "Sensing": [
+                "K20264"
+            ]
+        }
+    ],
+    "15": [
+        {
+            "Mode species": "Enterohemorrhagic Escherichia coli [EHEC]"
+        },
+        {
+            "Signal Compound": "C11841"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": []
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K07782"
+            ]
+        }
+    ],
+    "16": [
+        {
+            "Mode species": "Escherichia coli"
+        },
+        {
+            "Signal Compound": "C21382"
+        },
+        {
+            "Signal Type": "AI-2"
+        },
+        {
+            "Biosysthesis": [
+                "K07173"
+            ]
+        },
+        {
+            "Transporter": [
+                "K10555",
+                "K10556",
+                "K10557",
+                "K10558"
+            ]
+        },
+        {
+            "Sensing": [
+                "K11216",
+                "K11531"
+            ]
+        }
+    ],
+    "17": [
+        {
+            "Mode species": "Rhodopseudomonas palustris"
+        },
+        {
+            "Signal Compound": "C20677"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K18096"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K18098"
+            ]
+        }
+    ],
+    "18": [
+        {
+            "Mode species": "Rhizobium leguminosarum"
+        },
+        {
+            "Signal Compound": "C11845"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K20248"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K20252"
+            ]
+        }
+    ],
+    "19": [
+        {
+            "Mode species": "Rhizobium leguminosarum"
+        },
+        {
+            "Signal Compound": "C11845"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K20248"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K20253"
+            ]
+        }
+    ],
+    "20": [
+        {
+            "Mode species": "Rhizobium leguminosarum"
+        },
+        {
+            "Signal Compound": "C11841"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K22955"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K19732"
+            ]
+        }
+    ],
+    "21": [
+        {
+            "Mode species": "Rhizobium leguminosarum"
+        },
+        {
+            "Signal Compound": "C21197,C11844,C21199,C21200"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K20249"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K25873"
+            ]
+        }
+    ],
+    "22": [
+        {
+            "Mode species": "Rhizobium leguminosarum"
+        },
+        {
+            "Signal Compound": "C21197"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K18096"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K18098"
+            ]
+        }
+    ],
+    "23": [
+        {
+            "Mode species": "Erwinia, Serratia"
+        },
+        {
+            "Signal Compound": "C21198,C11841"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K22956"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K19734"
+            ]
+        }
+    ],
+    "24": [
+        {
+            "Mode species": "Pantoea stewartii"
+        },
+        {
+            "Signal Compound": "C21198"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K22956"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K19734"
+            ]
+        }
+    ],
+    "25": [
+        {
+            "Mode species": "Burkholderia cepacia complex [Bcc]"
+        },
+        {
+            "Signal Compound": "C21199"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K13061"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K19666"
+            ]
+        }
+    ],
+    "26": [
+        {
+            "Mode species": "Burkholderia cepacia complex [Bcc]"
+        },
+        {
+            "Signal Compound": "C21197"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K20250"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K19731"
+            ]
+        }
+    ],
+    "27": [
+        {
+            "Mode species": "Burkholderia cepacia complex [Bcc]"
+        },
+        {
+            "Signal Compound": "C21202"
+        },
+        {
+            "Signal Type": "BDSF"
+        },
+        {
+            "Biosysthesis": [
+                "K13816"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K14051"
+            ]
+        }
+    ],
+    "28": [
+        {
+            "Mode species": "Xanthomonas campestris"
+        },
+        {
+            "Signal Compound": "C18206"
+        },
+        {
+            "Signal Type": "DSF"
+        },
+        {
+            "Biosysthesis": [
+                "K01897",
+                "K13816"
+            ]
+        },
+        {
+            "Transporter": [
+                "K10715"
+            ]
+        },
+        {
+            "Sensing": [
+                "K13815"
+            ]
+        }
+    ],
+    "29": [
+        {
+            "Mode species": "Burkholderia glumae"
+        },
+        {
+            "Signal Compound": "C21199"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K13061"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K19666"
+            ]
+        }
+    ],
+    "30": [
+        {
+            "Mode species": "Chromobacterium violaceum"
+        },
+        {
+            "Signal Compound": "C21197"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K22957"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K20334"
+            ]
+        }
+    ],
+    "31": [
+        {
+            "Mode species": "Agrobacterium vitiae"
+        },
+        {
+            "Signal Compound": "C18049"
+        },
+        {
+            "Signal Type": "AI-1"
+        },
+        {
+            "Biosysthesis": [
+                "K22968"
+            ]
+        },
+        {
+            "Transporter": []
+        },
+        {
+            "Sensing": [
+                "K19733"
+            ]
+        }
+    ],
+    "32": [
+        {
+            "Mode species": "Staphylococcus aureus"
+        },
+        {
+            "Signal Compound": "C21200,C21241,C21242,C21243"
+        },
+        {
+            "Signal Type": "AIP"
+        },
+        {
+            "Biosysthesis": [
+                "K07800",
+                "K07813"
+            ]
+        },
+        {
+            "Transporter": [
+                "K07706"
+            ]
+        },
+        {
+            "Sensing": [
+                "K07707"
+            ]
+        }
+    ],
+    "33": [
+        {
+            "Mode species": "Clostridium difficile"
+        },
+        {
+            "Signal Compound": "C21245"
+        },
+        {
+            "Signal Type": "AIP"
+        },
+        {
+            "Biosysthesis": [
+                "K07800",
+                "K07813"
+            ]
+        },
+        {
+            "Transporter": [
+                "K20339"
+            ]
+        },
+        {
+            "Sensing": [
+                "K20340"
+            ]
+        }
+    ],
+    "34": [
+        {
+            "Mode species": "Streptococcus"
+        },
+        {
+            "Signal Compound": "C00007"
+        },
+        {
+            "Signal Type": "O2"
+        },
+        {
+            "Biosysthesis": []
+        },
+        {
+            "Transporter": [
+                "K14982"
+            ]
+        },
+        {
+            "Sensing": [
+                "K14983"
+            ]
+        }
+    ],
+    "35": [
+        {
+            "Mode species": "Streptococcus"
+        },
+        {
+            "Signal Compound": "C21221,C21222"
+        },
+        {
+            "Signal Type": "CSP"
+        },
+        {
+            "Biosysthesis": [
+                "K12415",
+                "K23133",
+                "K12292",
+                "K12293"
+            ]
+        },
+        {
+            "Transporter": [
+                "K12294"
+            ]
+        },
+        {
+            "Sensing": [
+                "K12295"
+            ]
+        }
+    ],
+    "36": [
+        {
+            "Mode species": "Streptococcus"
+        },
+        {
+            "Signal Compound": "C21223"
+        },
+        {
+            "Signal Type": "Blp"
+        },
+        {
+            "Biosysthesis": [
+                "K20343",
+                "K20344",
+                "K20345"
+            ]
+        },
+        {
+            "Transporter": [
+                "K07706"
+            ]
+        },
+        {
+            "Sensing": [
+                "K07707"
+            ]
+        }
+    ],
+    "37": [
+        {
+            "Mode species": "Bacillus"
+        },
+        {
+            "Signal Compound": "C21230"
+        },
+        {
+            "Signal Type": "ComX"
+        },
+        {
+            "Biosysthesis": [
+                "K02253",
+                "K02251"
+            ]
+        },
+        {
+            "Transporter": [
+                "K07680"
+            ]
+        },
+        {
+            "Sensing": [
+                "K07691"
+            ]
+        }
+    ],
+    "38": [
+        {
+            "Mode species": "Bacillus"
+        },
+        {
+            "Signal Compound": "C21232,C21234,C21237,C21235,C21236,C21231,C21233"
+        },
+        {
+            "Signal Type": "Phr"
+        },
+        {
+            "Biosysthesis": [
+                "K06353",
+                "K06355",
+                "K06358",
+                "K06356",
+                "K20389",
+                "K06352",
+                "K06354",
+                "K12257",
+                "K03073",
+                "K03075",
+                "K03076",
+                "K03210",
+                "K03217",
+                "K03070",
+                "K03110",
+                "K03071",
+                "K03106"
+            ]
+        },
+        {
+            "Transporter": [
+                "K15580",
+                "K15581",
+                "K15582",
+                "K15583",
+                "K10823"
+            ]
+        },
+        {
+            "Sensing": [
+                "K06361",
+                "K06364",
+                "K06369",
+                "K06365",
+                "K06366",
+                "K06359",
+                "K06363",
+                "K06360"
+            ]
+        }
+    ],
+    "39": [
+        {
+            "Mode species": "Bacillus thuringiensis"
+        },
+        {
+            "Signal Compound": "C21239"
+        },
+        {
+            "Signal Type": "PapR"
+        },
+        {
+            "Biosysthesis": [
+                "K20390",
+                "K12257",
+                "K03073",
+                "K03075",
+                "K03076",
+                "K03210",
+                "K03217",
+                "K03070",
+                "K03110",
+                "K03071",
+                "K03106",
+                "K08777"
+            ]
+        },
+        {
+            "Transporter": [
+                "K15580",
+                "K15581",
+                "K15582",
+                "K15583",
+                "K10823"
+            ]
+        },
+        {
+            "Sensing": [
+                "K20391"
+            ]
+        }
+    ],
+    "40": [
+        {
+            "Mode species": "Bacillus thuringiensis"
+        },
+        {
+            "Signal Compound": "C21238"
+        },
+        {
+            "Signal Type": "NprX"
+        },
+        {
+            "Biosysthesis": [
+                "K20481",
+                "K12257",
+                "K03073",
+                "K03075",
+                "K03076",
+                "K03210",
+                "K03217",
+                "K03070",
+                "K03110",
+                "K03071",
+                "K03106"
+            ]
+        },
+        {
+            "Transporter": [
+                "K15580",
+                "K15581",
+                "K15582",
+                "K15583",
+                "K10823"
+            ]
+        },
+        {
+            "Sensing": [
+                "K20480"
+            ]
+        }
+    ],
+    "41": [
+        {
+            "Mode species": "Gram-positive bacteria"
+        },
+        {
+            "Signal Compound": ""
+        },
+        {
+            "Signal Type": "Mature antimicrobial peptide"
+        },
+        {
+            "Biosysthesis": [
+                "K20482",
+                "K20483",
+                "K20484",
+                "K20485",
+                "K20486"
+            ]
+        },
+        {
+            "Transporter": [
+                "K20487"
+            ]
+        },
+        {
+            "Sensing": [
+                "K20488"
+            ]
+        }
+    ]
+}
