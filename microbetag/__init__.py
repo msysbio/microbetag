@@ -83,12 +83,12 @@ from .microbetag import (
 
 
 _KEGG_MAPPINGS         = os.path.join(os.path.dirname(__file__), "mtg_maps_models", "kegg_mappings")
-_KEGG_TERMS_PER_MODULE = os.path.join(_KEGG_MAPPINGS, "kegg_terms_per_module.tsv")
-_MODULE_DEFINITION_MAP = os.path.join(_KEGG_MAPPINGS, "module_definition_map.json")
-_KEGG_MODULES_TO_MAPS  = os.path.join(_KEGG_MAPPINGS, "module_map_pairs.tsv")
+# _KEGG_TERMS_PER_MODULE = os.path.join(_KEGG_MAPPINGS, "kegg_terms_per_module.tsv")
+# _MODULE_DEFINITION_MAP = os.path.join(_KEGG_MAPPINGS, "module_definition_map.json")
+# _KEGG_MODULES_TO_MAPS  = os.path.join(_KEGG_MAPPINGS, "module_map_pairs.tsv")
 
 _MTG_PHEN_ENV      = "mtg-phenotrex"
-_MTG_MODELSEED_ENV = "mtg-modelseed"
+# _MTG_MODELSEED_ENV = "mtg-modelseed"
 
 __version__ = "1.0.4"
 __license__ = "GNU GPL3"
@@ -96,5 +96,6 @@ __authors__ = ["Haris Zafeiropoulos <haris.zafeiropoulos@kuleuven.be>"]
 __cite__    = (
     "Zafeiropoulos H, Michail Delopoulos EI, Erega A, Schneider A, Geirnaert A, Morris J, Faust K."
     "microbetag: simplifying microbial network interpretation through annotation, enrichment tests and metabolic complementarity analysis."
-    "bioRxiv. 2024:2024-10."
+    "Genome Biol 26, 292 (2025)"
+    "DOI: https://doi.org/10.1186/s13059-025-03769-2"
 )

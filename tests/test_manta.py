@@ -12,22 +12,22 @@ from microbetag.helpers import manta_input_net
 # Directories
 root_dir   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 test_data  = os.path.join(root_dir, "test_data", "test_manta")
-output_dir = os.path.join(test_data, "output_files")
+outdir = os.path.join(test_data, "output_files")
 
 # Using abundance table to map sequence ids to taxonomies
 abd_table_dir = os.path.join(test_data, "input_files", "based_on_abd_table")
 abd_table     = os.path.join(abd_table_dir, "thirty_Samples.tsv")  # "plaque_abd_tab.tsv"
 net_edgelist  = os.path.join(abd_table_dir, "edgelist.csv")  # "plaque_edgelist.tsv"
-outdir_abd    = os.path.join(output_dir, "based_on_abd_table")
+outdir_abd    = os.path.join(outdir, "based_on_abd_table")
 
 # Using a sequence to taxonomy file to map sequence ids to taxonomies
 input_net_dir    = os.path.join(test_data, "input_files", "based_on_net")
 edgelist         = os.path.join(input_net_dir, "edgelist.csv")
 seq_tax_map_file = os.path.join(input_net_dir, "seq2taxonomy.tsv")
-outdir_net       = os.path.join(output_dir, "based_on_net")
+outdir_net       = os.path.join(outdir, "based_on_net")
 
 # Remove previous output folder
-prev_run = Path(output_dir)
+prev_run = Path(outdir)
 if prev_run.exists():
     print("Removing output folder from previous run.")
     shutil.rmtree(prev_run)
@@ -42,7 +42,7 @@ class NetConfig:
         # Specify case to use
         seq_tax_map          = pd.read_csv(seq_tax_map_file, sep="\t", names=["sequence_id", "taxonomy"])
 
-        self.output_dir      = outdir
+        self.outdir      = outdir
         self.network         = edgelist
         self.seq_to_taxon_df = seq_tax_map
         self.seq_ids         = seq_tax_map[seq_tax_map.columns[0]].unique().tolist()
@@ -56,7 +56,7 @@ class AbdTableConfig:
     def __init__(self, outdir):
 
         os.makedirs(outdir, exist_ok=True)
-        self.output_dir = outdir
+        self.outdir = outdir
 
         # Specify case to use
         self.abundance_table   = abd_table

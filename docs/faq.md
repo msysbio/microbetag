@@ -180,6 +180,14 @@ description: "Frequently Asked Questions on how to use and interprete microbetag
    Otherwise, you may have already annotated them with KEGG ORTHOLOGY terms. 
    Or you may already have reconstructed GEMs on your own. 
 
+
+   ```{important}
+   When using the local version of *microbetag*, remember you do not need to go for all the different annotation types!
+
+   That means that if for example you are not interested in pathway complementarities, you may set this step as `false` on the configuration file
+   and in that case, the time consuming step of KEGG ORTHOLOGY annotation would be skipped. 
+   ```
+
    You can adapt your `microbetag` run by pointing to these files through the 
    <a href="https://github.com/msysbio/microbetag/tree/develop/config_files" target="_blank">`config.yml`</a>
    file you have to provide as input.

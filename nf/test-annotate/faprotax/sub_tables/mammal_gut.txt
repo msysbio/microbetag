@@ -1,0 +1,15 @@
+#
+record,id,P-001,P-003,P-004,P-005,P-006,P-007,P-008,P-009,P-010,P-011,P-012,P-013,P-014,P-015,P-016,P-017
+Bacteria;Actinobacteriota;Coriobacteriia;Coriobacteriales;Eggerthellaceae;Eggerthella;Eggerthella lenta,ASV0107,32,49,19,21,39,51,18,11,20,5,18,11,17,17,11,20
+Bacteria;Actinobacteriota;Coriobacteriia;Coriobacteriales;Coriobacteriaceae;Collinsella;Collinsella aerofaciens,ASV0005,1485,1632,2005,2229,1339,1979,1768,1375,1471,1034,1360,920,1225,1043,1115,1874
+Bacteria;Firmicutes;Clostridia;Oscillospirales;Oscillospiraceae;Flavonifractor;Flavonifractor plautii,ASV0012,531,454,525,488,403,619,372,263,290,191,256,207,320,225,220,393
+Bacteria;Firmicutes;Clostridia;Lachnospirales;Lachnospiraceae;[Ruminococcus] gnavus group;,ASV0119,16,10,5,11,3,17,10,3,4,4,0,0,5,4,3,4
+Bacteria;Firmicutes;Clostridia;Lachnospirales;Lachnospiraceae;[Ruminococcus] gnavus group;,ASV0122,20,15,4,13,0,12,0,5,11,5,2,3,0,3,5,12
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0445,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Clostridia;Lachnospirales;Lachnospiraceae;[Ruminococcus] gnavus group;,ASV0025,76,53,53,84,29,180,44,64,74,38,91,70,99,51,71,55
+Bacteria;Firmicutes;Clostridia;Lachnospirales;Lachnospiraceae;[Ruminococcus] gnavus group;,ASV0142,8,2,14,8,5,33,8,19,15,7,19,15,31,10,18,0
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium paraputrificum,ASV0029,18,8,6,18,6,30,3,0,0,4,2,4,7,12,10,4
+Bacteria;Actinobacteriota;Actinobacteria;Bifidobacteriales;Bifidobacteriaceae;Bifidobacterium;Bifidobacterium bifidum,ASV0048,28,22,18,16,20,3,13,10,6,4,18,1,5,8,4,11
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0213,0,12,15,11,0,13,6,0,0,8,9,0,2,9,5,14
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0215,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0221,37,3,26,48,68,24,4,66,20,2,3,0,5,1,0,13

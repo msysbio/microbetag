@@ -1,0 +1,928 @@
+[
+    {
+        "CXVersion": "2.0",
+        "hasFragments": false
+    },
+    {
+        "metaData": [
+            {
+                "elementCount": 1,
+                "name": "attributeDeclarations"
+            },
+            {
+                "elementCount": 1,
+                "name": "networkAttributes"
+            },
+            {
+                "elementCount": 23,
+                "name": "nodes"
+            },
+            {
+                "elementCount": 18,
+                "name": "edges"
+            }
+        ]
+    },
+    {
+        "attributeDeclarations": [
+            {
+                "nodes": {
+                    "faprotax::chemoheterotrophy": {
+                        "d": "boolean"
+                    },
+                    "faprotax::fermentation": {
+                        "d": "boolean"
+                    },
+                    "microbetag::taxon": {
+                        "d": "string"
+                    },
+                    "microbetag::taxonomy": {
+                        "d": "string"
+                    },
+                    "name": {
+                        "d": "string"
+                    },
+                    "faprotax::nitrate reduction": {
+                        "d": "boolean"
+                    },
+                    "faprotax::animal parasites or symbionts": {
+                        "d": "boolean"
+                    },
+                    "faprotax::human associated": {
+                        "d": "boolean"
+                    },
+                    "faprotax::human gut": {
+                        "d": "boolean"
+                    },
+                    "faprotax::mammal gut": {
+                        "d": "boolean"
+                    },
+                    "microbetag::ncbi-tax-level": {
+                        "d": "string"
+                    },
+                    "taxonomy::class": {
+                        "d": "string"
+                    },
+                    "taxonomy::domain": {
+                        "d": "string"
+                    },
+                    "taxonomy::family": {
+                        "d": "string"
+                    },
+                    "taxonomy::genus": {
+                        "d": "string"
+                    },
+                    "taxonomy::order": {
+                        "d": "string"
+                    },
+                    "taxonomy::phylum": {
+                        "d": "string"
+                    },
+                    "taxonomy::species": {
+                        "d": "string"
+                    },
+                    "faprotax::aerobic chemoheterotrophy": {
+                        "d": "boolean"
+                    },
+                    "faprotax::nitrite ammonification": {
+                        "d": "boolean"
+                    },
+                    "faprotax::nitrite respiration": {
+                        "d": "boolean"
+                    },
+                    "faprotax::nitrogen fixation": {
+                        "d": "boolean"
+                    },
+                    "faprotax::nitrogen respiration": {
+                        "d": "boolean"
+                    },
+                    "phendb::T3SS.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::T6SS.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::anaerobe.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::fixing_n2.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::halophilic.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::hydrogen.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::indole.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::isobut.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::methanotroph.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::non_fermentative.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::phototrophy.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::psychrophilic.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::r_acetoin.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::sulfate_reducer.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::symbiont.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::thermophylic.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendbScore::T3SS.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::T6SS.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::anaerobe.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::fixing_n2.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::halophilic.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::hydrogen.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::indole.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::isobut.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::methanotroph.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::non_fermentative.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::phototrophy.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::psychrophilic.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::r_acetoin.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::sulfate_reducer.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::symbiont.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::thermophylic.tsv": {
+                        "d": "double"
+                    },
+                    "faprotax::human pathogens all": {
+                        "d": "boolean"
+                    },
+                    "faprotax::human pathogens diarrhea": {
+                        "d": "boolean"
+                    },
+                    "phendb::NOB.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::auto_co2.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendbScore::NOB.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::auto_co2.tsv": {
+                        "d": "double"
+                    },
+                    "phendb::aerobe.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::d_lactic_acid.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendb::isovaleric_acid.tsv": {
+                        "d": "boolean"
+                    },
+                    "phendbScore::aerobe.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::d_lactic_acid.tsv": {
+                        "d": "double"
+                    },
+                    "phendbScore::isovaleric_acid.tsv": {
+                        "d": "double"
+                    }
+                },
+                "edges": {
+                    "interaction": {
+                        "d": "string"
+                    },
+                    "interaction type": {
+                        "d": "string"
+                    },
+                    "microbetag::weight": {
+                        "d": "double"
+                    },
+                    "shared name": {
+                        "d": "string"
+                    },
+                    "seed::competition": {
+                        "d": "double"
+                    },
+                    "seed::cooperation": {
+                        "d": "double"
+                    },
+                    "seedCompl::bin_101:bin_151": {
+                        "d": "list_of_string"
+                    },
+                    "seedCompl::bin_151:bin_101": {
+                        "d": "list_of_string"
+                    },
+                    "seedCompl::MPB_bin_000002:bin_151": {
+                        "d": "list_of_string"
+                    },
+                    "seedCompl::bin_151:MPB_bin_000002": {
+                        "d": "list_of_string"
+                    }
+                },
+                "networkAttributes": {
+                    "name": {
+                        "d": "string"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "networkAttributes": [
+            {
+                "name": "microbetag network @ 2025-11-19_10-49"
+            }
+        ]
+    },
+    {
+        "nodes": [
+            {
+                "id": 0,
+                "v": {
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "microbetag::taxon": "Lactococcus",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Bacilli;Lactobacillales;Streptococcaceae;Lactococcus",
+                    "name": "ASV0004"
+                }
+            },
+            {
+                "id": 1,
+                "v": {
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "faprotax::nitrate reduction": true,
+                    "microbetag::taxon": "Veillonella",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella",
+                    "name": "ASV0043"
+                }
+            },
+            {
+                "id": 2,
+                "v": {
+                    "faprotax::animal parasites or symbionts": true,
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "faprotax::human associated": true,
+                    "faprotax::human gut": true,
+                    "faprotax::mammal gut": true,
+                    "microbetag::ncbi-tax-level": "species",
+                    "microbetag::taxon": "Bifidobacterium bifidum",
+                    "microbetag::taxonomy": "Bacteria;Actinobacteriota;Actinobacteria;Bifidobacteriales;Bifidobacteriaceae;Bifidobacterium;Bifidobacterium bifidum",
+                    "name": "ASV0048",
+                    "taxonomy::class": "Actinobacteria",
+                    "taxonomy::domain": "Bacteria",
+                    "taxonomy::family": "Bifidobacteriaceae",
+                    "taxonomy::genus": "Bifidobacterium",
+                    "taxonomy::order": "Bifidobacteriales",
+                    "taxonomy::phylum": "Actinobacteriota",
+                    "taxonomy::species": "Bifidobacterium bifidum"
+                }
+            },
+            {
+                "id": 3,
+                "v": {
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "microbetag::taxon": "Enterococcus",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Bacilli;Lactobacillales;Enterococcaceae;Enterococcus",
+                    "name": "ASV0050"
+                }
+            },
+            {
+                "id": 4,
+                "v": {
+                    "microbetag::ncbi-tax-level": "species",
+                    "microbetag::taxon": "Negativicoccus succinicivorans",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Negativicoccus;Negativicoccus succinicivorans",
+                    "name": "ASV0051",
+                    "taxonomy::class": "Negativicutes",
+                    "taxonomy::domain": "Bacteria",
+                    "taxonomy::family": "Veillonellaceae",
+                    "taxonomy::genus": "Negativicoccus",
+                    "taxonomy::order": "Veillonellales-Selenomonadales",
+                    "taxonomy::phylum": "Firmicutes",
+                    "taxonomy::species": "Negativicoccus succinicivorans"
+                }
+            },
+            {
+                "id": 5,
+                "v": {
+                    "faprotax::aerobic chemoheterotrophy": true,
+                    "faprotax::chemoheterotrophy": true,
+                    "microbetag::taxon": "Pseudomonas",
+                    "microbetag::taxonomy": "Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas",
+                    "name": "ASV0061"
+                }
+            },
+            {
+                "id": 6,
+                "v": {
+                    "microbetag::taxon": "Lachnoclostridium",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Lachnospirales;Lachnospiraceae;Lachnoclostridium",
+                    "name": "ASV0069"
+                }
+            },
+            {
+                "id": 7,
+                "v": {
+                    "microbetag::taxon": "Lachnoclostridium",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Lachnospirales;Lachnospiraceae;Lachnoclostridium",
+                    "name": "ASV0084"
+                }
+            },
+            {
+                "id": 8,
+                "v": {
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "microbetag::taxon": "Enterococcus",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Bacilli;Lactobacillales;Enterococcaceae;Enterococcus",
+                    "name": "ASV0117"
+                }
+            },
+            {
+                "id": 9,
+                "v": {
+                    "microbetag::taxon": "Lachnoclostridium",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Lachnospirales;Lachnospiraceae;Lachnoclostridium",
+                    "name": "ASV0139"
+                }
+            },
+            {
+                "id": 10,
+                "v": {
+                    "microbetag::taxon": "Lachnoclostridium",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Lachnospirales;Lachnospiraceae;Lachnoclostridium",
+                    "name": "ASV0145"
+                }
+            },
+            {
+                "id": 11,
+                "v": {
+                    "microbetag::taxon": "Ligilactobacillus",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Bacilli;Lactobacillales;Lactobacillaceae;Ligilactobacillus",
+                    "name": "ASV0160"
+                }
+            },
+            {
+                "id": 12,
+                "v": {
+                    "faprotax::aerobic chemoheterotrophy": true,
+                    "faprotax::chemoheterotrophy": true,
+                    "microbetag::taxon": "Pseudomonas",
+                    "microbetag::taxonomy": "Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas",
+                    "name": "ASV0195"
+                }
+            },
+            {
+                "id": 13,
+                "v": {
+                    "faprotax::animal parasites or symbionts": true,
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "faprotax::human associated": true,
+                    "faprotax::human gut": true,
+                    "faprotax::mammal gut": true,
+                    "faprotax::nitrite ammonification": true,
+                    "faprotax::nitrite respiration": true,
+                    "faprotax::nitrogen fixation": true,
+                    "faprotax::nitrogen respiration": true,
+                    "microbetag::ncbi-tax-level": "species",
+                    "microbetag::taxon": "Clostridium butyricum",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum",
+                    "name": "ASV0213",
+                    "taxonomy::class": "Clostridia",
+                    "taxonomy::domain": "Bacteria",
+                    "taxonomy::family": "Clostridiaceae",
+                    "taxonomy::genus": "Clostridium sensu stricto 1",
+                    "taxonomy::order": "Clostridiales",
+                    "taxonomy::phylum": "Firmicutes",
+                    "taxonomy::species": "Clostridium butyricum"
+                }
+            },
+            {
+                "id": 14,
+                "v": {
+                    "faprotax::animal parasites or symbionts": true,
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "faprotax::human associated": true,
+                    "faprotax::human gut": true,
+                    "faprotax::mammal gut": true,
+                    "faprotax::nitrite ammonification": true,
+                    "faprotax::nitrite respiration": true,
+                    "faprotax::nitrogen fixation": true,
+                    "faprotax::nitrogen respiration": true,
+                    "microbetag::ncbi-tax-level": "species",
+                    "microbetag::taxon": "Clostridium butyricum",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum",
+                    "name": "ASV0215",
+                    "taxonomy::class": "Clostridia",
+                    "taxonomy::domain": "Bacteria",
+                    "taxonomy::family": "Clostridiaceae",
+                    "taxonomy::genus": "Clostridium sensu stricto 1",
+                    "taxonomy::order": "Clostridiales",
+                    "taxonomy::phylum": "Firmicutes",
+                    "taxonomy::species": "Clostridium butyricum"
+                }
+            },
+            {
+                "id": 15,
+                "v": {
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "microbetag::taxon": "Enterococcus",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Bacilli;Lactobacillales;Enterococcaceae;Enterococcus",
+                    "name": "ASV0245"
+                }
+            },
+            {
+                "id": 16,
+                "v": {
+                    "faprotax::aerobic chemoheterotrophy": true,
+                    "faprotax::chemoheterotrophy": true,
+                    "microbetag::taxon": "Pseudomonas",
+                    "microbetag::taxonomy": "Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas",
+                    "name": "ASV0397"
+                }
+            },
+            {
+                "id": 17,
+                "v": {
+                    "microbetag::taxon": "Ligilactobacillus",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Bacilli;Lactobacillales;Lactobacillaceae;Ligilactobacillus",
+                    "name": "ASV0515"
+                }
+            },
+            {
+                "id": 18,
+                "v": {
+                    "microbetag::ncbi-tax-level": "species",
+                    "microbetag::taxon": "Clostridium neonatale",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium neonatale",
+                    "name": "MPB_bin_000002",
+                    "phendb::T3SS.tsv": false,
+                    "phendb::T6SS.tsv": false,
+                    "phendb::anaerobe.tsv": true,
+                    "phendb::fixing_n2.tsv": false,
+                    "phendb::halophilic.tsv": false,
+                    "phendb::hydrogen.tsv": false,
+                    "phendb::indole.tsv": false,
+                    "phendb::isobut.tsv": false,
+                    "phendb::methanotroph.tsv": false,
+                    "phendb::non_fermentative.tsv": false,
+                    "phendb::phototrophy.tsv": false,
+                    "phendb::psychrophilic.tsv": false,
+                    "phendb::r_acetoin.tsv": false,
+                    "phendb::sulfate_reducer.tsv": false,
+                    "phendb::symbiont.tsv": true,
+                    "phendb::thermophylic.tsv": false,
+                    "phendbScore::T3SS.tsv": 0.8041,
+                    "phendbScore::T6SS.tsv": 0.8168,
+                    "phendbScore::anaerobe.tsv": 0.8598,
+                    "phendbScore::fixing_n2.tsv": 0.8212,
+                    "phendbScore::halophilic.tsv": 0.757,
+                    "phendbScore::hydrogen.tsv": 0.7757,
+                    "phendbScore::indole.tsv": 0.7708,
+                    "phendbScore::isobut.tsv": 0.7587,
+                    "phendbScore::methanotroph.tsv": 0.7533,
+                    "phendbScore::non_fermentative.tsv": 0.8818,
+                    "phendbScore::phototrophy.tsv": 0.8219,
+                    "phendbScore::psychrophilic.tsv": 0.877,
+                    "phendbScore::r_acetoin.tsv": 0.7922,
+                    "phendbScore::sulfate_reducer.tsv": 0.8511,
+                    "phendbScore::symbiont.tsv": 0.7862,
+                    "phendbScore::thermophylic.tsv": 0.8465,
+                    "taxonomy::class": "Clostridia",
+                    "taxonomy::domain": "Bacteria",
+                    "taxonomy::family": "Clostridiaceae",
+                    "taxonomy::genus": "Clostridium sensu stricto 1",
+                    "taxonomy::order": "Clostridiales",
+                    "taxonomy::phylum": "Firmicutes",
+                    "taxonomy::species": "Clostridium neonatale"
+                }
+            },
+            {
+                "id": 19,
+                "v": {
+                    "faprotax::animal parasites or symbionts": true,
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "faprotax::human associated": true,
+                    "faprotax::human pathogens all": true,
+                    "faprotax::human pathogens diarrhea": true,
+                    "microbetag::ncbi-tax-level": "species",
+                    "microbetag::taxon": "Clostridioides difficile",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Peptostreptococcales-Tissierellales;Peptostreptococcaceae;Clostridioides;Clostridioides difficile",
+                    "name": "bin_101",
+                    "phendb::NOB.tsv": false,
+                    "phendb::T3SS.tsv": false,
+                    "phendb::T6SS.tsv": false,
+                    "phendb::anaerobe.tsv": true,
+                    "phendb::auto_co2.tsv": true,
+                    "phendb::isobut.tsv": false,
+                    "phendb::methanotroph.tsv": false,
+                    "phendb::non_fermentative.tsv": false,
+                    "phendb::phototrophy.tsv": false,
+                    "phendb::psychrophilic.tsv": false,
+                    "phendb::r_acetoin.tsv": false,
+                    "phendb::sulfate_reducer.tsv": false,
+                    "phendbScore::NOB.tsv": 0.8161,
+                    "phendbScore::T3SS.tsv": 0.8811,
+                    "phendbScore::T6SS.tsv": 0.8308,
+                    "phendbScore::anaerobe.tsv": 0.8784,
+                    "phendbScore::auto_co2.tsv": 0.7714,
+                    "phendbScore::isobut.tsv": 0.7899,
+                    "phendbScore::methanotroph.tsv": 0.8212,
+                    "phendbScore::non_fermentative.tsv": 0.8758,
+                    "phendbScore::phototrophy.tsv": 0.7644,
+                    "phendbScore::psychrophilic.tsv": 0.8701,
+                    "phendbScore::r_acetoin.tsv": 0.813,
+                    "phendbScore::sulfate_reducer.tsv": 0.8015,
+                    "taxonomy::class": "Clostridia",
+                    "taxonomy::domain": "Bacteria",
+                    "taxonomy::family": "Peptostreptococcaceae",
+                    "taxonomy::genus": "Clostridioides",
+                    "taxonomy::order": "Peptostreptococcales-Tissierellales",
+                    "taxonomy::phylum": "Firmicutes",
+                    "taxonomy::species": "Clostridioides difficile"
+                }
+            },
+            {
+                "id": 20,
+                "v": {
+                    "microbetag::taxon": "Eubacterium",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Eubacteriales;Eubacteriaceae;Eubacterium",
+                    "name": "bin_151",
+                    "phendb::NOB.tsv": false,
+                    "phendb::T3SS.tsv": false,
+                    "phendb::T6SS.tsv": false,
+                    "phendb::aerobe.tsv": false,
+                    "phendb::anaerobe.tsv": true,
+                    "phendb::d_lactic_acid.tsv": false,
+                    "phendb::isobut.tsv": false,
+                    "phendb::isovaleric_acid.tsv": false,
+                    "phendb::methanotroph.tsv": false,
+                    "phendb::non_fermentative.tsv": false,
+                    "phendb::phototrophy.tsv": false,
+                    "phendb::psychrophilic.tsv": false,
+                    "phendb::sulfate_reducer.tsv": false,
+                    "phendb::thermophylic.tsv": false,
+                    "phendbScore::NOB.tsv": 0.801,
+                    "phendbScore::T3SS.tsv": 0.8684,
+                    "phendbScore::T6SS.tsv": 0.8297,
+                    "phendbScore::aerobe.tsv": 0.7544,
+                    "phendbScore::anaerobe.tsv": 0.8846,
+                    "phendbScore::d_lactic_acid.tsv": 0.7812,
+                    "phendbScore::isobut.tsv": 0.7998,
+                    "phendbScore::isovaleric_acid.tsv": 0.769,
+                    "phendbScore::methanotroph.tsv": 0.8569,
+                    "phendbScore::non_fermentative.tsv": 0.7758,
+                    "phendbScore::phototrophy.tsv": 0.8462,
+                    "phendbScore::psychrophilic.tsv": 0.8744,
+                    "phendbScore::sulfate_reducer.tsv": 0.8667,
+                    "phendbScore::thermophylic.tsv": 0.7923
+                }
+            },
+            {
+                "id": 21,
+                "v": {
+                    "microbetag::taxon": "unknown",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Clostridia;Lachnospirales;Lachnospiraceae;unknown",
+                    "name": "err:ASV0026"
+                }
+            },
+            {
+                "id": 22,
+                "v": {
+                    "faprotax::chemoheterotrophy": true,
+                    "faprotax::fermentation": true,
+                    "faprotax::nitrate reduction": true,
+                    "microbetag::ncbi-tax-level": "species",
+                    "microbetag::taxon": "Veillonella magna",
+                    "microbetag::taxonomy": "Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;Veillonella magna",
+                    "name": "srss::ASV0014",
+                    "taxonomy::class": "Negativicutes",
+                    "taxonomy::domain": "Bacteria",
+                    "taxonomy::family": "Veillonellaceae",
+                    "taxonomy::genus": "Veillonella",
+                    "taxonomy::order": "Veillonellales-Selenomonadales",
+                    "taxonomy::phylum": "Firmicutes",
+                    "taxonomy::species": "Veillonella magna"
+                }
+            }
+        ]
+    },
+    {
+        "edges": [
+            {
+                "id": 0,
+                "s": 22,
+                "t": 1,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.945354163646698,
+                    "shared name": "srss::ASV0014 (cooccurs with) ASV0043"
+                }
+            },
+            {
+                "id": 1,
+                "s": 21,
+                "t": 2,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-exclusion",
+                    "microbetag::weight": -0.8270593881607056,
+                    "shared name": "err:ASV0026 (negatively correlated with) ASV0048"
+                }
+            },
+            {
+                "id": 2,
+                "s": 19,
+                "t": 20,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.9110686779022216,
+                    "shared name": "bin_101 (cooccurs with) bin_151"
+                }
+            },
+            {
+                "id": 3,
+                "s": 18,
+                "t": 20,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.8921782970428467,
+                    "shared name": "MPB_bin_000002 (cooccurs with) bin_151"
+                }
+            },
+            {
+                "id": 4,
+                "s": 6,
+                "t": 7,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.9847546219825744,
+                    "shared name": "ASV0069 (cooccurs with) ASV0084"
+                }
+            },
+            {
+                "id": 5,
+                "s": 7,
+                "t": 9,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.9196982383728028,
+                    "shared name": "ASV0084 (cooccurs with) ASV0139"
+                }
+            },
+            {
+                "id": 6,
+                "s": 6,
+                "t": 10,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.9490010142326356,
+                    "shared name": "ASV0069 (cooccurs with) ASV0145"
+                }
+            },
+            {
+                "id": 7,
+                "s": 4,
+                "t": 11,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.848395824432373,
+                    "shared name": "ASV0051 (cooccurs with) ASV0160"
+                }
+            },
+            {
+                "id": 8,
+                "s": 5,
+                "t": 12,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.9896746873855592,
+                    "shared name": "ASV0061 (cooccurs with) ASV0195"
+                }
+            },
+            {
+                "id": 9,
+                "s": 18,
+                "t": 13,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.8455622792243958,
+                    "shared name": "MPB_bin_000002 (cooccurs with) ASV0213"
+                }
+            },
+            {
+                "id": 10,
+                "s": 0,
+                "t": 14,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-exclusion",
+                    "microbetag::weight": -0.8721321225166321,
+                    "shared name": "ASV0004 (negatively correlated with) ASV0215"
+                }
+            },
+            {
+                "id": 11,
+                "s": 3,
+                "t": 15,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.8644614219665527,
+                    "shared name": "ASV0050 (cooccurs with) ASV0245"
+                }
+            },
+            {
+                "id": 12,
+                "s": 8,
+                "t": 16,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.8098902702331543,
+                    "shared name": "ASV0117 (cooccurs with) ASV0397"
+                }
+            },
+            {
+                "id": 13,
+                "s": 16,
+                "t": 17,
+                "v": {
+                    "interaction": "co-occurrence/co-exclusion",
+                    "interaction type": "co-occurrence",
+                    "microbetag::weight": 0.9350579380989076,
+                    "shared name": "ASV0397 (cooccurs with) ASV0515"
+                }
+            },
+            {
+                "id": 14,
+                "s": 20,
+                "t": 19,
+                "v": {
+                    "interaction type": "complementarity",
+                    "seed::competition": 0.57,
+                    "seed::cooperation": 0.2,
+                    "seedCompl::bin_101:bin_151": [
+                        "Carbohydrate metabolism^Glycolysis / Gluconeogenesis^cpd19001^C00267^https://www.kegg.jp/kegg-bin/show_pathway?map00010/C00022%20skyblue%2Cblue/C00074%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00111%20skyblue%2Cblue/C00197%20skyblue%2Cblue/C00236%20skyblue%2Cblue/C00354%20skyblue%2Cblue/C00631%20skyblue%2Cblue/C00022%20skyblue%2Cblue/C00074%20skyblue%2Cblue/C00111%20skyblue%2Cblue/C00197%20skyblue%2Cblue/C00236%20skyblue%2Cblue/C00631%20skyblue%2Cblue/C00036%20skyblue%2Cblue/C00074%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00111%20skyblue%2Cblue/C00197%20skyblue%2Cblue/C00236%20skyblue%2Cblue/C00354%20skyblue%2Cblue/C00631%20skyblue%2Cblue/C00022%20skyblue%2Cblue/C00024%20skyblue%2Cblue/C00068%20skyblue%2Cblue/C00267%09%23ff0000/",
+                        "Lipid metabolism^Fatty acid elongation^cpd01335;cpd01260^C01944;C01832^https://www.kegg.jp/kegg-bin/show_pathway?map00062/C00024%20skyblue%2Cblue/C00136%20skyblue%2Cblue/C00154%20skyblue%2Cblue/C02593%20skyblue%2Cblue/C03221%20skyblue%2Cblue/C05258%20skyblue%2Cblue/C05260%20skyblue%2Cblue/C05262%20skyblue%2Cblue/C05264%20skyblue%2Cblue/C05266%20skyblue%2Cblue/C05267%20skyblue%2Cblue/C05268%20skyblue%2Cblue/C05270%20skyblue%2Cblue/C05271%20skyblue%2Cblue/C05272%20skyblue%2Cblue/C05273%20skyblue%2Cblue/C05275%20skyblue%2Cblue/C05276%20skyblue%2Cblue/C01832%09%23ff0000/C01944%09%23ff0000/",
+                        "Lipid metabolism^Fatty acid degradation^cpd01335;cpd01260^C01944;C01832^https://www.kegg.jp/kegg-bin/show_pathway?map00071/C00024%20skyblue%2Cblue/C00136%20skyblue%2Cblue/C00154%20skyblue%2Cblue/C00332%20skyblue%2Cblue/C00877%20skyblue%2Cblue/C01144%20skyblue%2Cblue/C02593%20skyblue%2Cblue/C03221%20skyblue%2Cblue/C05258%20skyblue%2Cblue/C05260%20skyblue%2Cblue/C05262%20skyblue%2Cblue/C05264%20skyblue%2Cblue/C05266%20skyblue%2Cblue/C05267%20skyblue%2Cblue/C05268%20skyblue%2Cblue/C05270%20skyblue%2Cblue/C05271%20skyblue%2Cblue/C05272%20skyblue%2Cblue/C05273%20skyblue%2Cblue/C05275%20skyblue%2Cblue/C05276%20skyblue%2Cblue/C01832%09%23ff0000/C01944%09%23ff0000/",
+                        "Carbohydrate metabolism^Amino sugar and nucleotide sugar metabolism^cpd19001^C00267^https://www.kegg.jp/kegg-bin/show_pathway?map00520/C00029%20skyblue%2Cblue/C00052%20skyblue%2Cblue/C00446%20skyblue%2Cblue/C00984%20skyblue%2Cblue/C00043%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00352%20skyblue%2Cblue/C00357%20skyblue%2Cblue/C00043%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00352%20skyblue%2Cblue/C06156%20skyblue%2Cblue/C00267%09%23ff0000/C00267%09%23ff0000/C00267%09%23ff0000/",
+                        "Metabolism of cofactors and vitamins^Lipoic acid metabolism^cpd01335^C01944^https://www.kegg.jp/kegg-bin/show_pathway?map00785/C01944%09%23ff0000/"
+                    ],
+                    "shared name": "bin_101 (completed by) bin_151"
+                }
+            },
+            {
+                "id": 15,
+                "s": 19,
+                "t": 20,
+                "v": {
+                    "interaction type": "complementarity",
+                    "seed::competition": 0.57,
+                    "seed::cooperation": 0.2,
+                    "seedCompl::bin_151:bin_101": [
+                        "Amino acid metabolism^Cysteine and methionine metabolism^cpd00227^C00263^https://www.kegg.jp/kegg-bin/show_pathway?map00270/C00049%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C00155%20skyblue%2Cblue/C00441%20skyblue%2Cblue/C01118%20skyblue%2Cblue/C03082%20skyblue%2Cblue/C02291%20skyblue%2Cblue/C00065%20skyblue%2Cblue/C00097%20skyblue%2Cblue/C00283%20skyblue%2Cblue/C00979%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C04188%20skyblue%2Cblue/C04582%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00021%20skyblue%2Cblue/C00065%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C00155%20skyblue%2Cblue/C02291%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00021%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C00097%20skyblue%2Cblue/C00155%20skyblue%2Cblue/C02291%20skyblue%2Cblue/C00263%09%23ff0000/",
+                        "Amino acid metabolism^Glycine, serine and threonine metabolism^cpd00227^C00263^https://www.kegg.jp/kegg-bin/show_pathway?map00260/C00049%20skyblue%2Cblue/C00188%20skyblue%2Cblue/C00441%20skyblue%2Cblue/C01102%20skyblue%2Cblue/C03082%20skyblue%2Cblue/C00065%20skyblue%2Cblue/C00197%20skyblue%2Cblue/C01005%20skyblue%2Cblue/C03232%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00441%20skyblue%2Cblue/C03082%20skyblue%2Cblue/C00065%20skyblue%2Cblue/C00097%20skyblue%2Cblue/C00155%20skyblue%2Cblue/C02291%20skyblue%2Cblue/C00114%20skyblue%2Cblue/C00719%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00441%20skyblue%2Cblue/C00263%09%23ff0000/",
+                        "Amino acid metabolism^Arginine biosynthesis^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00220/C00025%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00437%20skyblue%2Cblue/C00624%20skyblue%2Cblue/C01250%20skyblue%2Cblue/C00014%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00086%20skyblue%2Cblue/C00122%20skyblue%2Cblue/C00169%20skyblue%2Cblue/C00327%20skyblue%2Cblue/C00025%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00122%20skyblue%2Cblue/C00169%20skyblue%2Cblue/C00327%20skyblue%2Cblue/C00025%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00122%20skyblue%2Cblue/C00169%20skyblue%2Cblue/C00327%20skyblue%2Cblue/C00437%20skyblue%2Cblue/C00624%20skyblue%2Cblue/C01250%20skyblue%2Cblue/C00062%09%23ff0000/C00062%09%23ff0000/C00062%09%23ff0000/",
+                        "Amino acid metabolism^Arginine and proline metabolism^cpd00250;cpd00118;cpd00051^C00134;C00062;C00300^https://www.kegg.jp/kegg-bin/show_pathway?map00330/C00025%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00148%20skyblue%2Cblue/C01165%20skyblue%2Cblue/C03912%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00334%20skyblue%2Cblue/C00334%20skyblue%2Cblue/C15699%20skyblue%2Cblue/C15700%20skyblue%2Cblue/C15767%20skyblue%2Cblue/C00025%20skyblue%2Cblue/C00062%09%23ff0000/C00300%09%23ff0000/C00062%09%23ff0000/C00134%09%23ff0000/C00062%09%23ff0000/C00134%09%23ff0000/C00134%09%23ff0000/C00134%09%23ff0000/C00062%09%23ff0000/",
+                        "Metabolism of cofactors and vitamins^Pantothenate and CoA biosynthesis^cpd00644^C00864^https://www.kegg.jp/kegg-bin/show_pathway?map00770/C00049%20skyblue%2Cblue/C00099%20skyblue%2Cblue/C00141%20skyblue%2Cblue/C00183%20skyblue%2Cblue/C00966%20skyblue%2Cblue/C00010%20skyblue%2Cblue/C00882%20skyblue%2Cblue/C01134%20skyblue%2Cblue/C03492%20skyblue%2Cblue/C04352%20skyblue%2Cblue/C00099%20skyblue%2Cblue/C00141%20skyblue%2Cblue/C00966%20skyblue%2Cblue/C00010%20skyblue%2Cblue/C00141%20skyblue%2Cblue/C00882%20skyblue%2Cblue/C00966%20skyblue%2Cblue/C01134%20skyblue%2Cblue/C03492%20skyblue%2Cblue/C04352%20skyblue%2Cblue/C00864%09%23ff0000/C00864%09%23ff0000/C00864%09%23ff0000/",
+                        "Carbohydrate metabolism^Amino sugar and nucleotide sugar metabolism^cpd00724^C00984^https://www.kegg.jp/kegg-bin/show_pathway?map00520/C00029%20skyblue%2Cblue/C00267%20skyblue%2Cblue/C00668%20skyblue%2Cblue/C00043%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00352%20skyblue%2Cblue/C00357%20skyblue%2Cblue/C00267%20skyblue%2Cblue/C00668%20skyblue%2Cblue/C00043%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00352%20skyblue%2Cblue/C06156%20skyblue%2Cblue/C00267%20skyblue%2Cblue/C00668%20skyblue%2Cblue/C00984%09%23ff0000/",
+                        "Carbohydrate metabolism^Galactose metabolism^cpd00724^C00984^https://www.kegg.jp/kegg-bin/show_pathway?map00052/C00197%20skyblue%2Cblue/C00236%20skyblue%2Cblue/C00029%20skyblue%2Cblue/C00984%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Clavulanic acid biosynthesis^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00331/C00062%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Monobactam biosynthesis^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00261/C00065%20skyblue%2Cblue/C00062%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Biosynthesis of various antibiotics^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00998/C00065%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00979%20skyblue%2Cblue/C00254%20skyblue%2Cblue/C00353%20skyblue%2Cblue/C00448%20skyblue%2Cblue/C00108%20skyblue%2Cblue/C00092%20skyblue%2Cblue/C00002%20skyblue%2Cblue/C00082%20skyblue%2Cblue/C00074%20skyblue%2Cblue/C00062%09%23ff0000/",
+                        "Amino acid metabolism^D-Amino acid metabolism^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00470/C00026%20skyblue%2Cblue/C01157%20skyblue%2Cblue/C00135%20skyblue%2Cblue/C00062%09%23ff0000/"
+                    ],
+                    "shared name": "bin_151 (completed by) bin_101"
+                }
+            },
+            {
+                "id": 16,
+                "s": 20,
+                "t": 18,
+                "v": {
+                    "interaction type": "complementarity",
+                    "seed::competition": 0.5,
+                    "seed::cooperation": 0.44,
+                    "seedCompl::MPB_bin_000002:bin_151": [
+                        "Carbohydrate metabolism^Pentose and glucuronate interconversions^cpd00026^C00029^https://www.kegg.jp/kegg-bin/show_pathway?map00040/C00231%20skyblue%2Cblue/C00022%20skyblue%2Cblue/C00116%20skyblue%2Cblue/C00022%20skyblue%2Cblue/C00029%09%23ff0000/C00029%09%23ff0000/",
+                        "Amino acid metabolism^Arginine and proline metabolism^cpd00064^C00077^https://www.kegg.jp/kegg-bin/show_pathway?map00330/C00025%20skyblue%2Cblue/C00148%20skyblue%2Cblue/C00062%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00062%20skyblue%2Cblue/C00315%20skyblue%2Cblue/C01137%20skyblue%2Cblue/C00062%20skyblue%2Cblue/C00334%20skyblue%2Cblue/C00334%20skyblue%2Cblue/C15699%20skyblue%2Cblue/C15700%20skyblue%2Cblue/C15767%20skyblue%2Cblue/C00025%20skyblue%2Cblue/C00062%20skyblue%2Cblue/C00077%09%23ff0000/C00077%09%23ff0000/",
+                        "Amino acid metabolism^Valine, leucine and isoleucine biosynthesis^cpd00156;cpd00322^C00183;C00407^https://www.kegg.jp/kegg-bin/show_pathway?map00290/C00022%20skyblue%2Cblue/C00109%20skyblue%2Cblue/C00024%20skyblue%2Cblue/C00022%20skyblue%2Cblue/C00109%20skyblue%2Cblue/C00109%20skyblue%2Cblue/C00188%20skyblue%2Cblue/C00183%09%23ff0000/C00407%09%23ff0000/C00407%09%23ff0000/",
+                        "Amino acid metabolism^Glycine, serine and threonine metabolism^cpd00738;cpd00098^C01005;C00114^https://www.kegg.jp/kegg-bin/show_pathway?map00260/C00049%20skyblue%2Cblue/C00188%20skyblue%2Cblue/C00441%20skyblue%2Cblue/C03082%20skyblue%2Cblue/C00065%20skyblue%2Cblue/C00197%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00441%20skyblue%2Cblue/C03082%20skyblue%2Cblue/C00065%20skyblue%2Cblue/C00097%20skyblue%2Cblue/C00155%20skyblue%2Cblue/C02291%20skyblue%2Cblue/C00576%20skyblue%2Cblue/C00719%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00441%20skyblue%2Cblue/C01005%09%23ff0000/C00114%09%23ff0000/",
+                        "Amino acid metabolism^Phenylalanine, tyrosine and tryptophan biosynthesis^cpd00065;cpd00216^C00251;C00078^https://www.kegg.jp/kegg-bin/show_pathway?map00400/C00074%20skyblue%2Cblue/C00279%20skyblue%2Cblue/C00944%20skyblue%2Cblue/C02637%20skyblue%2Cblue/C00079%20skyblue%2Cblue/C00082%20skyblue%2Cblue/C00082%20skyblue%2Cblue/C00079%20skyblue%2Cblue/C00251%09%23ff0000/C00078%09%23ff0000/C00251%09%23ff0000/C00251%09%23ff0000/C00251%09%23ff0000/C00251%09%23ff0000/C00251%09%23ff0000/",
+                        "Amino acid metabolism^Arginine biosynthesis^cpd00064;cpd00274^C00327;C00077^https://www.kegg.jp/kegg-bin/show_pathway?map00220/C00025%20skyblue%2Cblue/C00014%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00062%20skyblue%2Cblue/C00122%20skyblue%2Cblue/C00169%20skyblue%2Cblue/C03406%20skyblue%2Cblue/C00025%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00062%20skyblue%2Cblue/C00122%20skyblue%2Cblue/C00169%20skyblue%2Cblue/C03406%20skyblue%2Cblue/C00025%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00062%20skyblue%2Cblue/C00122%20skyblue%2Cblue/C00169%20skyblue%2Cblue/C03406%20skyblue%2Cblue/C00077%09%23ff0000/C00077%09%23ff0000/C00327%09%23ff0000/C00077%09%23ff0000/C00077%09%23ff0000/C00327%09%23ff0000/C00327%09%23ff0000/",
+                        "Amino acid metabolism^Tryptophan metabolism^cpd00065^C00078^https://www.kegg.jp/kegg-bin/show_pathway?map00380/C00003%20skyblue%2Cblue/C00857%20skyblue%2Cblue/C01185%20skyblue%2Cblue/C00078%09%23ff0000/C00078%09%23ff0000/C00078%09%23ff0000/C00078%09%23ff0000/C00078%09%23ff0000/",
+                        "Lipid metabolism^Fatty acid elongation^cpd01335;cpd00134;cpd01260^C00154;C01944;C01832^https://www.kegg.jp/kegg-bin/show_pathway?map00062/C00024%20skyblue%2Cblue/C02593%20skyblue%2Cblue/C05263%20skyblue%2Cblue/C05267%20skyblue%2Cblue/C05270%20skyblue%2Cblue/C05272%20skyblue%2Cblue/C05273%20skyblue%2Cblue/C05274%20skyblue%2Cblue/C00154%09%23ff0000/C01832%09%23ff0000/C01944%09%23ff0000/",
+                        "Lipid metabolism^Fatty acid biosynthesis^cpd00134^C00154^https://www.kegg.jp/kegg-bin/show_pathway?map00061/C00024%20skyblue%2Cblue/C00083%20skyblue%2Cblue/C00249%20skyblue%2Cblue/C00154%09%23ff0000/",
+                        "Lipid metabolism^Fatty acid degradation^cpd01335;cpd00134;cpd01260^C00154;C01944;C01832^https://www.kegg.jp/kegg-bin/show_pathway?map00071/C00024%20skyblue%2Cblue/C02593%20skyblue%2Cblue/C05263%20skyblue%2Cblue/C05267%20skyblue%2Cblue/C05270%20skyblue%2Cblue/C05272%20skyblue%2Cblue/C05273%20skyblue%2Cblue/C05274%20skyblue%2Cblue/C00154%09%23ff0000/C01832%09%23ff0000/C01944%09%23ff0000/",
+                        "Lipid metabolism^Glycerophospholipid metabolism^cpd00098^C00114^https://www.kegg.jp/kegg-bin/show_pathway?map00564/C00189%20skyblue%2Cblue/C00114%09%23ff0000/",
+                        "Lipid metabolism^Sphingolipid metabolism^cpd00134^C00154^https://www.kegg.jp/kegg-bin/show_pathway?map00600/C00065%20skyblue%2Cblue/C00154%09%23ff0000/C00154%09%23ff0000/",
+                        "Metabolism of cofactors and vitamins^Ubiquinone and other terpenoid-quinone biosynthesis^cpd00216;cpd00658^C00885;C00251^https://www.kegg.jp/kegg-bin/show_pathway?map00130/C00353%20skyblue%2Cblue/C03160%20skyblue%2Cblue/C03657%20skyblue%2Cblue/C15547%20skyblue%2Cblue/C03160%20skyblue%2Cblue/C03657%20skyblue%2Cblue/C15547%20skyblue%2Cblue/C00251%09%23ff0000/C00885%09%23ff0000/C00251%09%23ff0000/C00251%09%23ff0000/C00251%09%23ff0000/C00251%09%23ff0000/C00885%09%23ff0000/",
+                        "Metabolism of cofactors and vitamins^Pantothenate and CoA biosynthesis^cpd00156^C00183^https://www.kegg.jp/kegg-bin/show_pathway?map00770/C00049%20skyblue%2Cblue/C00099%20skyblue%2Cblue/C00010%20skyblue%2Cblue/C00099%20skyblue%2Cblue/C00010%20skyblue%2Cblue/C00183%09%23ff0000/",
+                        "Energy metabolism^Energy metabolismi^cpd00075^C00088^https://www.kegg.jp/kegg-bin/show_pathway?map00910/C00014%20skyblue%2Cblue/C00014%20skyblue%2Cblue/C00014%20skyblue%2Cblue/C00014%20skyblue%2Cblue/C00014%20skyblue%2Cblue/C00088%09%23ff0000/C00088%09%23ff0000/C00088%09%23ff0000/C00088%09%23ff0000/C00088%09%23ff0000/",
+                        "Carbohydrate metabolism^Amino sugar and nucleotide sugar metabolism^cpd00026^C00029^https://www.kegg.jp/kegg-bin/show_pathway?map00520/C00267%20skyblue%2Cblue/C00668%20skyblue%2Cblue/C00446%20skyblue%2Cblue/C00984%20skyblue%2Cblue/C00043%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00352%20skyblue%2Cblue/C00357%20skyblue%2Cblue/C00267%20skyblue%2Cblue/C00668%20skyblue%2Cblue/C00043%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00352%20skyblue%2Cblue/C06156%20skyblue%2Cblue/C00267%20skyblue%2Cblue/C00668%20skyblue%2Cblue/C00029%09%23ff0000/",
+                        "Carbohydrate metabolism^Galactose metabolism^cpd00026^C00029^https://www.kegg.jp/kegg-bin/show_pathway?map00052/C00197%20skyblue%2Cblue/C00236%20skyblue%2Cblue/C00446%20skyblue%2Cblue/C00984%20skyblue%2Cblue/C00029%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Penicillin and cephalosporin biosynthesis^cpd00156^C00183^https://www.kegg.jp/kegg-bin/show_pathway?map00311/C00097%20skyblue%2Cblue/C00097%20skyblue%2Cblue/C00183%09%23ff0000/C00183%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Biosynthesis of various antibiotics^cpd00064^C00077^https://www.kegg.jp/kegg-bin/show_pathway?map00998/C00062%20skyblue%2Cblue/C00065%20skyblue%2Cblue/C00979%20skyblue%2Cblue/C00353%20skyblue%2Cblue/C00448%20skyblue%2Cblue/C00092%20skyblue%2Cblue/C00002%20skyblue%2Cblue/C00082%20skyblue%2Cblue/C00074%20skyblue%2Cblue/C00077%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Staurosporine biosynthesis^cpd00065^C00078^https://www.kegg.jp/kegg-bin/show_pathway?map00404/C00148%20skyblue%2Cblue/C00078%09%23ff0000/C00078%09%23ff0000/C00078%09%23ff0000/C00078%09%23ff0000/C00078%09%23ff0000/",
+                        "Biosynthesis of terpenoids and polyketides^Biosynthesis of enediyne antibiotics^cpd00216^C00251^https://www.kegg.jp/kegg-bin/show_pathway?map01059/C00082%20skyblue%2Cblue/C00082%20skyblue%2Cblue/C00083%20skyblue%2Cblue/C00083%20skyblue%2Cblue/C00083%20skyblue%2Cblue/C00083%20skyblue%2Cblue/C00251%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Phenazine biosynthesis^cpd00216^C00251^https://www.kegg.jp/kegg-bin/show_pathway?map00405/C00251%09%23ff0000/",
+                        "Carbohydrate metabolism^Starch and sucrose metabolism^cpd00026^C00029^https://www.kegg.jp/kegg-bin/show_pathway?map00500/C01083%20skyblue%2Cblue/C00092%20skyblue%2Cblue/C00029%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Biosynthesis of various other secondary metabolites^cpd00064;cpd00738;cpd00065^C00078;C01005;C00077^https://www.kegg.jp/kegg-bin/show_pathway?map00997/C00065%20skyblue%2Cblue/C00515%20skyblue%2Cblue/C00079%20skyblue%2Cblue/C00083%20skyblue%2Cblue/C00041%20skyblue%2Cblue/C00441%20skyblue%2Cblue/C00047%20skyblue%2Cblue/C00047%20skyblue%2Cblue/C01005%09%23ff0000/C00077%09%23ff0000/C00078%09%23ff0000/C00078%09%23ff0000/",
+                        "Metabolism of cofactors and vitamins^Lipoic acid metabolism^cpd01335^C01944^https://www.kegg.jp/kegg-bin/show_pathway?map00785/C01944%09%23ff0000/",
+                        "Metabolism of cofactors and vitamins^Thiamine metabolism^cpd00939^C01279^https://www.kegg.jp/kegg-bin/show_pathway?map00730/C00068%20skyblue%2Cblue/C00082%20skyblue%2Cblue/C01081%20skyblue%2Cblue/C04556%20skyblue%2Cblue/C04752%20skyblue%2Cblue/C11437%20skyblue%2Cblue/C00037%20skyblue%2Cblue/C00068%20skyblue%2Cblue/C01081%20skyblue%2Cblue/C04556%20skyblue%2Cblue/C04752%20skyblue%2Cblue/C11437%20skyblue%2Cblue/C00003%20skyblue%2Cblue/C00037%20skyblue%2Cblue/C00068%20skyblue%2Cblue/C01081%20skyblue%2Cblue/C04556%20skyblue%2Cblue/C04752%20skyblue%2Cblue/C00003%20skyblue%2Cblue/C00037%20skyblue%2Cblue/C00068%20skyblue%2Cblue/C01081%20skyblue%2Cblue/C04556%20skyblue%2Cblue/C04752%20skyblue%2Cblue/C00003%20skyblue%2Cblue/C00018%20skyblue%2Cblue/C00037%20skyblue%2Cblue/C00068%20skyblue%2Cblue/C01081%20skyblue%2Cblue/C04556%20skyblue%2Cblue/C04752%20skyblue%2Cblue/C01081%20skyblue%2Cblue/C04327%20skyblue%2Cblue/C04556%20skyblue%2Cblue/C04752%20skyblue%2Cblue/C01279%09%23ff0000/"
+                    ],
+                    "shared name": "MPB_bin_000002 (completed by) bin_151"
+                }
+            },
+            {
+                "id": 17,
+                "s": 18,
+                "t": 20,
+                "v": {
+                    "interaction type": "complementarity",
+                    "seed::competition": 0.44,
+                    "seed::cooperation": 0.15,
+                    "seedCompl::bin_151:MPB_bin_000002": [
+                        "Amino acid metabolism^Arginine biosynthesis^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00220/C00025%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00437%20skyblue%2Cblue/C00624%20skyblue%2Cblue/C01250%20skyblue%2Cblue/C00014%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00086%20skyblue%2Cblue/C00122%20skyblue%2Cblue/C00169%20skyblue%2Cblue/C00327%20skyblue%2Cblue/C00025%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00122%20skyblue%2Cblue/C00169%20skyblue%2Cblue/C00327%20skyblue%2Cblue/C00025%20skyblue%2Cblue/C00049%20skyblue%2Cblue/C00122%20skyblue%2Cblue/C00169%20skyblue%2Cblue/C00327%20skyblue%2Cblue/C00437%20skyblue%2Cblue/C00624%20skyblue%2Cblue/C01250%20skyblue%2Cblue/C00062%09%23ff0000/C00062%09%23ff0000/C00062%09%23ff0000/",
+                        "Amino acid metabolism^Cysteine and methionine metabolism^cpd01981^C03089^https://www.kegg.jp/kegg-bin/show_pathway?map00270/C00049%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C00155%20skyblue%2Cblue/C00441%20skyblue%2Cblue/C01118%20skyblue%2Cblue/C03082%20skyblue%2Cblue/C02291%20skyblue%2Cblue/C00065%20skyblue%2Cblue/C00097%20skyblue%2Cblue/C00283%20skyblue%2Cblue/C00979%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C04188%20skyblue%2Cblue/C04582%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00021%20skyblue%2Cblue/C00065%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C00155%20skyblue%2Cblue/C02291%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00021%20skyblue%2Cblue/C00073%20skyblue%2Cblue/C00097%20skyblue%2Cblue/C00155%20skyblue%2Cblue/C02291%20skyblue%2Cblue/C03089%09%23ff0000/",
+                        "Amino acid metabolism^Arginine and proline metabolism^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00330/C00025%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00148%20skyblue%2Cblue/C01165%20skyblue%2Cblue/C03912%20skyblue%2Cblue/C00019%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00334%20skyblue%2Cblue/C00334%20skyblue%2Cblue/C15699%20skyblue%2Cblue/C15700%20skyblue%2Cblue/C15767%20skyblue%2Cblue/C00025%20skyblue%2Cblue/C00062%09%23ff0000/C00062%09%23ff0000/C00062%09%23ff0000/C00062%09%23ff0000/",
+                        "Carbohydrate metabolism^Amino sugar and nucleotide sugar metabolism^cpd00724^C00984^https://www.kegg.jp/kegg-bin/show_pathway?map00520/C00029%20skyblue%2Cblue/C00267%20skyblue%2Cblue/C00668%20skyblue%2Cblue/C00043%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00352%20skyblue%2Cblue/C00357%20skyblue%2Cblue/C00267%20skyblue%2Cblue/C00668%20skyblue%2Cblue/C00043%20skyblue%2Cblue/C00085%20skyblue%2Cblue/C00352%20skyblue%2Cblue/C06156%20skyblue%2Cblue/C00267%20skyblue%2Cblue/C00668%20skyblue%2Cblue/C00984%09%23ff0000/",
+                        "Carbohydrate metabolism^Galactose metabolism^cpd00724^C00984^https://www.kegg.jp/kegg-bin/show_pathway?map00052/C00197%20skyblue%2Cblue/C00236%20skyblue%2Cblue/C00029%20skyblue%2Cblue/C00984%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Clavulanic acid biosynthesis^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00331/C00062%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Monobactam biosynthesis^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00261/C00065%20skyblue%2Cblue/C00062%09%23ff0000/",
+                        "Biosynthesis of other secondary metabolites^Biosynthesis of various antibiotics^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00998/C00065%20skyblue%2Cblue/C00077%20skyblue%2Cblue/C00979%20skyblue%2Cblue/C00254%20skyblue%2Cblue/C00353%20skyblue%2Cblue/C00448%20skyblue%2Cblue/C00108%20skyblue%2Cblue/C00092%20skyblue%2Cblue/C00002%20skyblue%2Cblue/C00082%20skyblue%2Cblue/C00074%20skyblue%2Cblue/C00062%09%23ff0000/",
+                        "Amino acid metabolism^D-Amino acid metabolism^cpd00051^C00062^https://www.kegg.jp/kegg-bin/show_pathway?map00470/C00026%20skyblue%2Cblue/C01157%20skyblue%2Cblue/C00135%20skyblue%2Cblue/C00062%09%23ff0000/"
+                    ],
+                    "shared name": "bin_151 (completed by) MPB_bin_000002"
+                }
+            }
+        ]
+    },
+    {
+        "status": [
+            {
+                "error": "",
+                "success": true
+            }
+        ]
+    }
+]

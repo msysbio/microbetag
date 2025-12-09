@@ -1,0 +1,31 @@
+outdir: test-modules
+network: data/networks/salm_catalogue.txt
+
+# In case you already have your network in cyjs format
+cyjs_net:
+
+abundance_file: data/abd_data/salm_catalogue.tsv
+
+# Clustered netwrok output filename
+manta_prefix: manta_salm_net
+
+# todo: How to provide all the manta args if user wants to
+manta_args:
+  # https://github.com/ramellose/manta/blob/master/manta/main.py#L25
+  iter:
+  perm:
+  scale:
+  limit:
+  # Flags
+  cluster_reliability:
+    value:
+    flag: true
+  binary:
+    value:
+    flag: true
+  direction:
+    value:
+    flag: true
+  verbose:
+    value:
+    flag: true

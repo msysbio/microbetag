@@ -37,7 +37,7 @@ class Config:
         os.makedirs(out_dir, exist_ok=True)
 
         self.seeds_outdir    = out_dir
-        self.seed_compl_pckl = os.path.join(out_dir, "seed_complements.pckl")
+        self.sc_pkl = os.path.join(out_dir, "seed_complements.pckl")
         self.module_seeds    = os.path.join(self.seeds_outdir, "kegg_module_related_seeds.pckl")
         self.module_nonseeds = os.path.join(
             self.seeds_outdir, "kegg_module_related_nonseeds.pckl"

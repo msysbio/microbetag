@@ -1,0 +1,37 @@
+indir: data
+onthefly: false
+
+outdir: test-annotate
+mtg_net: my.cx2
+
+abundance_file: data/abd_data/testAbundMeta.tsv
+delimiter: ","
+sequence_id_column_name: null
+
+metadata_file:
+#data/abd_data/metadata.tsv
+
+network: test-annotate/flashweave//fw_net.txt
+
+# For each step, if false, you may leave the extra args blank
+faprotax: true
+faprotax_sub_tables: test-annotate/faprotax/sub_tables/
+
+phen_traits: true
+phen_traits_dir: test-precalc/phenotrex/predictions
+
+path_compl: true
+pc_percent: 1
+pc_dir: test-precalc/pathway_compl/
+pc_file: test-precalc/pathway_compl/pcompls.json
+
+seed_compl: true
+tinyurl: false
+sc_pkl: test-precalc/seed_compl/seed_compls.pkl
+module_nonseeds: test-precalc/seed_compl/keggm_nonseeds.pkl
+seed_scores: test-precalc/seed_compl/seed_scores.tsv
+
+net_cluster: true
+# If you wish to apply manta clustering set to true. Set to false if you already have clusters on your network.
+# Attention! In this case, please provide your network in .cyjs format.
+manta: true

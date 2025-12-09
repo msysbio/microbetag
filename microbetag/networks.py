@@ -173,22 +173,4 @@ def _build_a_base_node(node_name, map_seq, is_taxon: bool) -> dict:
     node["data"]["id"] = node_name
     node["data"]["selected"] = False
 
-    # if is_taxon:
-    #     case = map_seq[map_seq["sequence_id"] == node_name]
-
-    #     try:
-    #         node["data"]["taxonomy"] = case["taxonomy"].item()
-    #         node["data"]["name"]     = case["taxonomy"].item().split(";")[-1]
-    #     except Exception:
-    #         _logger_.info("I could not get the taxonomy..")
-    #         _logger_.info(case)
-    #         pass
-
-    #     try:
-    #         node["data"]["GTDB-representative"] = case["gtdb_gen_repr"]
-    #     except Exception:
-    #         _logger_.info("I could not get the gtdb regpresentative genome")
-    #         _logger_.info(case)
-    #         pass
-
     return node

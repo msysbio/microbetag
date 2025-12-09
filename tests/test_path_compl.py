@@ -40,10 +40,10 @@ if not os.path.exists(ko_merged):
         raise ("ko_merged (3-column KO annotation file, is not provided)")
 
 # Output
-output_dir = os.path.join(test_data, "output_files")
-alts_file  = os.path.join(output_dir, "alternatives.json")
-compl_file = os.path.join(output_dir, "complementarities.json")
-os.makedirs(output_dir, exist_ok=True)
+outdir = os.path.join(test_data, "output_files")
+alts_file  = os.path.join(outdir, "alternatives.json")
+pc_file = os.path.join(outdir, "complementarities.json")
+os.makedirs(outdir, exist_ok=True)
 
 # In this test, we use two approaches for the same thing: getting the paths to the mapping files:
 #
@@ -101,7 +101,7 @@ class testPathCompl(unittest.TestCase):
             self.bin_kos_per_module,
             self.bins_alternatives,
             module_to_map,
-            compl_file,
+            pc_file,
             tinyurl=False,
         )
 

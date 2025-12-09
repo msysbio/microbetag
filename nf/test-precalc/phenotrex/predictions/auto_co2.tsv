@@ -1,0 +1,5 @@
+# Trait: auto_co2
+Identifier	Trait present	Confidence
+MPB_bin_000002.fasta	N/A	0.6225
+bin_101.fa	YES	0.7714
+bin_151.fa	N/A	0.6312

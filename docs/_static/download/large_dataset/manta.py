@@ -8,8 +8,8 @@ from microbetag.config import load_abundance
 
 # Directories
 root_dir = os.path.dirname(os.path.abspath(__file__))
-output_dir = os.path.join(root_dir, "manta_output")
-os.makedirs(output_dir, exist_ok=True)
+outdir = os.path.join(root_dir, "manta_output")
+os.makedirs(outdir, exist_ok=True)
 
 # Using abundance table to map sequence ids to taxonomies ==  USED FOR THE MS // TAKES TOO LONG, REPLACE WITH SHORTER FILES
 input_data = os.path.join(root_dir, "prep_output")
@@ -23,13 +23,12 @@ net_edgelist = os.path.join(
 
 class AbdTableConfig:
     def __init__(self):
-
         """Config-like class for the case an abundance table is being used"""
 
         # Specify case to use
         self.abundance_table = abd_table
         self.network = net_edgelist
-        self.base_network_file = os.path.join(output_dir, "manta_basenet.cyjs")
+        self.base_network_file = os.path.join(outdir, "manta_basenet.cyjs")
 
         # Use-case independent but required part of the config
         (
@@ -40,7 +39,7 @@ class AbdTableConfig:
         ) = load_abundance(self.abundance_table)
 
         self.seq_ids = self.seq_to_taxon_df["sequence_id"].unique().tolist()
-        self.output_dir = output_dir
+        self.outdir = outdir
 
 
 class TestManta(unittest.TestCase):

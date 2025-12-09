@@ -6,41 +6,43 @@ from pathlib import Path
 from microbetag.utils import ko_list_parser, bin_kos_to_file, merge_ko
 from microbetag.tools import kegg_annotation
 
-# Project root directory
-root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-# Test data paths
-test_data_dir = os.path.join(root, "test_data", "test_kegg_annotation")
+# Directory paths
+# root          = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+root          = Path(__file__).resolve().parent.parent
+test_data_dir = root / "test_data" / "test_kegg_annotation"
+input_dir     = test_data_dir / "input_faa"
+kegg_db_dir   = root / "ext_data" / "kofam_database"  # KEGG database
+ko_list       = kegg_db_dir / "ko_list_tests"        # Subset used for faster testing
 
 # Input files
-input_dir = os.path.join(test_data_dir, "input_files")
 faas      = [
     os.path.join(input_dir, f)
     for f in os.listdir(input_dir)
     if f.endswith(".faa")
 ]
+
+# Bin names
 bin_ids   = [
     os.path.splitext(os.path.basename(faa))[0]
     for faa in faas
 ]
+
+# Number of threads to be used for parallel running
 threads   = 2
 
-# KEGG database paths
-kegg_db_dir = os.path.join(root, "ext_data", "kofam_database")
-ko_list     = os.path.join(kegg_db_dir, "ko_list_tests")  # Subset used for faster testing
 
 # Output files
-output_dir = os.path.join(test_data_dir, "output_files")
-hmmout_dir = os.path.join(output_dir, "hmmout")
-ko_merged  = os.path.join(output_dir, "ko_merged.txt")
+outdir = test_data_dir / "output_files"
+hmmout_dir = outdir / "hmmout"
+ko_merged  = outdir / "ko_merged.txt"
 
 # Remove ouput dir from previous run, if any
-prev_run = Path(output_dir)
+prev_run = Path(outdir)
 if prev_run.exists():
     print("Removing output folder from previous run.")
     shutil.rmtree(prev_run)
 
-os.makedirs(output_dir, exist_ok=True)
+os.makedirs(outdir, exist_ok=True)
 os.makedirs(hmmout_dir, exist_ok=True)
 
 
@@ -65,7 +67,7 @@ class testKEGGAnnotation(unittest.TestCase):
             os.makedirs(bin_kos_dir, exist_ok=True)
 
             _ = kegg_annotation(
-                faa, bin_id, hmmout_dir, kegg_db_dir, self.ko_dic, threads
+                faa=faa, basename=bin_id, out_dir=hmmout_dir, db_dir=kegg_db_dir, ko_dic=self.ko_dic, threads=threads
             )
 
             bin_kos_to_file(hmmout_dir=bin_kos_dir, bin_id=bin_id)

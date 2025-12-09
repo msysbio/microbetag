@@ -8,7 +8,6 @@
 Utility functions to be used across the `microbetag` library.
 """
 
-
 import os
 import re
 import sys
@@ -26,6 +25,7 @@ import numpy as np
 import pandas as pd
 import pkg_resources
 from pathlib import Path
+from multiprocessing import Pool, cpu_count
 from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Set, Union
 
 if TYPE_CHECKING:
@@ -112,6 +112,8 @@ def resolve_file_path(base_dir: str, file_path: str) -> str:
     >>> resolve_file_path("/home/user/docs", "~/file.txt")
     '/home/user/file.txt'
     """
+
+    _logger_.info(f">> file_path: {file_path}")
 
     if file_path is None:
         return None  # Return None if the file path is None
@@ -428,16 +430,25 @@ def merge_ko(hmmout_dir: str, output: str) -> None:
         hmmout_dir: path to the .hmmout files
         output: Path/filename to save the output file
     """
+    hmmout_dir = Path(hmmout_dir)
+    output     = Path(output)
+
     # Under any circumstances microbetag will overwrite the ko_merged.txt file
     with open(output, "w") as fo:
         fo.write("bin_id\tcontig_id\tko_term\n")
-    # Iterate through the bin folders in the hmmout folder
-    for bin_id in os.listdir(hmmout_dir):
-        bin_folder = os.path.join(hmmout_dir, bin_id)
-        bin_file = "_".join([bin_id, "kos.tsv"])
-        bin_kos_file = os.path.join(bin_folder, bin_file)
-        # Append
-        os.system(" ".join(["cat", bin_kos_file, ">>", output]))
+
+    for bin_id in hmmout_dir.iterdir():
+        if not bin_id.is_dir():
+            continue
+
+        bin_file = Path(bin_id) / f"{bin_id.name}_kos.tsv"
+        if not bin_file.exists():
+            continue
+
+        # Append file contents
+        with output.open("ab") as out_f, bin_file.open("rb") as in_f:
+            # The copyfileobj() efficiently appends the contents of each KO file, to the merged file.
+            shutil.copyfileobj(in_f, out_f)
 
 
 def bin_kos_to_file(hmmout_dir: str, bin_id: str) -> None:
@@ -513,23 +524,31 @@ def load_merged_ko_file(merged_ko: str) -> pd.DataFrame:
     Returns:
         pivot_df: a presence-absence (1/0) df where KOs are the rows and bin_ids the columns
     """
-    if merged_ko.endswith(".gz"):
-        os.system(f"gunzip {merged_ko}")
-        merged_ko = merged_ko.rsplit(".gz", 1)[0]
+    p = Path(merged_ko)
 
+    # Handle gzipped file
+    if p.suffix == ".gz":
+        decompressed = p.with_suffix("")  # remove .gz
+        if not decompressed.exists():
+            import gzip
+            _logger_.info(f"Decompressing {p.name} -> {decompressed.name}")
+            with gzip.open(p, 'rb') as f_in, open(decompressed, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+        merged_ko = decompressed
+    else:
+        # Compress if uncompressed version found and no .gz exists
+        gz_path = p.with_suffix(p.suffix + ".gz")
+        if not gz_path.exists():
+            os.system(f"gzip {p}")
+        merged_ko = p
+
+    # Load the (decompressed) file
     df = pd.read_csv(merged_ko, sep="\t")
 
-    column_names = df.columns.tolist()
-    bin_id, _, ko = column_names[:3]
-
-    # Pivot the DataFrame to have 'kegg_id' as rows and 'bin_id' as columns
-    unique_combinations = df.drop_duplicates().copy()
-    unique_combinations.loc[:, "presence"] = 1
-    pivot_df = unique_combinations.pivot_table(
-        index=ko, columns=bin_id, values="presence", fill_value=0
-    )
-
-    os.system(f"gzip {merged_ko}")
+    # Build presence/absence pivot table
+    bin_id, _, ko = df.columns[:3]  # The second column of the file corresponds to the contig id.
+    unique   = df.drop_duplicates().assign(presence=1)
+    pivot_df = unique.pivot_table(index=ko, columns=bin_id, values="presence", fill_value=0)
 
     return pivot_df  # keep one | used to alse return the bins_kos
 
@@ -653,18 +672,44 @@ def ensure_same_namespace_after_fw(conf: "Config") -> None:
     net_df.to_csv(conf.network, sep="\t", index=False, header=False)
 
 
+def _extend_for_pair(args):
+    beneficiary_bin, potential_donor, compls, descrps, pc_percent = args
+    local_out = {}
+
+    if not compls:
+        return (beneficiary_bin, potential_donor, local_out)
+
+    for compl in compls:
+        module_id   = compl[0][3:] if compl[0].startswith("md") else compl[0]
+        kos_to_get  = compl[1]
+        complet_alt = compl[2]
+
+        if len(kos_to_get) / len(complet_alt) > pc_percent:
+            continue
+
+        compl_str = [x if isinstance(x, str) else ";".join(x) for x in compl[1:]]
+        triplet   = descrps[descrps["moduleId"] == module_id].values.tolist()[0]
+
+        local_out[len(local_out)] = triplet + compl_str
+
+    return (beneficiary_bin, potential_donor, local_out)
+
+
 def extend_complements(
-    complements_json: str, descrps_path: str,
-    path_compl_perce: int, path_compl_dir: str
-) -> Dict:
+    complements_json: str,
+    descrps_path: str,
+    pc_percent: int,
+    pc_dir: str,
+    n_workers: int = None
+):
     """
     Extends pathway complement annotations based on given settings and descriptions.
 
     Parameters:
         - complements_json: Path to the complements JSON file.
         - descrps_path: Path to the KEGG MODULES description file.
-        - path_compl_perce: Maximum allowable percentage of required KOs that must be present.
-        - path_compl_dir: Directory to save the extended complements JSON file.
+        - pc_percent: Maximum allowable percentage of required KOs that must be present.
+        - pc_dir: Directory to save the extended complements JSON file.
         complements_dict (dict): Dictionary of complements loaded from a JSON file.
         descrps_path (str): Path to the module descriptions file (tab-separated file with no header).
 
@@ -675,71 +720,33 @@ def extend_complements(
         Here we build the `pathway_complements_extended.json` a JSON file with the dictionary returned
     """
 
-    _logger_.info(
-        f"complements_json: {complements_json}, descrps_path: {descrps_path}, path_compl_dir: {path_compl_dir}"
-    )
+    if n_workers is None:
+        n_workers = max(cpu_count() - 1, 1)
 
-    # Load and process module descriptions
     descrps         = pd.read_csv(descrps_path, sep="\t", header=None)
     descrps.columns = ["category", "moduleId", "description"]
-    column_order    = ["moduleId", "description", "category"]
-    descrps         = descrps[column_order]
+    descrps         = descrps[["moduleId", "description", "category"]]
 
-    # Deep copy the complements dictionary
-    with open(complements_json, "r") as file:
-        complements_dict = json.load(file)
+    out_json = os.path.join(pc_dir, "pathway_complements_extended.json")
+    if os.path.exists(out_json):
+        return json.load(open(out_json))
 
+    complements_dict = json.load(open(complements_json))
     complements_dict_ext = copy.deepcopy(complements_dict)
 
-    # Process complements
-    for beneficiary_bin, potential_donors in complements_dict.items():
+    tasks = []
+    for beneficiary_bin, donors in complements_dict.items():
+        for donor, compls in donors.items():
+            tasks.append((beneficiary_bin, donor, compls, descrps, pc_percent))
 
-        for potential_donor, compls in potential_donors.items():
+    with Pool(n_workers) as pool:
+        results = pool.map(_extend_for_pair, tasks)
 
-            if not compls:
-                continue
+    # merge
+    for bin, donor, data in results:
+        complements_dict_ext[bin][donor] = data
 
-            _logger_.info(f".. compls: {compls}")
-
-            complements_dict_ext[beneficiary_bin][potential_donor] = {}
-
-            for compl in compls:
-
-                module_id   = compl[0][3:] if compl[0].startswith("md") else compl[0]  # Extract module ID
-                kos_to_get  = compl[1]  # KOs required to complete the pathway
-                complet_alt = compl[2]  # Alternative complete
-
-                # Skip if long number of required KOs
-                if len(kos_to_get) / len(complet_alt) > path_compl_perce:
-                    _logger_.info(f"High number of required terms to complete alternative. {len(kos_to_get)} out of {len(complet_alt)}")
-                    continue
-
-                # Prepare the complement string
-                compl_str = [
-                    x if isinstance(x, str) else ";".join(x) for x in compl[1:]
-                ]
-
-                # Fetch module description details
-                triplet = descrps[
-                    descrps["moduleId"] == module_id
-                ].values.tolist()[0]
-
-                # Add extended complement details
-                complements_dict_ext[beneficiary_bin][potential_donor][
-                    len(complements_dict_ext[beneficiary_bin][potential_donor])
-                ] = (triplet + compl_str)
-
-                _logger_.info("hello friend")
-
-    _logger_.info(complements_dict_ext)
-
-    # Save extended complements to JSON
-    extended_path_compl_json = os.path.join(
-        path_compl_dir, "pathway_complements_extended.json"
-    )
-    with open(extended_path_compl_json, "w") as f:
-        json.dump(complements_dict_ext, f)
-
+    json.dump(complements_dict_ext, open(out_json, "w"))
     return complements_dict_ext
 
 
@@ -761,11 +768,12 @@ def extend_faprotax(faprotax_sub_tables, sequence_id_column_name) -> Tuple[dict[
     ]
 
     for file in fapro_sub_tables:
+        _logger_.info(f"File: {file}")
         # NOTE (Haris Zafeiropoulos, 2025-05-20):
         # We replace '_' with a space for user's convenience in the MGG
         # Also, this needs to be synced with the MGG.MUtils code for the grouping in the node panel
         trait_name, _ = os.path.splitext(os.path.basename(file))
-        trait         = pd.read_csv(file, sep="\t", skiprows=1)
+        trait         = pd.read_csv(file, sep=",", skiprows=1)
 
         bins_with_trait = trait[sequence_id_column_name].dropna()
 
@@ -850,47 +858,63 @@ def remove_nan_from_list(lst: List) -> List:
     return [x for x in lst if not is_any_nan(x)]
 
 
-def detect_separator(file_path: str) -> str:
+from typing import Optional
+
+
+def detect_separator(file_path: str) -> Optional[str]:
     """
-    Detects the separator used in a text file, i.e `\t`,  `,` , `;` etc.
-
-    It makes use of the :class:`csv.Sniffer` and gets a sample of the text based on its size.
-
-    Arguments:
-        file_path: Path to the file to be considered
+    Detects the separator used in a text file.
+    Tries csv.Sniffer first, falls back to common delimiters.
 
     Returns:
-        A separator, e.g. ","    
+        Detected delimiter as a string or None if undetectable.
     """
+
+    # Common delimiters to check if csv.Sniffer fails
+    fallback_delimiters = ['\t', ',', ';', ' ']
+
     try:
-        with open(file_path, "r") as file:
-            # Get the total file size
-            file.seek(0, 2)  # Move to the end of the file
-            file_size = file.tell()
-            # Calculate 1% of the file size: 1e6 is 1MB
-            percent_size = (
-                file_size
-                if file_size < 1e5
-                else (
-                    int(file_size * 0.2)
-                    if file_size < 1e6
-                    else (
-                        int(file_size * 0.1)
-                        if 1e7 < file_size < 1e8
-                        else int(file_size * 0.01)
-                    )
-                )
-            )
-            percent_size = max(percent_size, int(1e5))
-            # Move to the start of the file
-            file.seek(0)
-            sample = file.read(percent_size)
-            # Use csv.Sniffer to detect the dialect
-            sniffer = csv.Sniffer()
-            dialect = sniffer.sniff(sample)
-            return dialect.delimiter
-    except Exception:
-        raise TypeError(f"Cannot get delimiter for file {file_path}")
+        with open(file_path, "r", encoding="utf-8") as f:
+            f.seek(0, 2)
+            file_size = f.tell()
+
+            if file_size == 0:
+                raise ValueError("File is empty")
+
+            # Use a simpler and safer sampling logic
+            sample_size = max(min(file_size, int(file_size * 0.1)), 2000)
+            f.seek(0)
+            sample = f.read(sample_size)
+
+            if not sample.strip():
+                raise ValueError("File contains only whitespace")
+
+            # Try Sniffer first
+            try:
+                sniffer = csv.Sniffer()
+                dialect = sniffer.sniff(sample)
+                return dialect.delimiter
+            except Exception:
+                pass  # Fall through to manual detection
+
+            # Manual heuristic: test fallback delimiters
+            first_line = sample.splitlines()[0]
+            for delim in fallback_delimiters:
+                if delim in first_line:
+                    return delim
+
+            # Last resort: try Sniffer again on smaller chunk
+            try:
+                dialect = csv.Sniffer().sniff(sample[:1000])
+                return dialect.delimiter
+            except Exception:
+                return None
+
+    except Exception as exc:
+        raise TypeError(
+            f"Could not detect delimiter for file: {file_path}. "
+            f"Reason: {exc}"
+        ) from exc
 
 
 def find_three_column_format(file_path: str, delimiter: str) -> tuple[int, Union[None, int]]:
@@ -968,3 +992,11 @@ def get_tool_location(software: str) -> str:
 
 
 _logger_ = mtg_logger(__name__)
+
+
+def is_inside(path, root):
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False

@@ -43,6 +43,7 @@ microbetag
    :maxdepth: 2
    :caption: Tutorials: stand-alone
 
+   tutorials_local/nf
    tutorials_local/python
    tutorials_local/local
    tutorials_local/config

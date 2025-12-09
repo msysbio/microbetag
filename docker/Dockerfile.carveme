@@ -1,0 +1,31 @@
+FROM python:3.10-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    wget \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install CarveMe
+RUN pip install --upgrade pip
+RUN pip install carveme
+
+# Install DIAMOND
+ARG DIAMOND_V=2.1.9
+
+RUN wget -O /tmp/diamond-linux64.tar.gz \
+    https://github.com/bbuchfink/diamond/releases/download/v${DIAMOND_V}/diamond-linux64.tar.gz && \
+    tar xf /tmp/diamond-linux64.tar.gz -C /tmp && \
+    mv /tmp/diamond /usr/bin/ && \
+    chmod +x /usr/bin/diamond && \
+    rm /tmp/diamond-linux64.tar.gz
+
+# Install gurobipy
+RUN pip install gurobipy
+
+ENV GRB_LICENSE_FILE=/opt/gurobi/gurobi.lic
+
+WORKDIR /workspace
+CMD ["bash"]
+

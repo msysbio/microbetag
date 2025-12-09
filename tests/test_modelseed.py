@@ -25,16 +25,16 @@ root      = os.path.dirname(os.path.dirname(__file__))
 test_data = os.path.join(root, "test_data", "test_modelseed")
 
 input_dir  = os.path.join(test_data, "input_files")
-output_dir = os.path.join(test_data, "output_files")
+outdir = os.path.join(test_data, "output_files")
 
 input_fasta, input_faa = os.path.join(input_dir, "fasta"), os.path.join(input_dir, "faa")
 
-output_faa = os.path.join(output_dir, "faa")
+output_faa = os.path.join(outdir, "faa")
 os.makedirs(output_faa, exist_ok=True)
 faa_genres = os.path.join(output_faa, "GENREs")
 os.makedirs(faa_genres, exist_ok=True)
 
-output_fasta = os.path.join(output_dir, "fasta")
+output_fasta = os.path.join(outdir, "fasta")
 os.makedirs(output_fasta, exist_ok=True)
 fasta_genres = os.path.join(output_fasta, "GENREs")
 # shutil.rmtree(fasta_genres)
@@ -57,9 +57,9 @@ class ConfigFasta:
 
 class ConfigFaa:
     # dir to input files to be used for GENREs
-    for_reconstructions = output_dir
+    for_reconstructions = outdir
     # output dir for GENREs (.xml files) built to be saved ("GENREs")
-    genres        = os.path.join(output_dir, "GENREs")
+    genres        = os.path.join(outdir, "GENREs")
     gapfill_model = True           # bool
     gapfill_media = None           # file or noen
     threads       = 2

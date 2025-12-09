@@ -1,0 +1,31 @@
+outdir: test-modules
+
+faa_dir: test-modules/prodigal
+
+# KOFAM database
+# kegg_list should be a file that looks like:
+# knum    threshold       score_type      profile_type    F-measure       nseq    nseq_used       alen    mlen    eff_nseq        re/pos  definition
+# K00001  363.33  domain  all     0.312178        2773    2310    2080    519     14.06   0.590   alcohol dehydrogenase [EC:1.1.1.1]
+# K00002  438.50  domain  all     0.418181        2762    2642    6996    484     7.63    0.590   alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
+# You may get it from:
+#    wget -c ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz
+kegg_list: data/kofam_database/ko_list_test
+
+# hmm_profiles should be a directory with *.hmm profies for all KO terms listed in the kegg_list, that each would look like:
+# MMER3/f [3.2.1 | June 2018]
+# NAME  K00012
+# LENG  999
+# ALPH  amino
+# ..
+# HMM          A        C        D        E        F        G        H        I        K        L        M        N        P        Q        R        S        T        V        W        Y
+#             m->m     m->i     m->d     i->m     i->i     d->m     d->d
+#   COMPO   2.45379  4.30760  2.81043  2.62712  3.42276  2.82674  3.80620  2.93549  2.62228  2.57187  3.79548  3.04426  3.24490  3.10344  2.87788  2.53701  2.80143  2.69304  4.81702  3.64620
+#           2.68618  4.42225  2.77519  2.73123  3.46354  2.40513  3.72494  3.29354  2.67741  2.69355  4.24690  2.90347  2.73739  3.18146  2.89801  2.37887  2.77519  2.98518  4.58477  3.61503
+#           0.03904  3.65846  4.38081  0.61958  0.77255  0.00000
+# You may get it from:
+#   wget -c ftp://ftp.genome.jp/pub/db/kofam/profiles.tar.gz
+hmm_profiles: data/kofam_database/profiles_test/
+
+threads: 5
+
+ko_merged: ko_merged.txt

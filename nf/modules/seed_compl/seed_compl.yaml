@@ -1,0 +1,4 @@
+gems: data/gems
+namespace: BiGG
+outdir: test-modules
+kegg_modules_only: true

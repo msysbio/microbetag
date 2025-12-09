@@ -1,0 +1,27 @@
+# Use official Python 3.9 image
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies required by Python libraries (including libexpat)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libexpat1 \
+    gcc \
+    g++ \
+    make && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy the requirements file into the image
+COPY modelseedpy.txt ./modelseedpy.txt
+
+# Upgrade pip and install dependencies
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --timeout 120 --retries 10 -r modelseedpy.txt
+
+
+RUN python -c "import modelseedpy; print('modelseedpy ready!')"
+
+# Default command (if used with Nextflow, Nextflow will override this anyway)
+CMD ["bash"]

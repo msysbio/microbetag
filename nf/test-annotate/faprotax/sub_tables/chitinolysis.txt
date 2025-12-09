@@ -1,0 +1,4 @@
+#
+record,id,P-001,P-003,P-004,P-005,P-006,P-007,P-008,P-009,P-010,P-011,P-012,P-013,P-014,P-015,P-016,P-017
+Bacteria;Proteobacteria;Gammaproteobacteria;Xanthomonadales;Xanthomonadaceae;Stenotrophomonas;Stenotrophomonas maltophilia,ASV0381,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium paraputrificum,ASV0029,18,8,6,18,6,30,3,0,0,4,2,4,7,12,10,4

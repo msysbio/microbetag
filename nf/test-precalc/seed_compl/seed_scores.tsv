@@ -1,0 +1,7 @@
+nodeA	nodeB	CompetitionScore	CooperationScore
+MPB_bin_000002	bin_101	0.59	0.38
+MPB_bin_000002	bin_151	0.5	0.44
+bin_101	MPB_bin_000002	0.52	0.18
+bin_101	bin_151	0.57	0.2
+bin_151	MPB_bin_000002	0.44	0.15
+bin_151	bin_101	0.57	0.2

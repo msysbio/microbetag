@@ -1,0 +1,5 @@
+# Trait: non_fermentative
+Identifier	Trait present	Confidence
+MPB_bin_000002.fasta	NO	0.8818
+bin_101.fa	NO	0.8758
+bin_151.fa	NO	0.7758

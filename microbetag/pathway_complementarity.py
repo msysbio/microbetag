@@ -50,104 +50,6 @@ def build_kegg_url(kegg_map, clean_path, missing_kos, shortener=None):
     return url_ko_map_colored
 
 
-def all_alternatives(
-    bin_kos_per_module, modules_definitions_json_map, alts_output_file
-):
-    """
-    Build the alts.json file
-    list alternatives for a bin's modules to be completed
-
-    Inputs:
-        bin_kos_per_module (Dict):
-        modules_definitions_json_map (str): path to
-
-
-    """
-    logger.info("Step 2, build alts.json file.")
-
-    with open(modules_definitions_json_map, "r") as f:
-        mo_map = json.load(f)
-
-    structurals = [
-        "md:M00144",
-        "md:M00149",
-        "md:M00151",
-        "md:M00152",
-        "md:M00154",
-        "md:M00155",
-        "md:M00153",
-        "md:M00156",
-        "md:M00158",
-        "md:M00160",
-    ]
-    # Iterate through bins
-    bins_alternatives = {}
-    for bin_id in bin_kos_per_module:
-
-        complete_modules = set()
-        alternatives_to_gap = {}
-
-        for module, kos_on_its_own in bin_kos_per_module[bin_id].items():
-            if module in structurals:
-                continue
-            # Get KOs related to the module under study that are present on the beneficiary's genome
-            list_of_kos_present = set(kos_on_its_own)
-            definition_under_study = mo_map[module]["steps"]
-            definition_under_study_proc = [
-                term if isinstance(term, list) else [term]
-                for term in definition_under_study.values()
-            ]
-            potential_compl_paths = [
-                list(tup) for tup in itertools.product(*definition_under_study_proc)
-            ]
-            flat_potent_compl_paths = [flatten(path) for path in potential_compl_paths]
-            for path in flat_potent_compl_paths:
-                check = all(item in list_of_kos_present for item in path)
-                if check:
-                    if module not in complete_modules:
-                        complete_modules.add(module)
-                else:
-                    gaps = set(
-                        x for x in set(path) if x not in set(list_of_kos_present)
-                    )
-                    if module not in alternatives_to_gap:
-                        alternatives_to_gap[module] = {}
-                        alternatives_to_gap[module][str(path)] = gaps
-                    else:
-                        alternatives_to_gap[module][str(path)] = gaps
-
-        # Remove complete modules for the alternatived dict
-        for key in complete_modules:
-            if key in alternatives_to_gap:
-                del alternatives_to_gap[key]
-
-        # Get shortert alternative for each
-        for module, path_gaps in alternatives_to_gap.items():
-            tmp = tmp2 = alternatives_to_gap[module].copy()
-            min_val = min([len(path_gaps[ele]) for ele in path_gaps])
-            values = list(tmp2.values())
-            shortest_alternatives = [
-                list(tmp2.keys())[values.index(s)]
-                for s in values
-                if not any(s.issuperset(i) and len(s) > len(i) for i in values)
-            ]
-            for path, gaps in alternatives_to_gap[module].items():
-                if len(gaps) > min_val + 1 or path not in shortest_alternatives:
-                    del tmp[path]
-            alternatives_to_gap[module] = tmp
-
-        # Assign alternatives found to be potentially filled for the bin under study
-        bins_alternatives[bin_id] = alternatives_to_gap
-
-    # Write alts.json file
-    with open(alts_output_file, "w") as file:
-        json.dump(bins_alternatives, file, cls=SetEncoder)
-
-    logger.info("Step 2, the alternatives of each bin's modules were enumerated.")
-
-    return bins_alternatives
-
-
 def all_complements(
     bin_kos_per_module,
     bins_alternatives,
@@ -290,7 +192,10 @@ def export_pathway_complementarities(config, bins_kos_df):
     if not os.path.exists(config.alts_file):
 
         bins_alternatives = all_alternatives(
-            bin_kos_per_module, config.modules_definitions_json_map, config.alts_file
+            bin_kos_per_module,
+            config.modules_definitions_json_map,
+            config.alts_file,
+            n_workers=config.threads  # or use os.cpu_count() for max parallelism
         )
 
     else:
@@ -299,20 +204,104 @@ def export_pathway_complementarities(config, bins_kos_df):
             bins_alternatives = json.load(h)
 
     # If compl.json not available
-    if not os.path.exists(config.compl_file):
+    if not os.path.exists(config.pc_file):
 
         module_to_map = a_modules_maps(config.kegg_modules_to_maps)
         complements = all_complements(
             bin_kos_per_module,
             bins_alternatives,
             module_to_map,
-            config.compl_file,
+            config.pc_file,
             config.tinyurl,
         )
 
     else:
 
-        with open(config.compl_file, "r") as h:
+        with open(config.pc_file, "r") as h:
             complements = json.load(h)
 
     return bins_alternatives, complements
+
+
+def process_bin(bin_id, kos_per_module, mo_map, structurals):
+    complete_modules = set()
+    alternatives_to_gap = {}
+
+    for module, kos_on_its_own in kos_per_module.items():
+        if module in structurals:
+            continue
+        list_of_kos_present = set(kos_on_its_own)
+        definition_under_study = mo_map[module]["steps"]
+        definition_under_study_proc = [
+            term if isinstance(term, list) else [term]
+            for term in definition_under_study.values()
+        ]
+        potential_compl_paths = [list(tup) for tup in itertools.product(*definition_under_study_proc)]
+        flat_potent_compl_paths = [flatten(path) for path in potential_compl_paths]
+
+        for path in flat_potent_compl_paths:
+            if all(item in list_of_kos_present for item in path):
+                complete_modules.add(module)
+            else:
+                gaps = set(x for x in set(path) if x not in list_of_kos_present)
+                alternatives_to_gap.setdefault(module, {})[str(path)] = gaps
+
+    for key in complete_modules:
+        alternatives_to_gap.pop(key, None)
+
+    # Get shortest alternatives
+    for module, path_gaps in alternatives_to_gap.items():
+        tmp = tmp2 = path_gaps.copy()
+        min_val = min([len(gaps) for gaps in path_gaps.values()])
+        values = list(tmp2.values())
+        shortest_alternatives = [
+            list(tmp2.keys())[values.index(s)]
+            for s in values
+            if not any(s.issuperset(i) and len(s) > len(i) for i in values)
+        ]
+        for path, gaps in path_gaps.items():
+            if len(gaps) > min_val + 1 or path not in shortest_alternatives:
+                tmp.pop(path)
+        alternatives_to_gap[module] = tmp
+
+    return bin_id, alternatives_to_gap
+
+def all_alternatives(
+    bin_kos_per_module,
+    modules_definitions_json_map,
+    alts_output_file,
+    n_workers=4
+):
+    """
+    Build the alts.json file
+    list alternatives for a bin's modules to be completed
+
+    Inputs:
+        bin_kos_per_module (Dict):
+        modules_definitions_json_map (str): path to
+
+    """
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+
+    with open(modules_definitions_json_map, "r") as f:
+        mo_map = json.load(f)
+
+    structurals = [
+        "md:M00144","md:M00149","md:M00151","md:M00152","md:M00154","md:M00155",
+        "md:M00153","md:M00156","md:M00158","md:M00160"
+    ]
+
+    bins_alternatives = {}
+    with ProcessPoolExecutor(max_workers=n_workers) as executor:
+        futures = {
+            executor.submit(process_bin, bin_id, kos_per_module, mo_map, structurals): bin_id
+            for bin_id, kos_per_module in bin_kos_per_module.items()
+        }
+        for future in as_completed(futures):
+            bin_id, alternatives = future.result()
+            bins_alternatives[bin_id] = alternatives
+
+    with open(alts_output_file, "w") as file:
+        json.dump(bins_alternatives, file, cls=SetEncoder)
+
+    return bins_alternatives

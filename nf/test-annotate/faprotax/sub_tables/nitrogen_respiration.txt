@@ -1,0 +1,7 @@
+#
+record,id,P-001,P-003,P-004,P-005,P-006,P-007,P-008,P-009,P-010,P-011,P-012,P-013,P-014,P-015,P-016,P-017
+Bacteria;Proteobacteria;Gammaproteobacteria;Xanthomonadales;Xanthomonadaceae;Stenotrophomonas;Stenotrophomonas maltophilia,ASV0381,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0445,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0213,0,12,15,11,0,13,6,0,0,8,9,0,2,9,5,14
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0215,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0221,37,3,26,48,68,24,4,66,20,2,3,0,5,1,0,13

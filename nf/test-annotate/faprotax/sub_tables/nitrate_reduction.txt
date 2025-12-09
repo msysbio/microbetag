@@ -1,0 +1,9 @@
+#
+record,id,P-001,P-003,P-004,P-005,P-006,P-007,P-008,P-009,P-010,P-011,P-012,P-013,P-014,P-015,P-016,P-017
+Bacteria;Proteobacteria;Gammaproteobacteria;Xanthomonadales;Xanthomonadaceae;Stenotrophomonas;Stenotrophomonas maltophilia,ASV0381,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;Veillonella magna,srss::ASV0014,1587,1079,935,862,1341,1072,1081,364,593,465,313,376,761,709,640,1145
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;,ASV1009,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;,ASV0043,409,235,224,193,294,242,259,93,102,103,92,83,138,126,138,233
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;,ASV0060,0,0,0,0,0,0,0,1,0,0,4,0,0,0,0,0
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;,ASV0244,9,10,11,0,11,0,11,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;Veillonella parvula,ASV0251,0,0,0,2,0,1,1,0,0,1,7,0,0,0,0,4

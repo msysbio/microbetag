@@ -1,0 +1,10 @@
+# FAPROTAX testing parameters files
+# Pay attention to the delimiter, as it may need quotes as in this case of the comma
+
+outdir: test-modules
+
+abundance_table: data/abd_data/testAbundMeta.tsv
+
+delimiter: ","
+
+taxonomy_colname: Taxonomy

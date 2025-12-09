@@ -1,0 +1,45 @@
+FROM r-base:4.4.1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    wget \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# Installation of main system dependencies
+RUN apt-get update && \
+    apt-get install -y ncbi-blast+ git libglpk-dev r-base-core exonerate bedtools barrnap bc parallel curl libcurl4-openssl-dev libssl-dev libsbml5-dev bc && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# installation of required R-packages
+RUN R -e 'install.packages(c("data.table", "stringr", "getopt", "R.utils", "stringi", "jsonlite", "httr", "pak"))' &&\
+    R -e 'if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager"); BiocManager::install("Biostrings")' &&\
+    R -e 'pak::pkg_install("Waschina/cobrar")'
+
+# Download latest gapseq version from github
+RUN git clone https://github.com/jotech/gapseq && cd gapseq &&\
+    # Download latest reference sequence database
+    bash ./src/update_sequences.sh
+
+RUN R -e 'install.packages(c("remotes"))'
+
+RUN apt-get update &&\
+    apt-get install -y vim
+
+# Create source dir with open read permissions
+RUN mkdir -p /opt/Rsrc && chmod 755 /opt/Rsrc
+WORKDIR /opt/Rsrc
+
+# Download cobrarCPLEX tarball
+RUN R -e 'url <- "https://github.com/Waschina/cobrarCPLEX/archive/refs/heads/master.zip"; \
+    dest <- "/opt/Rsrc/cobrarCPLEX.zip"; \
+    utils::download.file(url, dest); \
+    message(dest)'
+
+# Set workdir
+ENV PATH="/gapseq:${PATH}"
+WORKDIR /workspace
+
+CMD ["bash"]

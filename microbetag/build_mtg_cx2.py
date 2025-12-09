@@ -114,15 +114,18 @@ def taxonomy_levels_sa(node: Dict) -> None:
 
 
 def init_nodes_and_edges(
-    edgelist: pd.DataFrame, seq_id_to_taxonomy: Dict[str, str],
-    onthefly=False, metadata=None, otf_seq_tax_df=None
+    edgelist    : pd.DataFrame,
+    seqId_to_tax: Dict[str, str],
+    onthefly       = False,
+    metadata       = None,
+    otf_seq_tax_df = None
 ) -> Tuple[List[dict], List[str], List[dict]]:
     """
     Initiates the nodes and edges of the network as dictionaries, in a ndex2-oriented format.
 
     Args:
         edgelist: DataFrame containing 'node_A', 'node_B', and 'microbetag::weight'.
-        seq_id_to_taxonomy: Mapping dictionary for sequence ids: taxonomy.
+        seqId_to_tax: Mapping dictionary for sequence ids: taxonomy.
 
     Returns:
         tuple: A tuple containing:
@@ -144,7 +147,7 @@ def init_nodes_and_edges(
         nodes = [
             {
                 "id": i,
-                "v": get_node_attributes(seq_id, seq_id_to_taxonomy, **kwargs)
+                "v": get_node_attributes(seq_id, seqId_to_tax, **kwargs)
             }
             for i, seq_id in enumerate(seq_ids_lst)
         ]
@@ -162,7 +165,7 @@ def init_nodes_and_edges(
         nodes = [
             {
                 "id": i,
-                "v": get_node_attributes(seq_id, seq_id_to_taxonomy, **kwargs)
+                "v": get_node_attributes(seq_id, seqId_to_tax, **kwargs)
             }
             for i, seq_id in enumerate(seq_ids_lst)
         ]
@@ -185,20 +188,20 @@ def init_nodes_and_edges(
     return nodes, seq_ids_lst, edges
 
 
-def get_node_attributes(seq_id: str, seq_id_to_taxonomy: Dict, ncbi_ids_dict: Dict = None, metavars=None) -> Dict:
+def get_node_attributes(seq_id: str, seqId_to_tax: Dict, ncbi_ids_dict: Dict = None, metavars=None) -> Dict:
     """
     Using the sequence mapping to their corresponding taxonomies objects, builds a dictionary with the
     node's taxonomy and mapped genomes (in case of on-the-fly) attributes, in a ndex2 and MGG-oriented way.
 
     Args:
         seq_id: Sequence id of the node
-        seq_id_to_taxonomy: Dictionary with sequence ids keys and their corresponding taxonomies as value
+        seqId_to_tax: Dictionary with sequence ids keys and their corresponding taxonomies as value
         config: Instance of the :class:`Config` class
 
     Returns:
         A dictionary with the a node's attributes regarding the `microbetag` namespace of the MGG
     """
-    node_tax = seq_id_to_taxonomy.get(seq_id, "Unknown").rstrip(";")
+    node_tax = seqId_to_tax.get(seq_id, "Unknown").rstrip(";")
 
     attrs = {
         "name"     : seq_id,
@@ -239,7 +242,7 @@ def get_node_attributes(seq_id: str, seq_id_to_taxonomy: Dict, ncbi_ids_dict: Di
     return attrs
 
 
-def update_with_phen_traits(nodes: List[dict], node_names: List[str], predictions_path: str, onthefly: bool) -> None:
+def update_with_phen_traits(nodes: List[dict], node_names: List[str], phen_traits_dir: str, onthefly: bool) -> None:
     """
     Updates nodes with phenotypic traits.
 
@@ -261,7 +264,7 @@ def update_with_phen_traits(nodes: List[dict], node_names: List[str], prediction
         2. Initial `phen_traits` has the genome ids present in the phenotrex prediction files.
     """
 
-    phen_traits, _ = load_phenotypic_traits(predictions_path)
+    phen_traits, _ = load_phenotypic_traits(phen_traits_dir)
 
     if onthefly:
 
@@ -401,8 +404,15 @@ def update_with_manta(nodes: List[dict], node_names: List[str], manta_net) -> Di
 # -----------------------------
 
 def pathway_complement_edge(
-    edge_id: int, beneficiary: str, donor: str, complement: Dict, node_names: List[str],
-    beneficiary_genome=None, donor_genome=None, update=False, cx_edges=None
+    edge_id    : int,
+    beneficiary: str,
+    donor      : str,
+    complement : Dict,
+    node_names : List[str],
+    beneficiary_genome = None,
+    donor_genome       = None,
+    update             = False,
+    cx_edges           = None
 ) -> Dict:
     """
     Creates or updates an edge carrying pathway complementarities between a donor and a beneficiary node.
@@ -447,7 +457,7 @@ def pathway_complement_edge(
     return edge
 
 
-def get_compl_maps(config: "Config", genome_ids_in_nodes: List) -> Tuple[pd.DataFrame, Dict[str, set]]:
+def get_compl_maps(mspecies_map_df: pd.DataFrame, genome_ids_in_nodes: List) -> Tuple[pd.DataFrame, Dict[str, set]]:
     """
     Builds mapping objects to properly pass pathway/seed complementarities to their corresponding edges.
 
@@ -462,7 +472,7 @@ def get_compl_maps(config: "Config", genome_ids_in_nodes: List) -> Tuple[pd.Data
         - node_to_gtdb: A dictionary with sequence ids as key and the set of their corresponding
                         GTDB representative as value{seq_id: {gtdb_ids}}
     """
-    df      = config.mspecies_map_df
+    df = mspecies_map_df
     gc_list = list(genome_ids_in_nodes.copy())
 
     # Filter rows where GC is in gtdb_gen_repr_A and get corresponding node_A
@@ -493,14 +503,22 @@ def get_compl_maps(config: "Config", genome_ids_in_nodes: List) -> Tuple[pd.Data
     return nodes_in_compls, node_to_gtdb
 
 
-def pathway_complements(config: "Config", edgelist_df: pd.DataFrame, node_names: List, cx_edges: Dict):
+def pathway_complements(
+    config: "Config",
+    edgelist_df: pd.DataFrame,
+    node_names: List,
+    cx_edges: Dict
+):
+
+    _logger_.info("Extend pathway complements format.")
+
+    _logger_.info(f"pc_file: {config.pc_file}")
 
     complements_dict = extend_complements(
-        complements_json = config.compl_file,
+        complements_json = config.pc_file,
         descrps_path     = config.module_descriptions,
-        # max_scratch_alt  = config.max_scratch_alt,
-        path_compl_dir   = config.path_compl_dir,
-        path_compl_perce = config.path_compl_perce,
+        pc_percent       = config.pc_percent,
+        pc_dir           = config.pc_dir,
     )
 
     nodes_in_compls = set()
@@ -513,7 +531,7 @@ def pathway_complements(config: "Config", edgelist_df: pd.DataFrame, node_names:
 
         # NOTE (Haris Zafeiropoulos, 2025-05-07): In this case the nodes_in_compls does not
         # have sequence identifiers, as in the stand-alone version, but GC ids. So we need to map them to seq ids.
-        nodes_in_compls, node_to_gtdb = get_compl_maps(config, nodes_in_compls)
+        nodes_in_compls, node_to_gtdb = get_compl_maps(config.mspecies_map_df, nodes_in_compls)
 
     for _, link in edgelist_df.iterrows():
         node_a, node_b, _ = link
@@ -561,8 +579,11 @@ def _hat_complement(complements: Dict) -> list:
     so MGG can get a list of strings.
     """
     hat_compl = []
-    for compl in complements.values():
-        hat_compl.append("^".join(compl))
+    if isinstance(complements, dict):
+        for compl in complements.values():
+            hat_compl.append("^".join(compl))
+    else:
+        _logger_.warning(f"complements is not in a dictionary type: {complements}")
     return hat_compl
 
 
@@ -748,13 +769,94 @@ def _assign_avg_std(edge, key):
     edge["v"][f"{key}{_STD}"] = std
 
 
-def seed_complements(config, edgelist_df, node_names, cx_edges):
+def process_se_edge(
+    beneficiary,
+    donor,
+    ben_genome,
+    don_genome,
+    node_names,
+    cx_edges,
+    seed_scores,
+    seed_complements_dict,
+    non_seed_sets,
+    kmap,
+    shortener,
+
+):
+    # Get the id of the edge under study
+    edge_id, update = _get_edge_id(
+        beneficiary,
+        donor,
+        node_names,
+        cx_edges,
+        _COMPLEMENTARITY_TYPE_,
+    )
+
+    # Get competition and cooperation scores
+    scores = seed_scores.query("A == @ben_genome and B == @don_genome")
+    if not scores.empty:
+        competAB, cooperAB = scores.iloc[0][["Competition", "Cooperation"]]
+    else:
+        competAB, cooperAB = None, None
+
+    # Get complement data
+    seed_complementAB = seed_complements_dict.get(ben_genome, {}).get(don_genome, None)
+    if seed_complementAB is None or (
+        hasattr(seed_complementAB, "__len__") and not len(seed_complementAB)
+    ) or (
+        isinstance(seed_complementAB, (list, np.ndarray)) and pd.isna(seed_complementAB).all()
+    ):
+        _logger_.warning(f"None complement for beneficiary: {beneficiary} and donor {donor}")
+        return None
+
+    # Get non-seed set for beneficiary
+    if ben_genome in non_seed_sets.index:
+        beneficiarys_nonseed = non_seed_sets.loc[ben_genome].to_list()[0]
+    else:
+        _logger_.info(f"Skip beneficiary {ben_genome} for {beneficiary} since no nonseed set.")
+        return None
+
+    # Verbose seed complement transformation
+    try:
+        seed_complementAB = (
+            _verbose_seed_complement(seed_complementAB, beneficiarys_nonseed, kmap, shortener)
+            if seed_complementAB is not None
+            else []
+        )
+    except Exception as e:
+        _logger_.error(f"Error processing seed complement for {beneficiary}–{donor}: {e}")
+        return None
+
+    # Create the edge
+    se = seed_complement_edge(
+        edge_id      = edge_id,
+        beneficiary  = beneficiary,
+        donor        = donor,
+        complement   = seed_complementAB,
+        competition  = competAB,
+        cooperation  = cooperAB,
+        node_names   = node_names,
+        ben_patric   = ben_genome,
+        donor_patric = don_genome,
+        update       = update,
+        cx_edges     = cx_edges,
+    )
+
+    return edge_id, se, update
+
+
+def seed_complements(
+    config,
+    edgelist_df,
+    node_names,
+    cx_edges
+):
 
     shortener = pyshorteners.Shortener() if config.tinyurl else None
     kmap      = load_seed_complement_files(config.kegg_mappings)
 
     seed_scores = pd.read_csv(
-        config.phylomint_scores,
+        config.seed_scores,
         sep      = "\t",
         header   = None,
         skiprows = 1,
@@ -765,10 +867,12 @@ def seed_complements(config, edgelist_df, node_names, cx_edges):
 
     # NOTE (Haris Zafeiropoulos, 2025-03-26):
     # Remember we only focus on the KEGG MODULES related seeds, nonseeds and compls
+    _logger_.info(f"~ module_nonseeds: {config.module_nonseeds}")
     with open(config.module_nonseeds, "rb") as f:
         non_seed_sets = pickle.load(f)
 
-    with open(config.seed_compl_pckl, "rb") as f:
+    _logger_.info(f"~ sc_pkl: {config.sc_pkl}")
+    with open(config.sc_pkl, "rb") as f:
         seed_complements = pickle.load(f)
 
     seed_complements_dict = seed_complements.to_dict(orient="index")
@@ -813,73 +917,16 @@ def seed_complements(config, edgelist_df, node_names, cx_edges):
 
                 for don_genome in don_ids:
 
-                    # Get the id of the edge under study
-                    edge_id, update = _get_edge_id(
-                        beneficiary,
-                        donor,
-                        node_names,
-                        cx_edges,
-                        _COMPLEMENTARITY_TYPE_
-                    )
+                    if (res := process_se_edge(
+                        beneficiary, donor,
+                        ben_genome, don_genome,
+                        node_names, cx_edges,
+                        seed_scores, seed_complements_dict,
+                        non_seed_sets, kmap, shortener,
+                    )) is not None:
 
-                    # From the seed_scores data frame, get those for the case under study
-                    scores = seed_scores.query("A == @ben_genome and B == @don_genome")
-
-                    if not scores.empty:
-                        competAB, cooperAB = scores.iloc[0][
-                            ["Competition", "Cooperation"]
-                        ]
-                    else:
-                        competAB, cooperAB = None, None  # or suitable defaults
-
-                    # Get complement for pair under study from the pickle-derived dictionary
-                    seed_complementAB = seed_complements_dict.get(ben_genome, {}).get(don_genome, None)
-
-                    if seed_complementAB is None or (
-                        hasattr(seed_complementAB, '__len__') and not len(seed_complementAB)
-                    ) or (
-                        isinstance(seed_complementAB, (list, np.ndarray)) and pd.isna(seed_complementAB).all()
-                    ):
-                        # if seed_complementAB is None or pd.isna(seed_complementAB):
-                        _logger_.warning(f"None complement for beneficiary: {beneficiary} and donor {donor}")
-                        continue
-
-                    if ben_genome in non_seed_sets.index:
-                        beneficiarys_nonseed = non_seed_sets.loc[ben_genome].to_list()[0]
-
-                    else:
-                        _logger_.info(f"Skip beneficiary {ben_genome} for {beneficiary} since no nonseed set.")
-                        continue
-
-                    try:
-                        seed_complementAB = (
-                            _verbose_seed_complement(
-                                seed_complementAB,
-                                beneficiarys_nonseed,
-                                kmap,
-                                shortener
-                            )
-                            if seed_complementAB is not None else []
-                        )
-                    except Exception:
-                        # This probably will never happen
-                        continue
-
-                    se = seed_complement_edge(
-                        edge_id      = edge_id,
-                        beneficiary  = beneficiary,
-                        donor        = donor,
-                        complement   = seed_complementAB,
-                        competition  = competAB,
-                        cooperation  = cooperAB,
-                        node_names   = node_names,
-                        ben_patric   = ben_genome,
-                        donor_patric = don_genome,
-                        update       = update,
-                        cx_edges     = cx_edges,
-                    )
-
-                    _update_or_append(cx_edges, edge_id, se, update)
+                        edge_id, se, update = res
+                        _update_or_append(cx_edges, edge_id, se, update)
 
     # Average seed scores
     for edge in cx_edges:
@@ -1046,12 +1093,12 @@ def mtg_annotate_network(config: "Config") -> ndex2.cx2.CX2Network:
     )
 
     # PHENOTREX ANNOTATIONS
-    if config.phen_traits and os.listdir(getattr(config, "predictions_path", [])):
+    if config.phen_traits and os.listdir(getattr(config, "phen_traits_dir", [])):
         _logger_.info("-- Loading phenotrex-based traits\n")
         update_with_phen_traits(
             nodes            = nodes,
             node_names       = node_names,
-            predictions_path = config.predictions_path,
+            phen_traits_dir = config.phen_traits_dir,
             onthefly         = config.onthefly
         )
 
@@ -1097,8 +1144,9 @@ def mtg_annotate_network(config: "Config") -> ndex2.cx2.CX2Network:
     if manta_layout:
         apply_layout(net_cx2, manta_layout)
 
-    timepoint = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-    cx2_file  = os.path.join(config.output_dir, f"mtag_net_{timepoint}.cx2")
+    timepoint   = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+    default_cx2 = os.path.join(config.outdir, f"mtag_net_{timepoint}.cx2")
+    cx2_file    = getattr(config, "mtg_net", default_cx2)
 
     net_cx2.set_network_attributes({"name": f"microbetag network @ {timepoint}"})
     net_cx2.write_as_raw_cx2(cx2_file)

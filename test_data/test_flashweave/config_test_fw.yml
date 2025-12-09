@@ -15,6 +15,7 @@ abundance_table_file:
   with those in your network (if one provided) as well as with those in your bins/faa/xml files, again if such provdied."
   required: true
   examples: 
+    - testAbundMeta.tsv
     - thirty_Samples.tsv
     - counts_genomes_taxonomies.tsv
   type: string

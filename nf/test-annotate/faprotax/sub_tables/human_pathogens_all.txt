@@ -1,0 +1,6 @@
+#
+record,id,P-001,P-003,P-004,P-005,P-006,P-007,P-008,P-009,P-010,P-011,P-012,P-013,P-014,P-015,P-016,P-017
+Bacteria;Proteobacteria;Gammaproteobacteria;Xanthomonadales;Xanthomonadaceae;Stenotrophomonas;Stenotrophomonas maltophilia,ASV0381,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Actinobacteriota;Coriobacteriia;Coriobacteriales;Eggerthellaceae;Eggerthella;Eggerthella lenta,ASV0107,32,49,19,21,39,51,18,11,20,5,18,11,17,17,11,20
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Streptococcaceae;Streptococcus;Streptococcus mutans,ASV0090,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Clostridia;Peptostreptococcales-Tissierellales;Peptostreptococcaceae;Clostridioides;Clostridioides difficile,bin_101,108,84,240,139,0,213,92,7,4,27,18,117,133,107,51,74

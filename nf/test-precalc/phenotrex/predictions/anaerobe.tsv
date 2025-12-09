@@ -1,0 +1,5 @@
+# Trait: anaerobe
+Identifier	Trait present	Confidence
+MPB_bin_000002.fasta	YES	0.8598
+bin_101.fa	YES	0.8784
+bin_151.fa	YES	0.8846

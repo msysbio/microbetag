@@ -1,0 +1,110 @@
+# The input and output directories in this workflow will be mounted
+# so that all relevant files can be accessed during the network annotation step.
+
+# If you have already run a pre-calculation step, you may copy its output into the input directory (indir)
+# along with your abundance data, metadata, or network file (if available).
+
+# Alternatively, you can create the output directory (outdir) in advance and place the pre-calculated results there.
+
+# Important:
+# Ensure that any file paths you provide point to files located within either the indir or the outdir.
+
+# Path to your input directory with abundance table and optional metadata and network file -- to be mounted so containers can access them
+indir: data/
+
+# Path to your abundance table -- needs to be within the indir and its path should be relative to the indir
+abundance_file: data/abd_data/abund.tsv
+
+# Path to metadata file. Leave empty if not available.
+metadata_file:
+
+# If already available, then set path to network file. It needs to be in a 3-column, tab separated format. Leave empty if not available.
+network:
+
+# Output directory of the MICROBETAG_PRECALC (precalc.nf) workflow -- to be mounted so containers can access them
+precalculations: test-precalc
+
+# Output
+outdir: test-annotate
+mtg_net: test.cx2
+
+# For each step, if false, you may leave the extra args blank
+faprotax: true
+taxonomy_colname: Taxonomy
+delimiter: ","
+
+# Annotate network using genome-based phenotypic traits as provided by Phenotreex
+phen_traits: true
+# Path to directory with Phenotreex predictions -- needs to be within the indir or outdir
+phen_traits_dir: test-precalc/phenotrex/predictions/
+
+# Annotate the network using pathway complementarities
+path_compl: true
+# Like in the precalc step.
+pc_percent: 1
+# Path to directory with pathway complementarities -- needs to be within the indir or outdir
+pc_dir: test-precalc/pathway_compl
+# Path to precalculated pathway complementarities file -- needs to be within the indir or outdir
+pc_file: test-precalc/pathway_compl/pcompls.json
+
+# Annotate the network using seed complementarities
+seed_compl: true
+# Path to seed complmentarities pickle file -- needs to be within the indir or outdir
+sc_pkl: test-precalc/seed_compl/seed_compls.pkl
+# Path to seed scores tsv file -- needs to be within the indir or outdir
+seed_scores: test-precalc/seed_compl/seed_scores.tsv
+# Path to non-seed KEGG MODULES pickle file -- needs to be within the indir or outdir
+module_nonseeds: test-precalc/seed_compl/keggm_nonseeds.pkl
+# Convert long URLs built from the complementarity modules pointing to KEGG MAPS, showing beneficiary's and donor's compounds or KOs, to tinyurl links in the output network file
+tinyurl: false
+
+# Annotate the network using cluster assignments
+net_cluster: false
+# Perform the manta algorithm for cluster detection
+manta: true
+manta_prefix:
+
+# In case a network file is provided, please skip flashweave_args
+flashweave_args:
+  # Enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (FlashWeaveHE).
+  heterogeneous: false
+
+  # Enable fine-grained associations (FlashWeave-S, FlashWeaveHE-S), sensitive=false results in the fast modes  FlashWeave-F or FlashWeaveHE-F
+  sensitive: true
+
+  # Maximum size of conditioning sets, high values can strongly increase runtime. max_k=0 results in no conditioning (univariate mode). By default: 3
+  max_k:
+
+  # Threshold used to determine statistical significance.
+  alpha:
+
+  # Convergence threshold, i.e. if conv=0.01 assume convergence if the number of edges increased by only 1% after 100% . more runtime (checked in intervals).
+  conv:
+
+  # Enable feed-forward heuristic
+  feed_forward:
+
+  # Maximum number of conditional tests that should be performed on a variable pair before association is assumed.
+  max_tests:
+
+  # Reliability criterion for statistical tests when sensitive=false.
+  hps:
+
+  # Perform false Discovery Rate correction (Benjamini-Hochberg method) on pairwise associations.
+  FDR:
+
+  # Do not compute associations between variables having less reliable samples (i.e. non-zero if heterogeneous=true) than this number. -1  automatically choose a threshold.
+  n_obs_min: 16
+
+  # If feed-forward heuristic is active, time_limit determines the interval (seconds) at which neighborhood information  is updated.
+  # -1.0 set heuristically, 0.0 no time_limit, otherwise time limit in seconds
+  time_limit:
+
+  # Automatically choose and perform data normalization (based on sensitive and heterogeneous)
+  normalize:
+
+  # Store for each discarded edge, which variable set lead to its exclusion (can be memory intense for large networks)
+  track_rejections:
+
+# Do not edit below this line
+onthefly: false

@@ -47,6 +47,7 @@ from .pathway_complementarity import export_pathway_complementarities
 logger = mtg_logger(__name__)
 
 
+# This is the main function building a microbetag-annotated network
 def run_microbetag(config: Config):
     """
     Main function for running the microbetag workflow.
@@ -61,56 +62,87 @@ def run_microbetag(config: Config):
     """
 
     if config.onthefly or config.api:
-
         from . import db
         from .helpers import otf_seqid_ncbi_gtdb_map
 
+        # The onthefly config file should always include the credentials
         db.DB_CREDENTIALS = config.db_config
 
-        # onthefly confing brings the db credentials on it
-
-    # ----------------
     # Build network if not available
-    # ----------------
+    _get_network(config)
+
+    # FAPROTAX
+    _run_faprotax(config)
+
+    # phen annotations
+    _get_phen_annotations(config, db) if (config.onthefly or config.api) else _get_phen_annotations(config)
+
+    # Prodigal - ORF prediction
+    _run_prodigal(config)
+
+    # Maps required for otf in case of complementaritites
+    if (config.path_compl or config.seed_compl) and config.onthefly:
+        (
+            config.pairs_of_interest,
+            config.relative_genomes,
+            config.mspecies_map_df
+
+        ) = otf_seqid_ncbi_gtdb_map(config)
+
+    # Pathway complementarity
+    _get_path_compl(config, db) if (config.onthefly or config.api) else _get_path_compl(config)
+
+    # Seed complementarity
+    _get_seed_compl(config, db) if (config.onthefly or config.api) else _get_seed_compl(config)
+
+    # Network clustering
+    _run_manta(config)
+
+    # Annotate network in .cx format
+    mtg_net = _annotate_network(config)
+
+    return mtg_net
+
+
+# Function to be used within the run_microbetag()
+def _get_network(config):
+    """Helper function to run FlashWeave or not."""
     if config.precalc_only:
 
         logger.info(
             "microbetag is about to perform the precalculations for your list of bins/MAGs only."
             "No network will be built."
         )
-
     elif not os.path.exists(config.network) or os.path.getsize(config.network) == 0:
 
         logger.info(
-            "[STEP] NETWORK INFERENCE WITH FLASHWEAVE. "
+            "⚙️ -- NETWORK INFERENCE WITH FLASHWEAVE --"
             "Using the abundance table provided, microbetag is about to build a co-occurrence network.\n"
         )
 
         run_flashweave(config)
 
-    # ----------------
-    # FAPROTAX
-    # ----------------
+
+def _run_faprotax(config):
+    """Helper function to run FAPROTAX or not."""
     if config.abundance_table is not None and config.faprotax:
 
-        logger.info("[STEP] LITERATURE ANNOTATION WITH FAPROTAX")
+        logger.info("⚙️ -- LITERATURE ANNOTATION WITH FAPROTAX --")
 
         try:
-
             run_faprotax(config)
 
         except Exception:
-
             error_msg = "FAPROTAX failed."
             logger.error(error_msg)
             raise RuntimeError(error_msg)
 
-    # ----------------
-    # phen annotations
-    # ----------------
+
+def _get_phen_annotations(config, **kwargs):
+    """Helper function to run Phenotrex or not; in both local and on-the-fly versions"""
     if config.phen_traits:
 
-        logger.info("[STEP] PREDICTING PHENOTYPIC TRAITS")
+        logger.info("⚙️ -- PREDICTING PHENOTYPIC TRAITS --")
 
         if config.bins_ids is not None and not config.onthefly:
 
@@ -128,61 +160,44 @@ def run_microbetag(config: Config):
         elif config.onthefly:
 
             try:
-
-                # get_phen_traits(config.repr_genomes_present, config.predictions_path)
-                t = db.GetPhenotrexTraits(config)
+                db = kwargs.get("db")  # Safely extracts db if present, otherwise None
+                t  = db.GetPhenotrexTraits(config)
                 t.get_phen_traits()
 
             except Exception:
-
                 error_msg = (
                     "Phenotypic traits for the genomes under study failed to be exported from microbetagDB."
                 )
                 logger.error(error_msg)
                 raise RuntimeError(error_msg)
 
-    # ----------------
-    # Prodigal - ORF prediction
-    # ----------------
-    if (
-        config.path_compl or config.seed_compl
-    ) and not config.onthefly:
+
+def _run_prodigal(config):
+    """Helper function to run Prodigal or not."""
+    if (config.path_compl or config.seed_compl) and not config.onthefly:
+
+        logger.info(f"ko_merged: {config.ko_merged}")
 
         if (
-            config.ko_merged is None and
-            len(os.listdir(config.prodigal)) != len(config.bins_ids)
+            config.ko_merged is None and len(os.listdir(config.prodigal)) != len(config.bins_ids)
         ):
 
             logger.info("[INTERMEDIATE STEP] PREDICTING ORFs WITH PRODIGAL THROUGH DiTing")
 
             try:
-
                 run_otf_prodigal(config)
 
             except Exception:
-
                 error_msg = "Prodigal failed to run on your genomes/bins."
                 logger.error(error_msg)
                 raise RuntimeError(error_msg)
 
-    # ----------------
-    # Maps required for otf in case of complementaritites
-    # ----------------
-    if (config.path_compl or config.seed_compl) and config.onthefly:
 
-        (
-            config.pairs_of_interest,
-            config.relative_genomes,
-            config.mspecies_map_df
-
-        ) = otf_seqid_ncbi_gtdb_map(config)
-
-    # ----------------
-    # Pathway complementarity
-    # ----------------
+def _get_path_compl(config, **kwargs):
+    """Helper function to get pathway complementarities or not."""
     if config.path_compl:
 
-        logger.info("[STEP] EXTRACTING PATHWAY COMPLEMENTARITIES.")
+        logger.info("⚙️ -- EXTRACTING PATHWAY COMPLEMENTARITIES --")
 
         # ----------------
         # KEGG annotation - based on the DiTing implementation
@@ -206,7 +221,7 @@ def run_microbetag(config: Config):
         # ----------------
 
         if config.onthefly:
-
+            db = kwargs.get("db")  # Safely extracts db if present, otherwise None
             db.get_path_compls_otf(config)
 
         else:
@@ -216,17 +231,18 @@ def run_microbetag(config: Config):
                 pivot_df = load_merged_ko_file(config.ko_merged)  # Load ko_merged.txt
 
                 if not os.path.exists(config.alts_file) or not os.path.exists(
-                    config.compl_file
+                    config.pc_file
                 ):
 
                     _, _ = export_pathway_complementarities(config, pivot_df)
 
-    # ----------------
-    # Seed complementarity
-    # ----------------
+
+def _get_seed_compl(config, **kwargs):
+    """Helper function to get seed complementarities or not"""
+
     if config.seed_compl:
 
-        logger.info("[STEP] EXTRACTING SEED COMPLEMENTARITIES.")
+        logger.info("⚙️ -- EXTRACTING SEED COMPLEMENTARITIES --")
 
         # ----------------
         # Build GENREs
@@ -240,9 +256,12 @@ def run_microbetag(config: Config):
         # ----------------
         # microbetag implementation of Phylomint
         # ----------------
-        logger.info("[INTERMEDIATE STEP] COMPUTING SEED SETS AND SCORES")
 
         if config.onthefly:
+
+            logger.info("[INTERMEDIATE STEP] GET SEED COMPLS FROM MICROBETAG DB")
+
+            db = kwargs.get("db")
 
             config.get_scores      = True
             config.get_complements = True
@@ -253,12 +272,12 @@ def run_microbetag(config: Config):
 
         run_seed_complementarity(config)
 
-    # ----------------
-    # Network clustering
-    # ----------------
+
+def _run_manta(config):
+    """Helper function to run manta or not"""
     if config.net_cluster and config.prev_manta_net is None:
 
-        logger.info("[STEP] network clustering using manta and the abundance table")
+        logger.info("⚙️ -- network clustering using manta and the abundance table")
 
         # Build original input file in cyjs format
         manta_input_net(config)
@@ -273,24 +292,7 @@ def run_microbetag(config: Config):
 
         logger.info("Base network has been built and saved.")
 
-    # ----------------
-    # Annotate network in .cx format
-    # ----------------
-    if config.precalc_only is False:
-        logger.info("[STEP] ANNOTATE NETWORK ")
-        mtg_net = mtg_annotate_network(config)
-
-    # ----------------
-    # Keep arguments
-    # ----------------
-    config.export_to_log()
-    logger.info("A parameters.log file with the parameters used in this run was built.")
-
-    logger.info("microbetag completed.")
-
-    return mtg_net
-
-
+# Functions to support the main()
 def _print_help():
     help_message = """
     Usage: microbetag --config <path_to_config_yml>
@@ -322,6 +324,22 @@ def _print_config_message():
     logger.error(conf_message)
 
 
+def _annotate_network(config):
+    """Helper function to build annotated netowork based on microbetag findings."""
+    mtg_net = None  # define upfront
+    if config.precalc_only is False:
+        logger.info("⚙️ -- ANNOTATE NETWORK ")
+        mtg_net = mtg_annotate_network(config)
+
+    # Keep arguments
+    config.export_to_log()
+    logger.info("A parameters.log file with the parameters used in this run was built.")
+
+    logger.info("microbetag completed.")
+
+    return mtg_net
+
+# The main
 def main():
     """
     Loads and parses a configuration YAML file 
@@ -345,11 +363,6 @@ def main():
         sys.exit(0)
 
     try:
-
-        # with open(args.config, "r") as yaml_file:
-        #     yaml_conf = yaml.safe_load(yaml_file)
-
-        # config = Config(yaml_conf, args.config)
         config = Config(load_config(args.config))
 
     except yaml.YAMLError:

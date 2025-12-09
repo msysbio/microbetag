@@ -1,5 +1,7 @@
 """
-Script to build GENREs using ModelSEEDpy and DNNGIOR
+Script to build GENREs using:
+- ModelSEEDpy (https://modelseedpy.readthedocs.io/en/latest/, https://github.com/ModelSEED/ModelSEEDpy), and 
+- DNNGIOR (https://doi.org/10.1016/j.isci.2024.111349)
 
 ModelSEEDpy v0.4.2 comes with a hard constraint, it needs scikit-learn 0.24.2 
 which is compatible only with Python < 3.10

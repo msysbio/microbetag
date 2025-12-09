@@ -85,7 +85,56 @@ Here we provide instructions for installing the required components for each mod
   If you are interested in running `microbetag` with your own genomes, or if you would like to go for any 
   of its features independently, you need to install the actual `microbetag` pipeline, and its several dependencies. 
 
-  To this end, you may use its [source code](#locally) or its [containerized versions](#as-a-container). 
+  To this end, you may build its Python library from its [source code](#locally) or its [containerized versions](#as-a-container). 
+  Yet, you may also access `microbetag` through a [Nextflow pipeline](#as-a-nextflow-pipeline).
+
+  In all cases, you need to make sure that besides `microbetag` itself, you also have access to:
+
+  - KOFAM database for KEGG Orthology annotations -- if you plan to run the KEGG annotation step
+  
+  In case you build `microbetag` from source code locally, you may add the `--kofam` in the `setup_environment.sh` script call,
+  and it will automatically download the KOFAM database for you.
+  Otherwise, you may download it manually by running the following commands:
+
+  ```
+    cd ext_data/kofam_database
+    wget -c ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz 
+    wget -c ftp://ftp.genome.jp/pub/db/kofam/profiles.tar.gz 
+    gzip -d ko_list.gz &&\
+    tar zxvf profiles.tar.gz 
+  ```
+  - A [Gurobi license](#install-gurobi-license) -- if you plan to run the GEM reconstruction step using `carveme`
+  - (optional) [a CPLEX license](#install-cplex) -- if you plan to run the GEM reconstruction step using `gapseq` with CPLEX solver
+
+
+### .. as a Nextflow pipeline
+
+  The easiest, most straight-forward approach to access the stand-alone version of `microbetag` is as a Nextflow pipeline. 
+
+  To get started, you need first to make sure you have [Nextflow](https://www.nextflow.io/) installed on your system.
+  If not already available, you may follow instructions 
+  <a href="https://www.nextflow.io/docs/latest/getstarted.html#installation" target="_blank">here</a>.
+
+  Then, you need to make sure you have `Docker` or `Singularity/Apptainer` installed on your system.
+  If not already available, you may follow instructions 
+  <a href="https://docs.docker.com/get-docker/" target="_blank">here</a> 
+  for `Docker` or 
+  <a href="https://docs.sylabs.io/guides/3.0/user-guide/installation.html" target="_blank">here</a> 
+  for `Singularity` and <a href="https://apptainer.org/docs/admin/main/installation.html" target="_blank">here</a> for `Apptainer`.
+
+  In case you are working on a HPC system, `Singularity` and/or `Apptainer` most likely would already be available, while Docker would not be an option.
+
+
+  After you have `Nextflow` and a containerization technology installed, you may get the `microbetag` Nextflow pipeline by running: 
+
+  ```bash
+      git clone https://github.com/msysbio/microbetag
+  ```
+
+  Then, you may run `microbetag` by executing either the `precalc.nf` or the `net_annotate.nf` workflow, located under the `nf/workflows/` folder of the cloned repository, following instructions [here](./tutorials_local/nf.md).
+
+
+
 
 ### .. locally
 
@@ -196,10 +245,6 @@ Here we provide instructions for installing the required components for each mod
   ```
 
 
-
-
-
-
 ## Further dependencies 
 
 ### Containerization technologies: Docker and Singularity/Apptainer
@@ -212,8 +257,6 @@ So far, we have tested them using:
 * 🐳 [Docker](https://docs.docker.com/get-docker/) 
 
 * ⚡[Singularity](https://docs.sylabs.io/guides/3.0/user-guide/installation.html): specified for HPC systems
-
-
 
 
 ### Install `gurobi` license
@@ -299,3 +342,25 @@ So far, we have tested them using:
 
   Note that `microbetag` is looking for the license under `/opt/gurobi/`.
   
+
+### Install CPLEX
+
+[IBM ILOG CPLEX Optimization Studio](https://www.ibm.com/products/ilog-cplex-optimization-studio)
+
+Jump to [IBM login](https://login.ibm.com/) page. 
+If you do not have an account already, create one by clicking on the _Create an IBMid_
+
+
+![alt text](image.png)
+
+
+
+https://academic.ibm.com/a2mt/downloads/data_science#/
+
+
+https://ronennir.medium.com/installing-cplex-optimization-studio-on-ubuntu-20-04-53e234ca4ec2
+
+
+https://www.youtube.com/watch?v=o8plELhkazU
+
+

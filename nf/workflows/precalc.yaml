@@ -1,0 +1,110 @@
+# -----------
+# Global
+# -----------
+
+outdir: test-precalc
+
+threads: 4
+
+# Path to the genome catalogue. Required for phenotrex -- will be used for pathway and seed complementarities if not .faa and gems are available respectively.
+genomes: data/genomes/
+
+# You may provide a path with .faa files if already available -- they can also used for the GEM reconstruction step if GEMs not available, e.g. test-precalc/prodigal/. Leave empty if not available.
+faa_dir:
+
+# -----------
+# PHENOTREX
+# -----------
+
+phenotrex: true
+
+# Genotypes output file. Output file of the phenotrex training step with the EGGNOG annotation per genome, e.g. test-precalc/eggnog.genotype. Leave empty if not available.
+genotype_file:
+
+# Class probability threshold for displaying predictions. Predictions below the threshold will be given as "N/A".
+min_proba: 0.75
+
+# -----------
+# PATHWAY COMPL
+# -----------
+
+pathway_compl: true
+
+# A three column file with the genome id, the contig id and its corresponding KEGG ORTHOLOGY term, e.g. test-modules/hmmsearch/ko_merged.txt. Leave empty if not available.
+# Example file:
+# bin_id  contig_id       ko_term
+# bin_101 c_000000006615_9        K00005
+# bin_101 c_000000142277_2        K00012
+ko_merged:
+
+# Path to KOFAM database list file, as downloaded by the `wget -c ftp://ftp.genome.jp/pub/db/kofam/ko_list.gz` command
+# Supposed to look like:
+# knum    threshold       score_type      profile_type    F-measure       nseq    nseq_used       alen    mlen    eff_nseq        re/pos  definition
+# K00001  363.33  domain  all     0.312178        2773    2310    2080    519     14.06   0.590   alcohol dehydrogenase [EC:1.1.1.1]
+# K00002  438.50  domain  all     0.418181        2762    2642    6996    484     7.63    0.590   alcohol dehydrogenase (NADP+) [EC:1.1.1.2]
+# Important: Make sure you replace this with the path to the file you downloaded for the KOFAM database if you downloaded it in a different location!
+kegg_list:
+  ../ext_data/kofam_database/ko_list_test
+  # <PATH_TO>/ko_list
+  # ../ext_data/kofam_database/
+
+# Path to KOFAM database folder with HMM models, as downloaded by the `wget -c ftp://ftp.genome.jp/pub/db/kofam/profiles.tar.gz` command
+# It would look like:
+# ls data/kofam_database/profiles_test
+# K00011.hmm  K00023.hmm  K00034.hmm
+# Important: Make sure you replace this with the path to the file you downloaded for the KOFAM database if you downloaded it in a different location!
+hmm_profiles:
+  ../ext_data/kofam_database/profiles_test
+  # <PATH_TO>/profiles
+
+# A .json file with the alternatives for each KEGG MODULE of each genome of the catalogue, e.g. alternatives.json. Leave empty if not available.
+alts_file:
+
+# A .json file with pathway complementarities, e.g. pcompls.json. Leave empty if not available.
+pc_file:
+
+# Use tinyurl (https://tinyurl.com/) to shorten the links to KEGG MAPS with colored KOs or compounds for the complementarities
+tinyurl: false
+
+# Ratio of the number of KOs to get to the total number of the KOs of the KEGG MODULE alternative.
+# So, for example if you need to get 2 and the alternative has 3, that would give a ~0.66.
+# microbetag will return all complementarities with a lower ratio than the pc_percent
+pc_percent: 0.75
+
+# -----------
+# SEED COMPL
+# -----------
+
+seed_compl: true
+
+# Path to previously reconstructed genome-scale models. Leave empty if not available.
+gems:
+
+# Tool to reconstruct GEMs with; gapseq requires much more computing resources and time.
+recon_with:
+  carveme
+  # gapseq
+
+# Path to the Gurobi WLS license, e.g. /opt/gurobi/gurobi_wlm.lic -- Attention! Please provide absolute path to the license file.
+gurobi_lic:
+
+# Path to the CPLEX installation, e.g. /opt/ibm/ILOG/CPLEX_Studio2211/
+cplex:
+
+# Gurobi WLS allows up to 5 parallel sessions, so in that case max could not be higher than 5.
+max_forks: 5
+
+# Namespace of the GEMs to be used; can be either BiGG or ModelSEED
+namespace: BiGG
+
+# Nonseed set per genome, e.g. nonseeds.json. Skip steps before SCORES_COMPLS_PRECALC. Leave empty if not available.
+nonseeds_json:
+
+# Confidence of each seed per genome, e.g. confidence.json. Leave empty if not available.
+confidence_json:
+
+# Return only seed complementarities that are related to some KEGG MODULE
+kegg_modules_only: true
+
+# In case you'd like to save the decompressed input files
+debug_decompress:

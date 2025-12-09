@@ -2,6 +2,8 @@
 # Date: May, 2025
 # Description: configuration file for running CarveMe test
 
+precalculations_only:
+  value: true
 
 bins_fasta:
   dir_path: input_files/my_bins
@@ -35,7 +37,7 @@ seed_complementarity:
 
 
 sc_input_type:
-  value: proteins_faa
+  value: bins_fasta
   value_from: 
     - bins_fasta
     - coding_regions
@@ -59,7 +61,7 @@ sc_input_type:
 # there parameters should be considered only in case seed complementarity is about to be performed and metabolic networks are not already available
 # -----
 sequence_files_for_reconstructions:
-  dir_path: input_files/faa
+  dir_path: input_files/my_bins
   required: 
     value: true
     when: if sc_input_type != "bins_fasta". Could be either .fna or .faa files.
@@ -67,7 +69,7 @@ sequence_files_for_reconstructions:
   type: string
 
 gene_predictor:
-  value: prodigal
+  value: fragGeneScan
   value_from: 
     - fragGeneScan
     - prodigal

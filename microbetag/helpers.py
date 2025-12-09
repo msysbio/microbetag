@@ -53,14 +53,14 @@ class PathwayComplementarity:
     def __init__(self, config: "Config"):
         self.conf       = config
         self.base_dir   = config.base_dir
-        self.output_dir = config.output_dir
+        self.outdir = config.outdir
 
         # Init
         self.initialize(config)
 
     def setup_kegg_annotations(self):
         """Sets up KEGG annotations and directories."""
-        self.kegg_annotations = os.path.join(self.output_dir, "KEGG_annotations")
+        self.kegg_annotations = os.path.join(self.outdir, "KEGG_annotations")
         os.makedirs(self.kegg_annotations, exist_ok=True)
 
         self.kegg_pieces_dir = os.path.join(self.kegg_annotations, "hmmout")
@@ -96,40 +96,43 @@ class PathwayComplementarity:
 
         # Set up KEGG annotations 3-column file
         self.ko_merged = None
-        if not self.prev_path_compl:
 
-            ko_merged = self.conf.yaml.get("ko_merged_file", {}).get("file_path")
+        # if not self.prev_path_compl:
 
-            if ko_merged:
+        ko_merged = self.conf.yaml.get("ko_merged_file", {}).get("file_path")
 
-                self.ko_merged = resolve_file_path(self.base_dir, ko_merged)
+        if ko_merged:
 
-            else:
+            self.ko_merged = resolve_file_path(self.base_dir, ko_merged)
 
-                if not conf.onthefly:
+        else:
 
-                    self.setup_kegg_annotations()
-                    self.kegg_db_dir = self.get_kofam_db_path()
+            if not conf.onthefly:
+
+                self.setup_kegg_annotations()
+                self.kegg_db_dir = self.get_kofam_db_path()
 
     def output_dirs(self):
         """Paths to output folders and files"""
 
-        compl_file            = self.conf.yaml.get("prev_calc_path_compl", {}).get("file_path")
-        self.path_compl_dir   = os.path.join(self.output_dir, "pathway_complementarity")
-        self.path_compl_perce = self.conf.yaml.get("pc_percentage", {}).get("value", 1)
+        pc_file      = self.conf.yaml.get("pc_file", {}).get("file_path")
+        self.pc_dir     = os.path.join(self.outdir, "pathway_complementarity")
+        self.pc_percent = self.conf.yaml.get("pc_percent", {}).get("value", 1)
 
-        os.makedirs(self.path_compl_dir, exist_ok=True)
+        os.makedirs(self.pc_dir, exist_ok=True)
 
-        if compl_file:
+        if pc_file:
 
-            self.compl_file      = resolve_file_path(self.base_dir, compl_file)
+            self.pc_file      = resolve_file_path(self.base_dir, pc_file)
             self.prev_path_compl = True
+
+            _logger_.info(f">>compl : {self.pc_file}")
 
         else:
 
             self.prev_path_compl = False
-            self.compl_file      = os.path.join(self.path_compl_dir, "pathCompls.json")
-            self.alts_file       = os.path.join(self.path_compl_dir, "alts.json")
+            self.pc_file      = os.path.join(self.pc_dir, "pathCompls.json")
+            self.alts_file       = os.path.join(self.pc_dir, "alts.json")
 
 
 class MappingPaths:
@@ -167,7 +170,7 @@ class Faprotax:
         self.faprotax_script = os.path.join(
             config.cwd, "mtg_maps_models/FAPROTAX_1.2.10/collapse_table.py"
         )
-        self.faprotax_output_dir  = os.path.join(config.output_dir, "faprotax")
+        self.faprotax_output_dir  = os.path.join(config.outdir, "faprotax")
         self.faprotax_funct_table = os.path.join(
             self.faprotax_output_dir, "functional_otu_table.tsv"
         )
@@ -190,7 +193,7 @@ class NetworkHandler:
         if config.network:
             self.process_network(config)
         else:
-            self.network    = os.path.join(config.output_dir, "network_output.edgelist")
+            self.network    = os.path.join(config.outdir, "network_output.edgelist")
             self.flashweave = True
 
     def process_network(self, config):
@@ -469,7 +472,7 @@ class SeedComplementarityHandler:
         if self.user_models is False:
 
             # Directory for tmp reconstruction files
-            self.reconstructions = os.path.join(config.output_dir, "reconstructions")
+            self.reconstructions = os.path.join(config.outdir, "reconstructions")
 
             # Directory for final reconstructions
             self.genres = os.path.join(self.reconstructions, "GENREs")
@@ -483,7 +486,7 @@ class SeedComplementarityHandler:
     def seeds_paths(self, config):
 
         # Directory for seeds complementarity
-        self.seeds_outdir  = os.path.join(config.output_dir, "seeds_complementarity")
+        self.seeds_outdir  = os.path.join(config.outdir, "seeds_complementarity")
         os.makedirs(self.seeds_outdir, exist_ok=True)
 
         # NOTE (Haris Zafeiropoulos, 2025-04-29): These 2 are supposed to be the .json files.
@@ -492,19 +495,19 @@ class SeedComplementarityHandler:
 
         self.skip_sets     = self.prev_conf is not None and self.prev_nonseeds is not None
 
-        self.seed_compl_pckl  = os.path.join(self.seeds_outdir, "seed_complements.pckl")
-        self.phylomint_scores = os.path.join(self.seeds_outdir, "phylomint_scores.tsv")
+        self.sc_pkl      = os.path.join(self.seeds_outdir, "seed_complements.pkl")
+        self.seed_scores = os.path.join(self.seeds_outdir, "seed_scores.tsv")
 
         # NOTE (Haris Zafeiropoulos, 2025-05-07):
         # If prev_conf and prev_nonseeds are None, then module_seeds and module_nonseeds will be built during the run
         # Otherwise, these neeed to
-        self.module_seeds    = os.path.join(self.seeds_outdir, "kegg_module_related_seeds.pckl")
+        self.module_seeds    = os.path.join(self.seeds_outdir, "kegg_module_related_seeds.pkl")
 
         if config.onthefly:
             self.module_nonseeds = config.yaml.get("prev_nonseeds_module", {}).get("file_path")
         else:
             self.module_nonseeds = os.path.join(
-                self.seeds_outdir, "kegg_module_related_nonseeds.pckl"
+                self.seeds_outdir, "kegg_module_related_nonseeds.pkl"
             )
 
 
@@ -577,7 +580,7 @@ def otf_seqid_ncbi_gtdb_map(config: "Config") -> tuple[dict, dict, pd.DataFrame]
          for _, row in mspecies_map_df.iterrows()}
     )
 
-    outfile = os.path.join(config.output_dir, "edge_map.tsv")
+    outfile = os.path.join(config.outdir, "edge_map.tsv")
     mspecies_map_df.to_csv(outfile)
 
     return pairs_of_interest, relative_genomes, mspecies_map_df

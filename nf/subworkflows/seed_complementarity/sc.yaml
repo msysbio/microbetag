@@ -1,0 +1,37 @@
+outdir: test-subworkflows
+# ---
+# Genome-scale metabolic model reconstructions
+# ---
+
+# Leave empty if not available
+gems:
+  # results/reconstructions
+  #
+
+# If gems already available, you may leave this blank
+# Otherwise, you may point either to .fa, .fna, .fasta or .faa files (compdessed or not)
+recon_files: data/faa
+
+gurobi_lic: /opt/gurobi/gurobi_wlm.lic
+recon_with:
+  carveme
+  # gapseq
+
+max_forks: 3
+
+namespace:
+  BiGG
+  # ModelSEED
+
+# Seed set inference: Skip steps before SCORES_COMPLS_PRECALC
+nonseeds_json:
+  # results/seed_compl/nonseeds.json
+
+confidence_json:
+  # results/seed_compl/confidence.json
+
+# Seed complementarity
+kegg_modules_only: true
+
+# In case you'd like to save the decompressed input files
+debug_decompress:

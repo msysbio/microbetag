@@ -7,7 +7,7 @@ microbetag_main = os.path.join(root_dir, "microbetag/microbetag.py")
 
 # Input/output directories
 test_data  = os.path.join(root_dir, "test_data", "test_microbetag")
-output_dir = os.path.join(test_data, "mtg_complete_output")
+outdir = os.path.join(test_data, "mtg_complete_output")
 
 # Config file -- config_mtg.yml
 config_file = os.path.join(test_data, "config_from_net.yml")
@@ -41,7 +41,7 @@ class testMicrobetag(unittest.TestCase):
 
         os.system(cmd)
 
-        self.assertTrue(any(x for x in os.listdir(output_dir) if x.endswith(".cx2")))
+        self.assertTrue(any(x for x in os.listdir(outdir) if x.endswith(".cx2")))
 
 
 if __name__ == "__main__":

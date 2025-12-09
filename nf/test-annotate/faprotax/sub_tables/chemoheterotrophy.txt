@@ -1,0 +1,39 @@
+#
+record,id,P-001,P-003,P-004,P-005,P-006,P-007,P-008,P-009,P-010,P-011,P-012,P-013,P-014,P-015,P-016,P-017
+Bacteria;Actinobacteriota;Actinobacteria;Bifidobacteriales;Bifidobacteriaceae;Bifidobacterium;,ASV0003,1522,0,850,1238,0,0,0,1405,0,0,0,0,0,1465,0,0
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Streptococcaceae;Lactococcus;,ASV0004,1396,1455,1379,861,1201,302,1495,15,719,405,415,299,1000,959,642,1642
+Bacteria;Actinobacteriota;Coriobacteriia;Coriobacteriales;Coriobacteriaceae;Collinsella;Collinsella aerofaciens,ASV0005,1485,1632,2005,2229,1339,1979,1768,1375,1471,1034,1360,920,1225,1043,1115,1874
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;Veillonella magna,srss::ASV0014,1587,1079,935,862,1341,1072,1081,364,593,465,313,376,761,709,640,1145
+Bacteria;Bacteroidota;Bacteroidia;Bacteroidales;Bacteroidaceae;Bacteroides;,ASV0017,445,376,1265,353,1640,1674,1441,1272,1095,226,395,663,981,761,677,519
+Bacteria;Firmicutes;Clostridia;Peptostreptococcales-Tissierellales;Peptostreptococcaceae;Clostridioides;Clostridioides difficile,bin_101,108,84,240,139,0,213,92,7,4,27,18,117,133,107,51,74
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium paraputrificum,ASV0029,18,8,6,18,6,30,3,0,0,4,2,4,7,12,10,4
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;,ASV0043,409,235,224,193,294,242,259,93,102,103,92,83,138,126,138,233
+Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Moraxellaceae;Acinetobacter;,ASV0045,251,24,580,85,693,786,47,232,61,639,8,468,149,506,614,75
+Bacteria;Actinobacteriota;Actinobacteria;Bifidobacteriales;Bifidobacteriaceae;Bifidobacterium;Bifidobacterium bifidum,ASV0048,28,22,18,16,20,3,13,10,6,4,18,1,5,8,4,11
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Enterococcaceae;Enterococcus;,ASV0050,14,29,0,2,5,46,2,160,61,2,5,0,22,2,142,67
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;,ASV0060,0,0,0,0,0,0,0,1,0,0,4,0,0,0,0,0
+Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas;,ASV0061,0,0,0,0,0,0,61,0,76,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Enterococcaceae;Enterococcus;,ASV0079,55,32,12,18,51,20,17,39,39,14,12,7,5,4,6,56
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Streptococcaceae;Streptococcus;Streptococcus mutans,ASV0090,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Enterococcaceae;Enterococcus;,ASV0117,0,0,5,0,0,0,3,0,73,2,0,0,0,0,0,3
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Streptococcaceae;Streptococcus;,ASV0128,3,0,0,0,0,5,0,113,12,0,0,0,0,0,9,1
+Bacteria;Actinobacteriota;Actinobacteria;Propionibacteriales;Propionibacteriaceae;Propionibacterium;Propionibacterium acidifaciens,ASV0133,0,0,0,9,0,1,0,0,0,0,3,3,1,5,0,0
+Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Moraxellaceae;Acinetobacter;,ASV0158,0,0,0,3,0,0,1,52,164,0,21,0,1,0,1,0
+Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas;,ASV0195,0,0,0,0,0,0,105,0,39,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Streptococcaceae;Lactococcus;,ASV0210,0,17,18,0,14,0,23,0,7,0,0,0,15,10,8,0
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0213,0,12,15,11,0,13,6,0,0,8,9,0,2,9,5,14
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0215,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0221,37,3,26,48,68,24,4,66,20,2,3,0,5,1,0,13
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;,ASV0244,9,10,11,0,11,0,11,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Enterococcaceae;Enterococcus;,ASV0245,0,9,0,2,0,5,2,44,9,0,2,0,7,0,38,25
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;Veillonella parvula,ASV0251,0,0,0,2,0,1,1,0,0,1,7,0,0,0,0,4
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Enterococcaceae;Enterococcus;,ASV0358,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Proteobacteria;Gammaproteobacteria;Xanthomonadales;Xanthomonadaceae;Stenotrophomonas;Stenotrophomonas maltophilia,ASV0381,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas;,ASV0397,0,0,0,0,0,0,1,0,4,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Clostridia;Clostridiales;Clostridiaceae;Clostridium sensu stricto 1;Clostridium butyricum,ASV0445,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Actinobacteriota;Coriobacteriia;Coriobacteriales;Coriobacteriaceae;Collinsella;Collinsella vaginalis,ASV0462,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0
+Bacteria;Firmicutes;Bacilli;Lactobacillales;Enterococcaceae;Enterococcus;Enterococcus avium,ASV0547,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Proteobacteria;Gammaproteobacteria;Pseudomonadales;Pseudomonadaceae;Pseudomonas;,ASV0655,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Firmicutes;Negativicutes;Veillonellales-Selenomonadales;Veillonellaceae;Veillonella;,ASV1009,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Actinobacteriota;Coriobacteriia;Coriobacteriales;Coriobacteriaceae;Collinsella;,ASV1076,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Bacteria;Actinobacteriota;Coriobacteriia;Coriobacteriales;Coriobacteriaceae;Collinsella;,ASV1079,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

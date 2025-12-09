@@ -1,0 +1,51 @@
+# FlashWeave configuration file
+
+outdir: test-modules
+
+# Input file (tab-separated, samples in rows, variables in columns, header required)
+abundance_file: data/abd_data/testAbundMeta.tsv
+
+# Metadata file
+metadata_file:
+# data/abd_data/metadata.tsv
+
+flashweave_args:
+  # Enable heterogeneous mode for multi-habitat or -protocol data with at least thousands of samples (FlashWeaveHE).
+  heterogeneous: false
+
+  # Enable fine-grained associations (FlashWeave-S, FlashWeaveHE-S), sensitive=false results in the fast modes  FlashWeave-F or FlashWeaveHE-F
+  sensitive: true
+
+  # Maximum size of conditioning sets, high values can strongly increase runtime. max_k=0 results in no conditioning (univariate mode). By default: 3
+  max_k:
+
+  # Threshold used to determine statistical significance.
+  alpha:
+
+  # Convergence threshold, i.e. if conv=0.01 assume convergence if the number of edges increased by only 1% after 100% . more runtime (checked in intervals).
+  conv:
+
+  # Enable feed-forward heuristic
+  feed_forward:
+
+  # Maximum number of conditional tests that should be performed on a variable pair before association is assumed.
+  max_tests:
+
+  # Reliability criterion for statistical tests when sensitive=false.
+  hps:
+
+  # Perform false Discovery Rate correction (Benjamini-Hochberg method) on pairwise associations.
+  FDR:
+
+  # Do not compute associations between variables having less reliable samples (i.e. non-zero if heterogeneous=true) than this number. -1  automatically choose a threshold.
+  n_obs_min: 16
+
+  # If feed-forward heuristic is active, time_limit determines the interval (seconds) at which neighborhood information  is updated.
+  # -1.0 set heuristically, 0.0 no time_limit, otherwise time limit in seconds
+  time_limit:
+
+  # Automatically choose and perform data normalization (based on sensitive and heterogeneous)
+  normalize:
+
+  # Store for each discarded edge, which variable set lead to its exclusion (can be memory intense for large networks)
+  track_rejections:

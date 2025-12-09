@@ -44,6 +44,7 @@ def run_seed_complementarity(config: "Config") -> None:
 
     if config.prev_conf is None or os.path.exists(config.prev_conf) is False:
         config.skip_sets = False
+
         if config.user_models:
             genre_files = [
                 os.path.join(config.for_reconstructions, file)
@@ -69,10 +70,12 @@ def run_seed_complementarity(config: "Config") -> None:
 
     # If no seed and/or non-seed sets are missing, get them
     if config.skip_sets is False and config.api is False:
+        _logger_.info("[INTERMEDIATE STEP] COMPUTING SEED SETS")
         seeds.get_sets()
 
     # If either the phylomint scores file or the one with the seed complementarities (pckl) is missing, exract them
     if seeds.get_scores or seeds.get_complements:
+        _logger_.info("[INTERMEDIATE STEP] COMPUTING SEED SCORES AND COMPLS")
         seeds.get_scores_and_compls()
 
 
@@ -116,7 +119,7 @@ def hmmsearch(params: List) -> None:
 
 def run_prodigal(fasta: str, basename: str, outdir: str) -> None:
     """
-    Function to predict ORFs using Prodigal.
+    Function to predict ORFs using Prodigal; predicting protein-coding genes
     By default outdir is the ORFs folder
     fna	FASTA nucleic acid	Used generically to specify nucleic acids
     ffn	FASTA nucleotide of gene regions	Contains coding regions for a genome
@@ -137,15 +140,15 @@ def run_prodigal(fasta: str, basename: str, outdir: str) -> None:
         PRODIGAL,
         "-q",
         "-i",
-        fasta,
+        str(fasta),
         "-p",
         "meta",
         "-a",
-        faa_file,
+        str(faa_file),
         "-d",
-        ffn_file,
+        str(ffn_file),
         "-o",
-        gbk_file,
+        str(gbk_file),
     ]
     cmd = " ".join(cmd_para)
     if os.path.exists(faa_file) or os.path.exists(fna_file) or os.path.exists(ffn_file):
@@ -159,12 +162,12 @@ def run_prodigal(fasta: str, basename: str, outdir: str) -> None:
 
 
 def kegg_annotation(
-    faa: str,
+    faa     : str,
     basename: str,
-    out_dir: str,
-    db_dir: str,
-    ko_dic: dict,
-    threads: int
+    out_dir : str,
+    db_dir  : str,
+    ko_dic  : dict,
+    threads : int
 ) -> bool:
     """
     Function to perform KEGG annotation in parallel.
@@ -190,30 +193,36 @@ def kegg_annotation(
     for knum, info in ko_dic.items():
 
         # Check if hmmout for particular KO of a certain bin is already there
-        hmmout_filename = ".".join([knum, str(basename), "hmmout"])
-        output = os.path.join(out_dir, basename, hmmout_filename)
+        hmmout = ".".join([knum, str(basename), "hmmout"])
+        output = os.path.join(out_dir, basename, hmmout)
         if os.path.exists(output):
             continue
 
         # Get hmm for KO under consideration
         hmm_db = os.path.join(db_dir, "profiles", knum + ".hmm")
         if not os.path.exists(hmm_db):
+            _logger_.warn(f"- {hmm_db} KEGG hidden markov model profile was not found.")
             continue
 
         # Set params for hmmsearch based on the ko_list annotation
         if info[1] == "full":
-            threshold_method = "-T"
-            outtype = "--tblout"
+
+            thres_meth = "-T"
+            outtype          = "--tblout"
 
         elif info[1] == "domain":
-            threshold_method = "--domT"
-            outtype = "--domtblout"
+
+            thres_meth = "--domT"
+            outtype          = "--domtblout"
 
         elif info[1] == "custom":
-            threshold_method = "-E"
-            outtype = "--tblout"
 
-        params.append((threshold_method, info[0], outtype, output, hmm_db, faa))
+            thres_meth = "-E"
+            outtype    = "--tblout"
+
+        params.append((thres_meth, info[0], outtype, output, hmm_db, faa))
+
+        print(">> ", params)
 
     _logger_.info("Number of KEGG processes to be performed: %s", str(len(params)))
 
@@ -259,6 +268,7 @@ def phenotrex_genotype(config: "Config") -> None:
             str(config.threads),
             bin_files_in_a_row,
         ]
+
         # Container - case
         if config.cwd.startswith("/microbetag"):
 
@@ -286,6 +296,7 @@ def phenotrex_genotype(config: "Config") -> None:
         # Local case
         else:
             compute_genotype_command = " ".join(compute_genotype_params)
+            print(compute_genotype_command)
             try:
                 subprocess.run(compute_genotype_command, shell=True, check=True)
             except Exception as e:
@@ -315,7 +326,7 @@ def phenotrex_predict(config: "Config") -> None:
     for model in phen_models:
         model_name = os.path.basename(model)
         model_predictions_output = "".join(
-            [config.predictions_path, "/", model_name[:-4], ".prediction.tsv"]
+            [config.phen_traits_dir, "/", model_name[:-4], ".prediction.tsv"]
         )
 
         # Skip if predictions already computed
@@ -351,7 +362,7 @@ def phenotrex_predict(config: "Config") -> None:
                 _logger_.warn(f"Command execution failed with return code {e}")
 
     # If no predictions file is present for any classes, probably something went off.
-    if not any(glob.glob(os.path.join(config.predictions_path, "*.prediction.tsv"))):
+    if not any(glob.glob(os.path.join(config.phen_traits_dir, "*.prediction.tsv"))):
         _logger_.error(
             "No prediction was able to be retrieved with phenotrex. Check your input files."
         )
@@ -368,7 +379,7 @@ def run_manta(config: "Config") -> None:
     """
     # Build the manta command
     _logger_.info("Running manta clustering algorithm.")
-    manta_output_file = "/".join([config.output_dir, "manta_annotated"])
+    manta_output_file = "/".join([config.outdir, "manta_annotated"])
     manta_params = [
         "manta",
         "-i",
@@ -496,6 +507,11 @@ def run_faprotax(config: "Config") -> None:
         Science. 2016 Sep 16;353(6305):1272-7.
     """
 
+    if config.delimiter == "\t":
+        delimiter = "\\\\t"
+    else:
+        delimiter = config.delimiter
+
     faprotax_params = [
         "python",
         config.faprotax_script,
@@ -505,6 +521,8 @@ def run_faprotax(config: "Config") -> None:
         config.faprotax_funct_table,
         "-g",
         config.faprotax_txt,
+        "--table_delimiter",
+        delimiter,
         "-c",
         '"' + "#" + '"',
         "-d",

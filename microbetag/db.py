@@ -221,7 +221,7 @@ class GetPhenotrexTraits:
         """
         Returns predictions for a list of genomes
 
-        repr_genomes_present, config.predictions_path
+        repr_genomes_present, config.phen_traits_dir
         """
         # Get predictions for each trait, for all genomes matched to the taxonomies given from the user.
         traits_per_genome = {
@@ -236,7 +236,7 @@ class GetPhenotrexTraits:
         df = df.drop("gtdbId", errors="ignore")  # drop to make it safe if "gtdbId" isn't present.
 
         # Export predictions per trait to a 3-col file.
-        GetPhenotrexTraits.to_csv(df, self.config.predictions_path)
+        GetPhenotrexTraits.to_csv(df, self.config.phen_traits_dir)
 
     def get_phendb_traits(self, gtdb_genome_id: str):
         """
@@ -273,14 +273,14 @@ class GetPhenotrexTraits:
         return query
 
     @staticmethod
-    def to_csv(df, output_dir=None):
+    def to_csv(df, outdir=None):
         """
         Saves phenotypic trait predictions of a trait for a set of genomes in a file, in a 3-column format.
         Identifier, Trait present, Confidence
         The values the 'Trait present' column may get, is 'YES, 'NO', and 'N/A'.
         """
-        if output_dir is None:
-            output_dir = os.getcwd()
+        if outdir is None:
+            outdir = os.getcwd()
 
         # Loop through traits (every 2 rows)
         for i in range(0, df.shape[0], 2):
@@ -298,7 +298,7 @@ class GetPhenotrexTraits:
             # Write to .tsv
             trait    = f"{trait}.prediction.tsv"
 
-            with open(os.path.join(output_dir, trait), "w") as f:
+            with open(os.path.join(outdir, trait), "w") as f:
 
                 f.write(f"# Trait: {trait}\n")
 
@@ -373,7 +373,7 @@ def get_path_compls_otf(config):
     # Serialize the formatted complements dictionary
     compls_serial = convert_to_json_serializable(compls_format)
 
-    with open(config.compl_file, "w") as f:
+    with open(config.pc_file, "w") as f:
         json.dump(compls_serial, f)
 
 

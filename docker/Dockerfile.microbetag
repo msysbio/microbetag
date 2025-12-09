@@ -1,0 +1,98 @@
+# Use an official Miniconda image as base
+# FROM continuumio/miniconda3:latest
+# This Dockerfile requires to be built from the root folder of the microbetag repo
+FROM python:3.10
+
+# Set environment name
+ENV CONDA_ENV_NAME=microbetag
+ENV PATH=/opt/conda/envs/$CONDA_ENV_NAME/bin:$PATH
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
+    make \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create conda environment with core dependencies
+RUN pip install pip>=24.0 \
+    setuptools>=68 wheel \
+    numpy==1.24.4 \
+    pandas==2.2.3 \
+    scipy==1.10.1 \
+    scikit-learn==1.2.0 \
+    scikit-bio==0.6.3 \
+    requests \
+    click \
+    jinja2 \
+    pyyaml 
+
+# Activate environment and install additional pip packages
+RUN pip install backoff==2.2.1 \
+    igraph==0.11.8 \
+    biom-format==2.1.16 \
+    chardet==5.2.0 \
+    cobra==0.29.0 \
+    colorbrewer==0.2.0 \
+    colour==0.1.5 \
+    colorlog\
+    depinfo==2.2.0 \
+    ete3==3.1.3 \
+    execnet==2.1.1 \
+    hdmedians==0.14.2 \
+    joblib==1.4.2 \
+    llvmlite==0.44.0 \
+    markupsafe==3.0.2 \
+    natsort==8.4.0 \
+    oauthlib==3.2.2 \
+    packaging==24.2 \
+    pbr==6.1.1 \
+    pexpect==4.9.0 \
+    ptyprocess==0.7.0 \
+    py2cytoscape==0.7.1 \
+    py4cytoscape==1.11.0 \
+    pydot==3.0.4 \
+    pydotplus==2.0.2 \
+    pyshorteners==1.0.1 \
+    pytest-shutil==1.8.1 \
+    python-dateutil==2.9.0.post0 \
+    pytz==2025.1 \
+    requests-toolbelt==1.0.0 \
+    six==1.17.0 \
+    slicer==0.0.8 \
+    texttable==1.7.0 \
+    threadpoolctl==3.5.0 \
+    tzdata==2025.1 \
+    urllib3==2.3.0 \
+    venn==0.1.3 \
+    wand==0.6.13 
+
+# Set working directory
+WORKDIR /workspace
+
+RUN  wget http://ftp.gnu.org/gnu/parallel/parallel-latest.tar.bz2 && \
+    tar xjf parallel-latest.tar.bz2 && \
+    rm parallel-latest.tar.bz2 && \
+    cd parallel-* && \
+    ./configure && \
+    make && \
+    make install 
+
+RUN apt-get update && apt-get install -y \
+    jq \
+    vim
+
+# Install manta 
+RUN pip install git+https://github.com/hariszaf/manta.git@scipy-version 
+
+# Add the microbetag library source code and install it 
+COPY . .
+RUN pip install . 
+
+# Add paths
+ADD nf/bin/mtg /opt/mtg
+ENV PATH=/opt/mtg/:$PATH
+
+# Default command
+CMD ["bash"]

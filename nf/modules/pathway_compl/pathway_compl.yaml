@@ -1,0 +1,15 @@
+outdir: test-modules
+
+alts_file:
+  # results/pathway_compl/alts.json
+
+pc_file:
+  # results/pathway_compl/pathCompls.json
+
+pc_percent: 1
+
+tinyurl: false
+
+ko_merged: test-modules/hmmsearch/ko_merged.txt
+
+threads: 5

@@ -25,21 +25,11 @@ if TYPE_CHECKING:
 _logger_ = mtg_logger(__name__)
 
 
-def _generate_fixed_pairwise_comparisons(fixed_item: str, patric_ids_of_interest: List):
-    """Generate and return two lists: one with the fixed item in the first position and one with it in the second."""
-
-    fixed_seedset_as_A    = set()
-    fixed_nonseedset_as_A = set()
-
-    # Generate pairs where fixed_item is in the first position
-    for B in patric_ids_of_interest:
-        fixed_seedset_as_A.add((fixed_item, B))
-
-    # Generate pairs where fixed_item is in the second position
-    for A in patric_ids_of_interest:
-        fixed_nonseedset_as_A.add((A, fixed_item))
-
-    return list(fixed_seedset_as_A), list(fixed_nonseedset_as_A)
+class Ixes:
+    def __init__(self, compound_prefix, ex_suffix, int_suffix):
+        self.compound_prefix = compound_prefix
+        self.ex_suffix = ex_suffix
+        self.int_suffix = int_suffix
 
 
 class ExportSeedComplementarities:
@@ -70,7 +60,7 @@ class ExportSeedComplementarities:
         self.api      = getattr(config, 'api', False)
         self.onthefly = getattr(config, 'onthefly', False)
 
-        self.seed_compls_pckl = getattr(config, 'seed_compl_pckl', None)
+        self.seed_compls_pckl = getattr(config, 'sc_pkl', None)
 
         self.modules_ms_cpd = get_kegg_module_related(config.seed_ko_mo)
 
@@ -78,7 +68,7 @@ class ExportSeedComplementarities:
         self.perce_save     = 10
 
         if not self.api:
-            self.scores_outfile   = os.path.join(self.config.seeds_outdir, "phylomint_scores.tsv")
+            self.scores_outfile   = os.path.join(self.config.seeds_outdir, "seed_scores.tsv")
 
         if self.api or self.onthefly:
 
@@ -128,8 +118,10 @@ class ExportSeedComplementarities:
                 except FileExistsError as e:
                     raise e
 
-                self.ConfidenceDic = {k: self._strip_pre_suff_from_dict(v) for k, v in raw_conf.items()}
-                self.nonSeedSetDic = {k: self._strip_pre_suff_from_list(v) for k, v in raw_nonseeds.items()}
+                ixes = Ixes(self.compound_prefix, self.ex_suffix, self.int_suffix)
+
+                self.ConfidenceDic = {k: _strip_pre_suff_from_dict(v, ixes) for k, v in raw_conf.items()}
+                self.nonSeedSetDic = {k: _strip_pre_suff_from_list(v, ixes) for k, v in raw_nonseeds.items()}
 
     def get_sets(self):
         """
@@ -162,8 +154,11 @@ class ExportSeedComplementarities:
 
                 results = []
 
+                ixes = Ixes(self.compound_prefix, self.ex_suffix, self.int_suffix)
+                args = [(sbml_file, self.namespace, self.switch, self.bigg2seed, ixes) for sbml_file in sbml_files]
+
                 # NOTE (Haris Zafeiropoulos, 2025-05-18): Apply the process_sbml() in parallel
-                for result in pool.imap_unordered(self.process_sbml, sbml_files):
+                for result in pool.imap_unordered(process_sbml, args):
                     results.append(result)
                     pbar.update(1)  # Update progress bar as soon as a task completes
 
@@ -195,10 +190,10 @@ class ExportSeedComplementarities:
 
         # if self.save_dics:
 
-        SeedSetDic_serial = self._serialize_dic(
+        SeedSetDic_serial = _serialize_dic(
             SeedSetDic, os.path.join(self.config.seeds_outdir, "SeedSetDic.json")
         )
-        nonSeedSetDic_serial = self._serialize_dic(
+        nonSeedSetDic_serial = _serialize_dic(
             nonSeedSetDic, os.path.join(self.config.seeds_outdir, "nonSeedSetDic.json")
         )
 
@@ -317,7 +312,7 @@ class ExportSeedComplementarities:
             return None, None
 
         # Get pairwise
-        as_beneficiary, _ = _generate_fixed_pairwise_comparisons(
+        as_beneficiary, _ = generate_fixed_pairwise_comparisons(
             species, list(self.patric_ids_of_interest)
         )
 
@@ -373,81 +368,6 @@ class ExportSeedComplementarities:
 
             return compls
 
-    def process_sbml(self, sbml_path: str, maxcc: int = 2):
-        """
-        For each SBML model file (.xml) extract seeds, non-seeds and confidence scores
-        using the PhyloMint adapted/refined approach of ours, i.e. building a directed graph
-        with only the cytosol reactions, considering for the reversibility of a reaction.
-        """
-        filename  = os.path.basename(sbml_path)
-        sbml_base = filename.rstrip(".xml")
-
-        # calculate SeedSets
-        try:
-            DG_sbml = BuildGraphNetX.buildDG(sbml_path)
-        except Exception as e:
-            _logger_.error("Failed to run build directional graph for:", sbml_path)
-            return e
-
-        # Get sets !
-        # SeedSet: a dict_keys  |  nonSeedSet: a list already  |  SeedSetConfidence: a dict
-        SeedSetConfidence, SeedSet, nonSeedSet = BuildGraphNetX.getSeedSet(
-            DG_sbml, maxComponentSize=maxcc
-        )
-
-        # Remove any prefixes-suffixes
-        SeedSetConfidence, SeedSet, nonSeedSet = (
-            self._strip_pre_suff_from_dict(SeedSetConfidence),
-            self._strip_pre_suff_from_list(SeedSet),
-            self._strip_pre_suff_from_list(nonSeedSet),
-        )
-
-        # If carveme, map compounds to modelseed
-        if self.namespace == "BiGG":
-
-            seedSetBigg           = SeedSet.copy()
-            nonSeedSetBigg        = nonSeedSet.copy()
-            SeedSetConfidenceBigg = SeedSetConfidence.copy()
-
-            if self.switch:
-
-                SeedSet           = _bigg_to_modelseed(seedSetBigg, self.bigg2seed)
-                nonSeedSet        = _bigg_to_modelseed(nonSeedSetBigg, self.bigg2seed)
-                SeedSetConfidence = _bigg_to_modelseed(
-                    SeedSetConfidenceBigg, self.bigg2seed
-                )
-
-        return sbml_base, list(SeedSet), nonSeedSet, SeedSetConfidence
-
-    def _strip_pre_suff_from_list(self, terms):
-        return [
-            term.split("_", 1)[-1] if term.startswith(self.compound_prefix) else term
-            for term in (
-                (
-                    t.rsplit("_", 1)[0]
-                    if t.split("_")[-1] in {self.ex_suffix, self.int_suffix}
-                    else t
-                )
-                for t in terms
-            )
-        ]
-
-    # TODO (Haris Zafeiropoulos, 2025-03-28): check if this could be a static
-    def _strip_pre_suff_from_dict(self, d):
-        d_tmp = {}
-        for k, v in d.items():
-            new_k = self._strip_pre_suff_from_list([k])[0]
-            d_tmp[new_k] = v
-        return d_tmp
-
-    # TODO (Haris Zafeiropoulos, 2025-03-28): like above
-    def _serialize_dic(self, dict, json_file):
-
-        dict_serial = {k: list(v) for k, v in dict.items()}
-        with open(json_file, "w") as out_file:
-            json.dump(dict_serial, out_file)
-        return dict_serial
-
     def _dict_to_pickle(self, dict, pickle_file):
         """
         Saves a dictionary as a pickle file after filtering for KEGG MODULE related cases.
@@ -461,11 +381,94 @@ class ExportSeedComplementarities:
         with open(pickle_file, "wb") as f:
             pickle.dump(df.T, f)
 
-    def _worker_function(self, lock, species, queue, shared_dict):
-        """Wrapper function to process a species and signal completion."""
-        self.species_scores_compls(species, lock, shared_dict)
-        with lock:
-            queue.put(1)  # Signal that one task is completed
+# ----
+
+def process_sbml(args: set):
+    """
+    For each SBML model file (.xml) extract seeds, non-seeds and confidence scores
+    using the PhyloMint adapted/refined approach of ours, i.e. building a directed graph
+    with only the cytosol reactions, considering for the reversibility of a reaction.
+
+    sbml_path: str,
+    namespace: str,
+    switch: bool,
+    bigg2seed: pd.DataFrame,
+    maxcc: int = 2
+    """
+    maxcc: int = 2
+    sbml_path, namespace, switch, bigg2seed, ixes = args
+
+    filename  = os.path.basename(sbml_path)
+    sbml_base = filename.rstrip(".xml")
+
+    # calculate SeedSets
+    try:
+        DG_sbml = BuildGraphNetX.buildDG(sbml_path)
+    except Exception as e:
+        _logger_.error("Failed to run build directional graph for:", sbml_path)
+        return e
+
+    # Get sets !
+    # SeedSet: a dict_keys  |  nonSeedSet: a list already  |  SeedSetConfidence: a dict
+    SeedSetConfidence, SeedSet, nonSeedSet = BuildGraphNetX.getSeedSet(
+        DG_sbml, maxComponentSize=maxcc
+    )
+
+    # Remove any prefixes-suffixes
+    SeedSetConfidence, SeedSet, nonSeedSet = (
+        _strip_pre_suff_from_dict(SeedSetConfidence, ixes),
+        _strip_pre_suff_from_list(SeedSet, ixes),
+        _strip_pre_suff_from_list(nonSeedSet, ixes),
+    )
+
+    # If carveme, map compounds to modelseed
+    if namespace == "BiGG":
+
+        seedSetBigg           = SeedSet.copy()
+        nonSeedSetBigg        = nonSeedSet.copy()
+        SeedSetConfidenceBigg = SeedSetConfidence.copy()
+
+        if switch:
+
+            SeedSet           = _bigg_to_modelseed(seedSetBigg, bigg2seed)
+            nonSeedSet        = _bigg_to_modelseed(nonSeedSetBigg, bigg2seed)
+            SeedSetConfidence = _bigg_to_modelseed(
+                SeedSetConfidenceBigg, bigg2seed
+            )
+
+    return sbml_base, list(SeedSet), nonSeedSet, SeedSetConfidence
+
+
+def _strip_pre_suff_from_list(terms, ixes):
+    return [
+        term.split("_", 1)[-1] if term.startswith(ixes.compound_prefix) else term
+        for term in (
+            (
+                t.rsplit("_", 1)[0]
+                if t.split("_")[-1] in {ixes.ex_suffix, ixes.int_suffix}
+                else t
+            )
+            for t in terms
+        )
+    ]
+
+
+# TODO (Haris Zafeiropoulos, 2025-03-28): check if this could be a static
+def _strip_pre_suff_from_dict(d, ixes):
+    d_tmp = {}
+    for k, v in d.items():
+        new_k = _strip_pre_suff_from_list([k], ixes)[0]
+        d_tmp[new_k] = v
+    return d_tmp
+
+
+# TODO (Haris Zafeiropoulos, 2025-03-28): like above
+def _serialize_dic(dict, json_file):
+
+    dict_serial = {k: list(v) for k, v in dict.items()}
+    with open(json_file, "w") as out_file:
+        json.dump(dict_serial, out_file)
+    return dict_serial
 
 
 def kegg_module_related_intersect(intersect, modules_ms_cpd):
@@ -538,19 +541,19 @@ def progress_tracker(queue, total):
             pbar.update(1)
 
 
-def generate_fixed_pairwise_comparisons(fixed_item, reconstruction_filenames):
+def generate_fixed_pairwise_comparisons(term, lst):
     """Generate and return two lists: one with the fixed item in the first position and one with it in the second."""
 
-    fixed_seedset_as_A = set()
+    fixed_seedset_as_A    = set()
     fixed_nonseedset_as_A = set()
 
-    # Generate pairs where fixed_item is in the first position
-    for B in reconstruction_filenames:
-        fixed_seedset_as_A.add((fixed_item, B))
+    # Generate pairs where term is in the first position
+    for B in lst:
+        fixed_seedset_as_A.add((term, B))
 
-    # Generate pairs where fixed_item is in the second position
-    for A in reconstruction_filenames:
-        fixed_nonseedset_as_A.add((A, fixed_item))
+    # Generate pairs where term is in the second position
+    for A in lst:
+        fixed_nonseedset_as_A.add((A, term))
 
     return list(fixed_seedset_as_A), list(fixed_nonseedset_as_A)
 

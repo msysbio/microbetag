@@ -14,7 +14,7 @@ config_file = os.path.join(test_data, "config_test_fw.yml")
 # Initially the configuration mentions a metadata file
 with open(config_file, "r") as yaml_file:
     config_meta         = Config(yaml.safe_load(yaml_file), config_file)
-    config_meta.network = os.path.join(config_meta.output_dir, "network_metadata.edgelist")
+    config_meta.network = os.path.join(config_meta.outdir, "network_metadata.edgelist")
 
 # We make a second config and we shut down the metadata file part
 with open(config_file, "r") as yaml_file:

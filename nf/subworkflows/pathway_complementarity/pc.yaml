@@ -1,0 +1,33 @@
+# Example parameters file for pathway complementarity
+# If you skip a parameter, e.g. ko_merged, you can leave it empty (reccommended) or remove it
+
+outdir: test-subworkflows
+
+threads: 4
+
+genomes: data/genomes
+
+faa_dir:
+  # results/prodigal
+  #
+
+ko_merged:
+  # results/hmmsearch/ko_merged.txt
+  #
+
+kegg_list: data/kofam_database/ko_list_test
+
+hmm_profiles: data/kofam_database/profiles_test/
+
+# Path compl
+alts_file:
+  # results/pathway_compl/alternatives.json
+  #
+
+pc_file:
+  # results/pathway_compl/pcompls.json
+  #
+
+tinyurl: false
+
+pc_percent: 1

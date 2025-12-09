@@ -1,0 +1,50 @@
+FROM ubuntu:22.04
+
+# System dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    tar \
+    ca-certificates \
+    git \
+    build-essential \
+    python3 python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- Install Julia ---
+ARG JULIA_VERSION=1.9.4
+ENV JULIA_DIR=/opt/julia
+
+RUN apt-get update && apt-get install -y wget tar ca-certificates && \
+    mkdir -p $JULIA_DIR && \
+    wget -q https://julialang-s3.julialang.org/bin/linux/x64/1.9/julia-${JULIA_VERSION}-linux-x86_64.tar.gz -O /tmp/julia.tar.gz && \
+    tar -xzf /tmp/julia.tar.gz -C $JULIA_DIR --strip-components=1 && \
+    rm /tmp/julia.tar.gz && \
+    ln -s $JULIA_DIR/bin/julia /usr/local/bin/julia
+
+# 🧩 Set system-wide Julia depot path (FIXED - only set once)
+ENV JULIA_DEPOT_PATH=/usr/local/share/julia
+RUN mkdir -p $JULIA_DEPOT_PATH
+
+# Install FlashWeave.jl and dependencies via Julia
+RUN julia -e 'import Pkg; Pkg.add("FlashWeave"); Pkg.add("ArgParse"); Pkg.add("JSON"); Pkg.instantiate(); Pkg.precompile()'
+
+# Install Python 
+RUN apt-get update && apt-get install -y \
+    python3 python3-pip python3-venv \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3 1 \
+    && python --version \
+    && pip3 install --upgrade pip
+
+RUN pip install julia
+
+ADD nf/bin/fw /opt/fw
+ENV PATH=/opt/fw/:$PATH
+
+# Together with the Pkg.precompile(). this make sure all Julia packages are fully precompiled during docker build,
+#  and no precompilation happens at runtime.
+# This eliminates the mktemp: Read-only file system errors entirely.
+COPY nf/bin/fw/precompile_julia.jl /opt/fw/precompile_fw.jl
+RUN julia -e 'include("/opt/fw/precompile_fw.jl")'
+
+# Default command
+CMD ["bash"]

@@ -80,14 +80,14 @@ class Config:
             raise SystemError("You need to provide a base directory, where your config is found.")
 
         # Output dir
-        output_dir = conf.get("output_directory", {}).get("dir_path")
-        if output_dir:
-            self.output_dir = os.path.join(self.base_dir, output_dir)
+        outdir = conf.get("output_directory", {}).get("dir_path")
+        if outdir:
+            self.outdir = os.path.join(self.base_dir, outdir)
         else:
             raise ValueError("Output directory needs to be specified.")
 
         # Build output dir
-        os.makedirs(self.output_dir, exist_ok=True)
+        os.makedirs(self.outdir, exist_ok=True)
 
         # Mappings
         mappings = MappingPaths()
@@ -236,10 +236,10 @@ class Config:
             self.__dict__.update(vars(pc))
 
         # Open Reading Frames
-        if not self.onthefly and self.path_compl:
+        if not self.onthefly and (self.path_compl or self.seed_compl):
             orfs = conf.get("orfs", {}).get("path")
             if orfs is None:
-                self.prodigal = os.path.join(self.output_dir, "ORFs")
+                self.prodigal = os.path.join(self.outdir, "ORFs")
                 os.makedirs(self.prodigal, exist_ok=True)
             else:
                 self.prodigal = os.path.join(self.base_dir, orfs)
@@ -251,12 +251,12 @@ class Config:
         # Phenotrex
         if self.phen_traits:
 
-            self.predictions_path = os.path.join(self.output_dir, "phen_predictions")
-            self.phen_classes     = os.path.join(self.cwd, "mtg_maps_models/phenDB/classes/")
-            self.genotypes_file   = os.path.join(self.output_dir, "train.genotype")
-            self.min_proba        = conf.get("min_proba", {}).get("value", 0.75)
+            self.phen_traits_dir = os.path.join(self.outdir, "phen_predictions")
+            self.phen_classes    = os.path.join(self.cwd, "mtg_maps_models/phenDB/classes/")
+            self.genotypes_file  = os.path.join(self.outdir, "train.genotype")
+            self.min_proba       = conf.get("min_proba", {}).get("value", 0.75)
 
-            os.makedirs(self.predictions_path, exist_ok=True)
+            os.makedirs(self.phen_traits_dir, exist_ok=True)
 
         # FAPROTAX
         if self.abundance_table is not None and self.faprotax:
@@ -273,8 +273,8 @@ class Config:
             if self.prev_manta_net:
                 self.manta_net = resolve_file_path(self.base_dir, self.prev_manta_net)
             else:
-                self.base_network_file = os.path.join(self.output_dir, "basenet.cyjs")
-                self.manta_net         = os.path.join(self.output_dir, "manta_annotated.cyjs")
+                self.base_network_file = os.path.join(self.outdir, "basenet.cyjs")
+                self.manta_net         = os.path.join(self.outdir, "manta_annotated.cyjs")
 
         # Seed complementarity
         if self.seed_compl:
@@ -283,7 +283,7 @@ class Config:
 
         # Intermediate annoteted network file name
         self.microbetag_annotated_network_file = os.path.join(
-            self.output_dir, "pseudo_cx_annotated_net.cx"
+            self.outdir, "pseudo_cx_annotated_net.cx"
         )
         self.tinyurl = get_value(conf, "tinyurl", False)
 
@@ -331,14 +331,18 @@ def get_value(conf, key, default=None):
 
 
 def load_config(yaml_file):
+
     import yaml
+
     config_path = os.path.abspath(yaml_file)
-    config_dir = os.path.dirname(config_path)
+    config_dir  = os.path.dirname(config_path)
+
     with open(yaml_file, "r") as y:
         yaml_data = yaml.safe_load(y)
     yaml_data["__config_dir__"] = config_dir
 
     return yaml_data
+
 
 def load_abundance(abd_file: str) -> tuple[pd.DataFrame, str, str, str]:
     """

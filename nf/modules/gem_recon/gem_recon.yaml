@@ -1,0 +1,66 @@
+outdir: test-modules
+
+recon_files: data/test_gapseq
+# data/faa
+# data/genomes
+
+recon_with:
+  gapseq
+  # carveme
+
+# In case of CarveMe, Gurobi is required!
+# Attention! You will need a Gurobi license specifically for containers -- WLS
+gurobi_lic: /opt/gurobi/gurobi_wlm.lic
+
+# In case of gapseq, cplex is optional
+cplex: /opt/ibm/ILOG/CPLEX_Studio2211/
+
+# Since we can have up to 5 parallel sessions with the WLS license of Gurobi,
+# which is the only way to go on with a Docker container, we set by defalt max_forks to 5.
+# Then, our input files will be split in chunks of max_forks size for parallel processing.
+max_forks: 3
+
+debug_decompress:
+
+gapseq:
+  # For more in gapseq params, you may check on https://gapseq.readthedocs.io/en/latest/usage/parameters.html
+  find:
+    # keywords such as pathways or subsystems (for example amino,nucl,cofactor,carbo,polyamine)
+    p: polyamine
+    # Bit score cutoff for local alignment (default: 200)
+    b: 200
+    # Identity cutoff for local alignment (default: 0)
+    i: 0
+    # Coverage cutoff for local alignment (default: 75)
+    c: 75
+    # Taxonomic range for reference sequences to be used. (Bacteria, Archaea, auto; default: Bacteria). See Details.
+    t: Bacteria
+
+  find_transport:
+    # bit score cutoff for local alignment (default: 50)
+    b: 50
+    # identity cutoff for local alignment (default: 0)
+    i: 0
+    # coverage cutoff for local alignment (default: 75)
+    c: 75
+
+  draft:
+    # Biomass reaction for network model.
+    # Values from: "pos", "neg", "archaea", "auto", or path to user-defined biomass reaction
+    b: auto
+    # "Reactions with an associated blast-hit with a bitscore above this value will be added to the draft model as core reactions
+    # (i.e. high-sequence-evidence reactions). Default: 200
+    u: 200
+    # Reactions with an associated blast-hit with a bitscore below this value will be considered just as reactions that have no blast hit
+    # Default: 50
+    l: 50
+
+  medium:
+    # Path to medium file
+    file: data/gapseq-ecoli/ecoli-medium.csv
+    # bitscore threshold above which associated reactions are considered as core candidate reactions for gapfilling.
+    b: 100
+
+  # In case you already have gapseq files for your genomes, you may provide a path to them so microbetag can skip their corresponding steps
+  # Please put all relative files in a single folder and microbetag will map them
+  prev_tbl: data/gapseq-ecoli/

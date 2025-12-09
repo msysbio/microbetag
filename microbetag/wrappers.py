@@ -38,7 +38,7 @@ def run_otf_prodigal(config: "Config"):
         bin_filename = os.path.basename(bin_fa)
 
         bin_id, _ = os.path.splitext(bin_filename)
-        bin_id = bin_id.split("/")[-1]
+        bin_id    = bin_id.split("/")[-1]
 
         bin_fa = os.path.join(config.bins_path, bin_fa)
 
@@ -53,12 +53,13 @@ def run_kegg_annotate(config: "Config"):
     Wrapper for the tools.kegg_annotation() for each genome/MAG and the utils.merge_ko().
     """
     ko_list = os.path.join(config.kegg_db_dir, "ko_list")
-    ko_dic = ko_list_parser(ko_list)
+    ko_dic  = ko_list_parser(ko_list)
 
-    hmmout_dir = config.kegg_pieces_dir
+    hmmout_dir       = config.kegg_pieces_dir
     config.ko_merged = os.path.join(config.kegg_annotations, "ko_merged.txt")
 
     for bn in config.bin_filenames:
+
         bin_id, _   = os.path.splitext(bn)
         bin_kos_dir = os.path.join(hmmout_dir, bin_id)
         os.makedirs(bin_kos_dir, exist_ok=True)
@@ -90,13 +91,14 @@ def build_genres(config: "Config"):
     Wrapper function for GENREs in a microbetag pipeline run.
     """
     # Init reconstruction class
-    build_genres = GEMSReconstruction(config)
+    genres_config = GEMSReconstruction(config)
+    _logger_.info("---")
 
     # Annotate step
     if config.sc_input_type == "bins_fasta":
 
         if config.genre_reconstruction_with == "modelseedpy":
-            build_genres.rast_annotate_genomes()  # saves under config.reconstructions
+            genres_config.rast_annotate_genomes()  # saves under config.reconstructions
 
         elif config.gene_predictor == "prodigal":
             _logger_.info(
@@ -105,7 +107,7 @@ def build_genres(config: "Config"):
 
         elif config.gene_predictor == "fragGeneScan":
             _logger_.info("Get annotations with FragGeneScan.")
-            build_genres.fgs_annotate_genomes()  # saves under config.reconstructions
+            genres_config.fgs_annotate_genomes()  # saves under config.reconstructions
 
     elif config.sc_input_type == "coding_regions":
         _logger_.info("CarveMe will be used with the users .ffn-like files.")
@@ -119,11 +121,11 @@ def build_genres(config: "Config"):
     # Reconstruct step
     if config.genre_reconstruction_with == "modelseedpy":
         _logger_.info("Build draft reconstructions with ModelSEEDpy")
-        build_genres.modelseed_reconstructions()
+        genres_config.modelseed_reconstructions()
 
     elif config.genre_reconstruction_with == "carveme":
         _logger_.info("Build draft reconstructions with carveme")
-        build_genres.carve_reconstructions()
+        genres_config.carve_reconstructions()
 
     else:
         _logger_.info("User models to be used for the seed complementarity step.")

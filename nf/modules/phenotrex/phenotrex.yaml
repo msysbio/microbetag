@@ -1,0 +1,13 @@
+# Phenotrex parameters file
+
+outdir: test-modules
+
+# Input file (tab-separated, samples in rows, variables in columns, header required)
+genomes: data/genomes
+threads: 10
+
+# Genotypes output file
+genotype_file:
+# results/eggnog.genotype
+
+min_proba: 0.75

@@ -92,7 +92,6 @@ dada2familiesNcbiIds
 *.contigs.fa
 bins/
 
-
 # Ignore the output of the installation.sh script 
 microbetag_env
 
@@ -109,7 +108,6 @@ gurobi.lic
 # Ignore the output folder of the stand alone tool
 #microbetag_run/
 hmmout/
-MetaNetX/
 
 microbetagDB/mappings/gtdb_ncbi/
 .vscode/
@@ -120,3 +118,14 @@ test_data/test_modelseed/input_files
 test_data/test_microbetag/mtg_complete_output
 test_data/test_microbetag/input_files
 
+# Nextflow
+.nextflow.*
+.nextflow/
+work/
+nf/data/
+nf/results/
+nf/phenotrex/classes/
+nf/test-*
+
+# Ignore Singularity .sif files
+*.sif

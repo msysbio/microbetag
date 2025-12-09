@@ -83,7 +83,7 @@ threads:
   type: integer
 
 # -----
-# LIterature base
+# Literature base
 # -----
 faprotax_annotation:
   value:
